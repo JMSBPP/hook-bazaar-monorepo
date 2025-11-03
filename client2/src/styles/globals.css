@@ -1,0 +1,283 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Crimson+Pro:wght@400;500;700&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Colors - Primary */
+  --color-primary: #FFD700;
+  --color-primary-light: #FFA500;
+  --color-primary-dark: #DAA520;
+  
+  /* Colors - Background (Dark Mode - Logo-Inspired) */
+  --color-bg-darkest: #000814;      /* Deepest navy - primary background */
+  --color-bg-dark: #001F3F;         /* Dark navy - secondary background */
+  --color-bg-elevated: #1A1A1A;     /* Dark gray - elevated surfaces */
+  
+  /* Colors - Secondary */
+  --color-secondary: #003366;
+  --color-secondary-light: #0066CC;
+  --color-secondary-dark: #001F3F;
+  
+  /* Colors - Accent (Logo-Inspired) */
+  --color-accent: #E85A4F;          /* Orange-Red from logo */
+  --color-accent-dark: #CD5C5C;
+  --color-accent-alt: #CD853F;      /* Terracotta */
+  --color-accent-alt-dark: #B87333;
+  
+  /* Colors - Neutrals */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-gray-light: #F5F5F0;
+  --color-gray-medium: #9E9E9E;
+  --color-gray-dark: #1A1A1A;
+  --color-disabled: #9E9E9E;
+  
+  /* Legacy light mode support (kept for backwards compatibility) */
+  --color-marble-light: #F5F5F0;
+  --color-marble-dark: #E8E8E3;
+  
+  /* Colors - Status */
+  --color-success: #28A745;
+  --color-success-bg: rgba(40, 167, 69, 0.1);
+  --color-error: #DC3545;
+  --color-error-bg: rgba(220, 53, 69, 0.1);
+  --color-warning: #FFC107;
+  --color-warning-bg: rgba(255, 193, 7, 0.1);
+  --color-info: #0066CC;
+  --color-info-bg: rgba(0, 102, 204, 0.1);
+  
+  /* Typography - Fonts */
+  --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+  --font-body: 'Crimson Pro', Georgia, serif;
+  --font-mono: 'Courier New', monospace;
+  
+  /* Typography - Sizes */
+  --font-size-h1: 64px;
+  --font-size-h2: 48px;
+  --font-size-h3: 36px;
+  --font-size-h4: 28px;
+  --font-size-h5: 24px;
+  --font-size-h6: 20px;
+  --font-size-body-lg: 18px;
+  --font-size-body: 16px;
+  --font-size-body-sm: 14px;
+  --font-size-caption: 12px;
+  
+  /* Typography - Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+  
+  /* Typography - Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.5;
+  --line-height-loose: 1.75;
+  
+  /* Spacing */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 128px;
+  
+  /* Layout - Grid */
+  --grid-columns: 12;
+  --grid-gutter: 24px;
+  --container-max-width: 1440px;
+  --container-padding-desktop: 48px;
+  --container-padding-mobile: 24px;
+  
+  /* Borders */
+  --border-width: 2px;
+  --border-style: solid;
+  --border-color-primary: var(--color-primary);
+  --border-color-secondary: var(--color-secondary);
+  --border-color-accent: var(--color-accent);
+  
+  /* Shadows (Angular with Gold Glow for Dark Mode) */
+  --shadow-level-1: 2px 2px 0 rgba(0, 51, 102, 0.1), 0 0 15px rgba(255, 215, 0, 0.1);
+  --shadow-level-2: 4px 4px 0 rgba(0, 51, 102, 0.15), 0 0 20px rgba(255, 215, 0, 0.2);
+  --shadow-level-3: 6px 6px 0 rgba(0, 51, 102, 0.2), -4px -4px 0 rgba(255, 215, 0, 0.1), 0 0 25px rgba(255, 215, 0, 0.3);
+  --shadow-level-4: 8px 8px 0 rgba(0, 51, 102, 0.25), -6px -6px 0 rgba(255, 215, 0, 0.15), 0 0 30px rgba(255, 215, 0, 0.4);
+  
+  /* Animation */
+  --animation-fast: 200ms;
+  --animation-standard: 300ms;
+  --animation-slow: 400ms;
+  --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 3D Variables */
+  --3d-depth: 20px;
+  --3d-glow: rgba(255, 215, 0, 0.3);
+  --3d-glow-orange: rgba(232, 90, 79, 0.2);
+
+  /* Legacy support */
+  --font-size: 16px;
+  --background: var(--color-bg-darkest);
+  --foreground: var(--color-white);
+  --card: var(--color-bg-dark);
+  --card-foreground: var(--color-white);
+  --border: var(--color-secondary);
+  --radius: 0rem;
+}
+
+@layer base {
+  * {
+    @apply outline-none;
+    border-color: var(--border-color-secondary);
+  }
+
+  body {
+    background: var(--color-bg-darkest);
+    color: var(--color-white);
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-relaxed);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-white);
+  }
+
+  h1 {
+    font-size: var(--font-size-h1);
+    line-height: 1.125;
+  }
+
+  h2 {
+    font-size: var(--font-size-h2);
+    line-height: 1.167;
+  }
+
+  h3 {
+    font-size: var(--font-size-h3);
+    line-height: 1.222;
+  }
+
+  h4 {
+    font-size: var(--font-size-h4);
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1.286;
+  }
+
+  h5 {
+    font-size: var(--font-size-h5);
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1.333;
+  }
+
+  h6 {
+    font-size: var(--font-size-h6);
+    font-weight: var(--font-weight-semi-bold);
+    line-height: 1.4;
+  }
+
+  p {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-gray-light);
+  }
+
+  /* Mobile Typography */
+  @media (max-width: 767px) {
+    h1 {
+      font-size: 40px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 32px;
+      line-height: 1.25;
+    }
+
+    h3 {
+      font-size: 28px;
+      line-height: 1.286;
+    }
+  }
+}
+
+/* Utility Classes */
+@layer utilities {
+  .angular-clip {
+    clip-path: polygon(0% 0%, 98% 0%, 100% 2%, 100% 100%, 2% 100%, 0% 98%);
+  }
+
+  .angular-clip-button {
+    clip-path: polygon(0% 0%, 95% 0%, 100% 5%, 100% 100%, 5% 100%, 0% 95%);
+  }
+
+  .angular-shadow {
+    box-shadow: var(--shadow-level-2);
+  }
+
+  .angular-shadow-hover {
+    box-shadow: var(--shadow-level-3);
+  }
+
+  .container-custom {
+    max-width: var(--container-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
+
+  @media (max-width: 767px) {
+    .container-custom {
+      padding-left: var(--container-padding-mobile);
+      padding-right: var(--container-padding-mobile);
+    }
+  }
+
+  .diagonal-bg {
+    background: linear-gradient(135deg, transparent 0%, rgba(255, 215, 0, 0.02) 100%);
+  }
+
+  .speed-lines {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(255, 215, 0, 0.03) 20px,
+      rgba(255, 215, 0, 0.03) 22px
+    );
+  }
+
+  .greek-key-border {
+    border-top: 2px solid var(--color-primary);
+    position: relative;
+  }
+
+  .greek-key-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--color-primary) 0px,
+      var(--color-primary) 16px,
+      transparent 16px,
+      transparent 32px
+    );
+    opacity: 0.5;
+  }
+}
+
+html {
+  font-size: var(--font-size);
+  scroll-behavior: smooth;
+}
