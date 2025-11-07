@@ -1,0 +1,4009 @@
+---
+alwaysApply: false
+---
+
+Build this following engineering best practices:
+- Write all code to WCAG AA accessibility standards
+- Create and use reusable components throughout
+- Use semantic HTML and proper component architecture
+- Avoid absolute positioning; use flexbox/grid layouts
+- Build actual code components, not image SVGs
+- Keep code clean, maintainable, and well-structured
+
+# UI GUIDELINES
+
+# UI Design Guidelines: Italian Futurism + Ancient Greek Bazaar Aesthetic
+
+## Design Reference Websites & Styles
+
+### Primary Design Inspiration
+
+**Olympus DAO** ([olympusdao.finance](https://www.olympusdao.finance/)) serves as the primary design reference:
+- Clean, modern DeFi interface aesthetic
+- Dark mode as primary design direction
+- Prominent statistics/metrics display
+- Hero sections with protocol stats
+- Card-based layouts with elegant spacing
+- Sophisticated dark backgrounds with gold accents
+- Modern typography hierarchy
+- Professional, trustworthy DeFi appearance
+
+### Design Style Adaptation
+
+**Hook Bazaar adapts Olympus DAO style** with:
+- Dark mode primary (deep navy backgrounds)
+- Geometric, angular forms (Futurist influence)
+- Ancient Greek elements (Greek key patterns, laurel leaves)
+- Logo-inspired color palette (deep blue, gold, orange-red)
+- 3D JavaScript features for enhanced interactivity
+
+### Additional Design References
+
+#### **Geometric & Angular (Futurist-Inspired)**
+1. **Brutalist Websites** (brutalistwebsites.com)
+   - Bold geometric forms
+   - Angular compositions
+   - High contrast
+   - Example: Many DeFi protocol websites
+
+2. **Contemporary Design Agencies**
+   - Pentagram (pentagram.com) - Geometric layouts, bold typography
+   - DesignStudio - Angular, dynamic compositions
+   - Fantasy Interactive - Geometric, modern interfaces
+
+#### **Classical-Inspired Modern**
+1. **Heritage & Classical Sites**
+   - Acropolis Museum (theacropolismuseum.gr) - Modern UI with classical elements
+   - Getty Museum (getty.edu) - Classical proportions, modern execution
+   - Metropolitan Museum (metmuseum.org) - Traditional elements, contemporary layouts
+
+### Design Styles to Reference
+
+- **Olympus DAO Style**: Clean, dark, modern DeFi interface
+- **Brutalist Web Design**: Angular, geometric, high contrast
+- **Neoclassical Modern**: Classical proportions, contemporary execution
+- **Constructivist Design**: Geometric forms, dynamic composition
+- **Modernist Grid Systems**: Structured but dynamic
+
+---
+
+## Figma Design System Constraints
+
+### 1. Color Palette
+
+#### Primary Colors (Logo-Inspired)
+```css
+/* Gold (Primary) - From Logo */
+--gold-primary: #FFD700;      /* Rich gold */
+--gold-secondary: #FFA500;     /* Orange gold */
+--gold-dark: #DAA520;          /* Dark gold */
+
+/* Deep Navy Blue (Primary Background) - From Logo */
+--blue-darkest: #000814;       /* Deepest navy (almost black) - logo background */
+--blue-dark: #001F3F;          /* Dark navy blue */
+--blue-primary: #003366;        /* Deep Mediterranean blue */
+--blue-secondary: #0066CC;      /* Bright blue */
+
+/* Orange-Red (Accent) - From Logo */
+--orange-red: #E85A4F;         /* Vibrant earthy red-orange from logo */
+--orange-red-dark: #CD5C5C;    /* Darker orange-red variant */
+
+/* Terracotta (Accent) */
+--terracotta-primary: #CD853F; /* Warm terracotta */
+--terracotta-secondary: #B87333; /* Darker terracotta */
+
+/* Neutrals - Dark Mode */
+--white: #FFFFFF;
+--black: #000000;
+--gray-light: #F5F5F0;         /* Light gray for text on dark */
+--gray-medium: #9E9E9E;       /* Medium gray */
+--gray-dark: #1A1A1A;         /* Dark gray for elevated surfaces */
+```
+
+#### Usage Rules (Dark Mode Primary)
+- **Primary Actions**: Gold (#FFD700)
+- **Secondary Actions**: Deep Blue (#003366)
+- **Accents**: Orange-Red (#E85A4F) or Terracotta (#CD853F)
+- **Backgrounds**: Deep Navy (#000814) or Dark Navy (#001F3F) - Dark mode primary
+- **Card Backgrounds**: Darker Navy (#001F3F) or Dark Gray (#1A1A1A)
+- **Text Primary**: White (#FFFFFF) or Gold (#FFD700)
+- **Text Secondary**: Light Gray (#F5F5F0) or Medium Gray (#9E9E9E)
+
+#### Contrast Ratios (Dark Mode)
+- **Text on Dark Navy**: Minimum 4.5:1 (use White or Gold)
+- **Text on Gold**: Minimum 4.5:1 (use Deep Navy or Black)
+- **Text on Orange-Red**: Minimum 4.5:1 (use White)
+- **Text on Dark Gray**: Minimum 4.5:1 (use White or Gold)
+
+### 2. Typography System
+
+#### Font Families
+
+**Primary (Futurist-Inspired):**
+- **Headings**: Geometric Sans-Serif
+  - Options: `Space Grotesk`, `DM Sans`, `Work Sans`, `Inter`
+  - Weight: 700 (Bold) for H1-H3, 600 (Semi-Bold) for H4-H6
+  - Style: Angular, modern, geometric
+
+**Secondary (Classical-Inspired):**
+- **Body Text**: Classical Serif
+  - Options: `Crimson Pro`, `Lora`, `EB Garamond`, `Cormorant Garamond`
+  - Weight: 400 (Regular), 500 (Medium) for emphasis
+  - Style: Elegant, readable, classical
+
+**Accent (Greek-Inspired):**
+- **Decorative Text**: Optional Greek letter-style
+  - For special elements only
+  - Use sparingly
+
+#### Type Scale
+```css
+/* Desktop */
+--font-h1: 64px / 72px (Space Grotesk, Bold 700)
+--font-h2: 48px / 56px (Space Grotesk, Bold 700)
+--font-h3: 36px / 44px (Space Grotesk, Bold 700)
+--font-h4: 28px / 36px (Space Grotesk, Semi-Bold 600)
+--font-h5: 24px / 32px (Space Grotesk, Semi-Bold 600)
+--font-h6: 20px / 28px (Space Grotesk, Semi-Bold 600)
+--font-body-lg: 18px / 28px (Crimson Pro, Regular 400)
+--font-body: 16px / 24px (Crimson Pro, Regular 400)
+--font-body-sm: 14px / 20px (Crimson Pro, Regular 400)
+--font-caption: 12px / 16px (Space Grotesk, Medium 500)
+
+/* Mobile */
+--font-h1-mobile: 40px / 48px
+--font-h2-mobile: 32px / 40px
+--font-h3-mobile: 28px / 36px
+```
+
+#### Typography Rules
+- **Headings**: Always use geometric sans-serif (Futurist style)
+- **Body Text**: Use classical serif for readability
+- **Angular Letters**: Emphasize geometric forms in headings
+- **Letter Spacing**: Tight for headings (-0.02em), normal for body
+- **Line Height**: 1.2-1.4 for headings, 1.5-1.75 for body
+
+### 3. Geometric Forms & Shapes
+
+#### Allowed Shapes
+- **Triangles**: Sharp, angular (Futurist)
+- **Rectangles**: Angular, rotated (dynamic)
+- **Circles**: Perfect circles only (Greek perfection)
+- **Polygons**: Hexagons, octagons (geometric)
+- **Lines**: Angular, diagonal (speed lines)
+
+#### Shape Rules
+- **Angles**: Use 30°, 45°, 60°, 90° angles only
+- **Corners**: Sharp (no rounded corners except circles)
+- **Rotation**: Elements can be rotated at standard angles
+- **Overlap**: Encourage overlapping geometric forms
+- **Symmetry**: Asymmetric compositions preferred (Futurist)
+
+#### Pattern Elements
+- **Greek Key (Meander)**: Use as borders, dividers
+- **Laurel Leaves**: Decorative elements, frames
+- **Geometric Patterns**: Angular, repeating patterns
+- **Speed Lines**: Diagonal lines suggesting movement
+
+### 4. Layout System
+
+#### Grid Structure
+```
+Base Grid: 8px system
+- Columns: 12-column grid
+- Gutter: 24px
+- Margin: 48px (desktop), 24px (mobile)
+- Max Width: 1440px container
+```
+
+#### Composition Rules
+- **Asymmetry**: Prefer asymmetric layouts (Futurist dynamism)
+- **Diagonal Elements**: Include diagonal lines/elements
+- **Overlapping**: Allow overlapping elements (planes)
+- **Golden Ratio**: Use for key proportions (Greek harmony)
+- **White Space**: Generous spacing (classical elegance)
+
+#### Breakpoints
+```css
+--breakpoint-mobile: 320px
+--breakpoint-tablet: 768px
+--breakpoint-desktop: 1024px
+--breakpoint-large: 1440px
+```
+
+### 5. Spacing System
+
+```css
+/* Based on 8px grid */
+--space-xs: 8px;
+--space-sm: 16px;
+--space-md: 24px;
+--space-lg: 32px;
+--space-xl: 48px;
+--space-2xl: 64px;
+--space-3xl: 96px;
+--space-4xl: 128px;
+```
+
+#### Spacing Rules
+- Always use multiples of 8px
+- Vertical rhythm: Maintain consistent spacing
+- Section spacing: Minimum 64px between sections
+- Component spacing: 24px internal padding
+
+### 6. Iconography
+
+#### Icon Style
+- **Geometric**: Angular, geometric forms
+- **Minimalist**: Simple, essential shapes
+- **Classical Elements**: Integrate Greek symbols (laurel, key pattern)
+- **Line Weight**: 2px stroke for consistency
+
+#### Icon Rules
+- Use geometric shapes (squares, triangles, circles)
+- Avoid rounded corners (except circles)
+- Maintain consistent stroke width
+- Include angular elements suggesting movement
+
+### 7. Imagery & Graphics
+
+#### Image Style
+- **Geometric Overlays**: Add geometric shapes over images
+- **Angular Crops**: Use diagonal, angular image crops
+- **High Contrast**: Adjust images for high contrast
+- **Overlapping**: Layer images with geometric shapes
+
+#### Graphic Elements
+- **Speed Lines**: Diagonal lines suggesting movement
+- **Geometric Patterns**: Angular, repeating patterns
+- **Classical Motifs**: Laurel leaves, Greek key patterns
+- **Futurist Forms**: Abstract geometric shapes
+
+### 8. Components
+
+#### Button Styles
+```css
+/* Primary Button (Gold) */
+- Background: Gold (#FFD700)
+- Text: Deep Blue (#003366) or Black
+- Border: 2px solid Deep Blue
+- Shape: Angular rectangle (sharp corners)
+- Hover: Darker gold (#DAA520)
+- Shadow: Angular shadow (not rounded)
+
+/* Secondary Button (Blue) */
+- Background: Deep Blue (#003366)
+- Text: White or Gold
+- Border: 2px solid Gold
+- Shape: Angular rectangle
+- Hover: Lighter blue (#0066CC)
+
+/* Accent Button (Terracotta) */
+- Background: Terracotta (#CD853F)
+- Text: White
+- Border: 2px solid Gold
+- Shape: Angular rectangle
+```
+
+#### Card Styles (Dark Mode)
+- **Background**: Dark Navy (#001F3F) or Dark Gray (#1A1A1A)
+- **Border**: 2px solid Gold (#FFD700) or Deep Blue (#003366)
+- **Shape**: Angular rectangle (sharp corners)
+- **Shadow**: Angular shadow with Gold glow, offset diagonal
+- **Padding**: 24px internal
+- **Hover**: Gold border glow, subtle elevation
+
+#### Input Fields (Dark Mode)
+- **Border**: 2px solid Deep Blue (#003366) or Gold (#FFD700)
+- **Shape**: Angular rectangle
+- **Focus**: Gold border (#FFD700) with glow
+- **Background**: Dark Navy (#001F3F) or Dark Gray (#1A1A1A)
+- **Text**: White (#FFFFFF)
+- **Placeholder**: Medium Gray (#9E9E9E) at 0.6 opacity
+
+### 9. Animation & Motion
+
+#### Animation Principles
+- **Speed**: Fast, energetic (Futurist speed)
+- **Easing**: Sharp, angular curves (not smooth)
+- **Direction**: Diagonal movement preferred
+- **Duration**: 200-400ms for interactions
+
+#### Animation Types
+- **Hover**: Quick scale/shift (200ms)
+- **Transitions**: Angular slide (not smooth curves)
+- **Loading**: Geometric shapes animating
+- **Scroll**: Parallax with geometric elements
+
+#### Motion Rules
+- **Avoid**: Smooth, rounded animations
+- **Prefer**: Angular, geometric motion
+- **Speed Lines**: Use in loading states
+- **Direction**: Diagonal movement (Futurist dynamism)
+
+### 9.5. 3D JavaScript Features
+
+#### 3D Implementation Guidelines
+
+**Framework**: Use Three.js or React Three Fiber for 3D elements
+
+**3D Elements**:
+- **Geometric Shapes**: Angular 3D forms (cubes, pyramids, abstract shapes)
+- **Low-Poly Style**: Stylized, geometric, angular 3D models
+- **Parallax Effects**: 3D depth on scroll
+- **Interactive 3D**: Rotating geometric elements on hover
+- **Hero 3D Backgrounds**: Subtle 3D geometric patterns
+
+**3D Style Rules**:
+- **Angular Geometry**: Use sharp edges, not smooth curves
+- **Colors**: Use logo colors (Deep Navy, Gold, Orange-Red)
+- **Lighting**: Dramatic lighting with Gold highlights
+- **Materials**: Matte or metallic (Gold accents)
+- **Animations**: Angular rotation, not smooth spins
+
+**3D Use Cases**:
+- **Hero Sections**: 3D geometric background elements
+- **Stats Cards**: 3D rotating geometric icons
+- **Loading States**: 3D angular geometric spinners
+- **Interactive Elements**: 3D hover effects on cards
+- **Background Patterns**: Subtle 3D geometric depth
+
+**Performance Considerations**:
+- Use low-poly models for performance
+- Implement lazy loading for 3D elements
+- Optimize textures and materials
+- Use CSS transforms where possible
+- Consider WebGL fallbacks
+
+### 10. Decorative Elements
+
+#### Laurel Wreath
+- Use as decorative frame elements
+- Top of sections, headers
+- Simplified geometric version
+- Color: Gold or Deep Blue
+
+#### Greek Key Pattern
+- Use as borders, dividers
+- Footer elements
+- Section separators
+- Color: Deep Blue or Terracotta
+
+#### Geometric Patterns
+- Background patterns
+- Overlay elements
+- Angular, repeating patterns
+
+---
+
+## Frontend Implementation Guidelines
+
+### CSS Variables Setup
+
+```css
+:root {
+  /* Colors - Logo-Inspired Dark Mode */
+  --gold-primary: #FFD700;
+  --gold-secondary: #FFA500;
+  --gold-dark: #DAA520;
+  
+  --blue-darkest: #000814;      /* Deepest navy - primary background */
+  --blue-dark: #001F3F;         /* Dark navy */
+  --blue-primary: #003366;
+  --blue-secondary: #0066CC;
+  
+  --orange-red: #E85A4F;        /* Orange-red from logo */
+  --orange-red-dark: #CD5C5C;
+  
+  --terracotta-primary: #CD853F;
+  --terracotta-secondary: #B87333;
+  
+  --white: #FFFFFF;
+  --black: #000000;
+  --gray-light: #F5F5F0;
+  --gray-medium: #9E9E9E;
+  --gray-dark: #1A1A1A;
+  
+  /* Dark Mode Backgrounds */
+  --bg-primary: var(--blue-darkest);    /* #000814 */
+  --bg-secondary: var(--blue-dark);     /* #001F3F */
+  --bg-elevated: var(--gray-dark);      /* #1A1A1A */
+  
+  /* Typography */
+  --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+  --font-body: 'Crimson Pro', Georgia, serif;
+  
+  /* Spacing */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+  
+  /* Grid */
+  --grid-columns: 12;
+  --grid-gutter: 24px;
+  --container-max-width: 1440px;
+  
+  /* Angles */
+  --angle-sharp: 0deg;
+  --angle-diagonal-1: 30deg;
+  --angle-diagonal-2: 45deg;
+  --angle-diagonal-3: 60deg;
+  
+  /* 3D Variables */
+  --3d-depth: 20px;
+  --3d-glow: rgba(255, 215, 0, 0.3);
+}
+```
+
+### Component Patterns
+
+#### Angular Button (Dark Mode)
+```css
+.btn-primary {
+  background: var(--gold-primary);
+  color: var(--blue-darkest);
+  border: 2px solid var(--blue-primary);
+  padding: var(--space-md) var(--space-xl);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  clip-path: polygon(
+    0% 0%, 
+    95% 0%, 
+    100% 5%, 
+    100% 100%, 
+    5% 100%, 
+    0% 95%
+  );
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: rotate(0deg);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--gold-dark);
+  transform: rotate(-1deg) translateY(-2px);
+  box-shadow: 
+    4px 4px 0 var(--blue-primary),
+    0 0 30px rgba(255, 215, 0, 0.4);
+}
+```
+
+#### Geometric Card (Dark Mode)
+```css
+.card {
+  background: var(--bg-secondary);
+  border: 2px solid var(--gold-primary);
+  padding: var(--space-xl);
+  clip-path: polygon(
+    0% 0%, 
+    98% 0%, 
+    100% 2%, 
+    100% 100%, 
+    2% 100%, 
+    0% 98%
+  );
+  position: relative;
+  color: var(--white);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    var(--gold-primary),
+    var(--blue-primary),
+    var(--orange-red)
+  );
+  z-index: -1;
+  clip-path: polygon(
+    0% 0%, 
+    98% 0%, 
+    100% 2%, 
+    100% 100%, 
+    2% 100%, 
+    0% 98%
+  );
+  opacity: 0.1;
+}
+
+.card:hover {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  transform: translateY(-4px) rotate(-0.5deg);
+}
+```
+
+#### 3D Geometric Element Example
+```javascript
+// Three.js example for 3D angular geometric shape
+import * as THREE from 'three';
+
+function createAngularGeometric(scene) {
+  // Create angular geometric shape (low-poly)
+  const geometry = new THREE.BoxGeometry(2, 2, 2);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xffd700, // Gold
+    metalness: 0.8,
+    roughness: 0.2,
+    emissive: 0x000814, // Deep navy glow
+    emissiveIntensity: 0.1
+  });
+  
+  const cube = new THREE.Mesh(geometry, material);
+  cube.rotation.set(0.5, 0.5, 0);
+  
+  // Angular rotation animation
+  function animate() {
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    requestAnimationFrame(animate);
+  }
+  
+  scene.add(cube);
+  animate();
+}
+
+// React Three Fiber example
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Mesh } from 'three';
+
+function AngularGeometric() {
+  const meshRef = useRef<Mesh>(null);
+  
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += delta * 0.5;
+      meshRef.current.rotation.y += delta * 0.5;
+    }
+  });
+  
+  return (
+    <mesh ref={meshRef}>
+      <boxGeometry args={[2, 2, 2]} />
+      <meshStandardMaterial 
+        color="#FFD700" 
+        metalness={0.8}
+        roughness={0.2}
+        emissive="#000814"
+        emissiveIntensity={0.1}
+      />
+    </mesh>
+  );
+}
+```
+
+#### Speed Lines Pattern
+```css
+.speed-lines {
+  position: relative;
+  overflow: hidden;
+}
+
+.speed-lines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      var(--blue-primary) 10px,
+      var(--blue-primary) 12px
+    );
+  opacity: 0.1;
+  animation: speedLineMove 2s linear infinite;
+}
+
+@keyframes speedLineMove {
+  0% { transform: translateX(-20px) translateY(-20px); }
+  100% { transform: translateX(20px) translateY(20px); }
+}
+```
+
+#### Greek Key Border
+```css
+.greek-key-border {
+  position: relative;
+  padding: var(--space-lg);
+}
+
+.greek-key-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--blue-primary);
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 8px,
+      var(--gold-primary) 8px,
+      var(--gold-primary) 10px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 8px,
+      var(--gold-primary) 8px,
+      var(--gold-primary) 10px
+    );
+  clip-path: polygon(
+    0% 0%, 
+    92% 0%, 
+    100% 8%, 
+    100% 100%, 
+    8% 100%, 
+    0% 92%
+  );
+}
+```
+
+### Layout Patterns
+
+#### Asymmetric Grid
+```css
+.asymmetric-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--grid-gutter);
+}
+
+.asymmetric-grid > *:nth-child(odd) {
+  grid-column: span 5;
+  transform: rotate(-0.5deg);
+}
+
+.asymmetric-grid > *:nth-child(even) {
+  grid-column: span 7;
+  transform: rotate(0.5deg);
+}
+```
+
+#### Diagonal Section
+```css
+.diagonal-section {
+  position: relative;
+  padding: var(--space-4xl) 0;
+  clip-path: polygon(0% 5%, 100% 0%, 100% 95%, 0% 100%);
+  background: linear-gradient(
+    135deg,
+    var(--marble-light) 0%,
+    var(--white) 100%
+  );
+}
+```
+
+### Animation Guidelines
+
+#### Angular Transitions
+```css
+@keyframes angularSlide {
+  0% {
+    transform: translateX(-100%) rotate(-5deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-angular {
+  animation: angularSlide 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+```
+
+#### Geometric Loading
+```css
+@keyframes geometricSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.geometric-loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--blue-primary);
+  border-top-color: var(--gold-primary);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 75%, 75% 100%, 0% 100%);
+  animation: geometricSpin 1s linear infinite;
+}
+```
+
+---
+
+## AI Agent Constraints (for Frontend Generation)
+
+### Prompt Template for AI Agents
+
+```
+Design a [component/page] following these constraints:
+
+**Style**: Italian Futurism + Ancient Greek Bazaar (Olympus DAO-inspired)
+- Dark mode primary (deep navy backgrounds)
+- Geometric, angular forms (no rounded corners except circles)
+- Dynamic, asymmetric compositions
+- High contrast colors (gold on dark navy)
+- Angular, diagonal elements
+
+**Colors** (Logo-Inspired):
+- Primary: Gold #FFD700
+- Background: Deep Navy #000814 (primary) or Dark Navy #001F3F (secondary)
+- Accent: Orange-Red #E85A4F (from logo)
+- Secondary Accent: Terracotta #CD853F
+- Text: White #FFFFFF or Gold #FFD700
+
+**Typography**:
+- Headings: Geometric sans-serif (Space Grotesk, bold)
+- Body: Classical serif (Crimson Pro, regular)
+
+**Shapes**:
+- Use only: Triangles, rectangles, circles, polygons
+- Angles: 30°, 45°, 60°, 90° only
+- Sharp corners (no border-radius except circles)
+- Overlapping geometric forms
+
+**Layout** (Olympus DAO-style):
+- Clean, modern DeFi interface
+- Prominent stats/metrics display
+- Card-based layouts with elegant spacing
+- Hero sections with protocol information
+- Asymmetric grid (12 columns)
+- Diagonal elements
+- Generous spacing (8px grid system)
+
+**Animation**:
+- Angular, sharp transitions (200-400ms)
+- Diagonal movement preferred
+- Cubic-bezier(0.4, 0, 0.2, 1) easing
+- Speed lines for motion
+
+**3D JavaScript Features**:
+- Use Three.js or React Three Fiber
+- Low-poly angular geometric shapes
+- Gold metallic materials with navy glow
+- Angular rotation animations
+- Subtle parallax effects
+
+**Decorative Elements**:
+- Laurel leaves (geometric version)
+- Greek key pattern (borders)
+- Speed lines (motion)
+- Geometric patterns
+
+**DO NOT USE**:
+- Rounded corners (except circles)
+- Smooth, curved animations
+- Light backgrounds
+- Pastel colors
+- Symmetric layouts
+- Smooth gradients
+- Organic shapes
+```
+
+---
+
+## Checklist for Designers
+
+### Figma Design Checklist
+- [ ] All colors use defined palette
+- [ ] Typography follows type scale
+- [ ] All shapes are geometric (no organic forms)
+- [ ] Sharp corners (except circles)
+- [ ] Asymmetric compositions
+- [ ] Diagonal elements included
+- [ ] Greek key pattern used appropriately
+- [ ] Laurel leaves decorative elements
+- [ ] High contrast maintained
+- [ ] 8px grid system followed
+- [ ] Golden ratio proportions where applicable
+
+### Frontend Implementation Checklist
+- [ ] CSS variables defined
+- [ ] Angular buttons with clip-path
+- [ ] Geometric cards with sharp corners
+- [ ] Angular animations (not smooth)
+- [ ] Greek key borders implemented
+- [ ] Speed lines pattern added
+- [ ] Asymmetric grid layout
+- [ ] Diagonal sections where appropriate
+- [ ] High contrast maintained
+- [ ] Typography system implemented
+
+---
+
+## Reference Resources
+
+### Typography
+- Google Fonts: Space Grotesk, Crimson Pro
+- Adobe Fonts: Work Sans, EB Garamond
+
+### Icons
+- Geometric icon sets
+- Custom Greek-inspired icons
+- Angular, minimalist icons
+
+### Patterns
+- Greek key pattern generators
+- Geometric pattern libraries
+- Angular pattern collections
+
+---
+
+This design system ensures consistent implementation of the Italian Futurism + Ancient Greek Bazaar aesthetic across all design and development work.
+
+
+# APP OVERVIEW
+
+## Design System Reference
+**Follow all constraints from:** `UI_DESIGN_GUIDELINES.md`
+
+**Key Design Principles:**
+- Italian Futurism + Ancient Greek Bazaar aesthetic
+- Geometric, angular forms (no rounded corners except circles)
+- Color palette: Gold (#FFD700), Deep Blue (#003366), Terracotta (#CD853F)
+- Typography: Space Grotesk (headings), Crimson Pro (body)
+- Asymmetric layouts, diagonal elements
+- Angular animations (200-400ms)
+
+---
+
+## 1. App Type and Purpose
+
+### What Kind of App is This?
+
+**Hook Bazaar** is a **two-sided marketplace platform** for Uniswap V4 hooks in the DeFi ecosystem. It connects hook developers (supply) with protocol designers and pools (demand) through a contestable market mechanism.
+
+### What Problem Does It Solve?
+
+**Core Problem:** Pools lack agency over which hooks they use. Currently, pools cannot autonomously choose which hooks to integrate when multiple eligible hooks are available for the same role, leading to:
+
+1. **Missing Two-Sided Market Mechanism**: No matching mechanism between hook supply and pool demand prevents efficient market clearing
+2. **High Deployment Costs**: Protocols face high costs developing their own hooks without access to a curated marketplace
+3. **Allocation Inefficiency**: Suboptimal hook-pool matching creates Pareto inefficiency
+4. **Competition Suppression**: Hook competition cannot function properly without demand-side choice
+5. **Coordination Failure**: Pools cannot coordinate to select optimal hook matches
+
+**Solution:** Hook Bazaar enables:
+- Hook developers to deploy and compete for pool integration
+- Protocol designers to specify hook requirements and select hooks
+- Pools to autonomously or collectively choose which hooks to integrate
+- Market-driven pricing through auction mechanisms
+- Revenue sharing for hook developers based on TVL
+
+---
+
+## 2. Core Features
+
+### Primary Features (5-7 Core Functionalities)
+
+1. **Hook Marketplace & Discovery**
+   - Browse available hooks by category (fee management, liquidity management, etc.)
+   - View hook specifications, audits, and performance metrics
+   - Compare competing hooks for the same functionality
+   - Filter by quality attributes (security, efficiency, cost, innovation)
+
+2. **Protocol Creation & Management**
+   - Register protocols with fee recipient addresses
+   - Define protocol specifications and hook requirements by category
+   - Manage multiple pools under a single protocol
+   - Track protocol revenue and pool performance
+
+3. **Pool Creation & Hook Selection**
+   - Create pools with token pairs and fee tiers
+   - Select hooks from marketplace for pool integration
+   - Configure hook parameters and settings
+   - Preview pool configuration before deployment
+
+4. **Hook Developer Dashboard**
+   - Deploy hooks with specifications and metadata
+   - Register hooks for specific categories/functions
+   - Compete in auctions to serve pools
+   - Track hook performance, revenue, and pool adoption
+   - Monitor staking requirements and bids
+
+5. **Auction & Competition Mechanism**
+   - Hooks bid to serve pools through staking/tokens
+   - Pools evaluate competing hooks based on performance/rent ratio
+   - Dynamic hook selection and switching
+   - Revenue distribution based on TVL and performance
+
+6. **Revenue Tracking & Analytics**
+   - Protocol-level revenue aggregation
+   - Pool-level revenue contributions
+   - Hook developer earnings tracking
+   - Performance metrics and analytics
+   - Historical data and trends
+
+7. **Integration Tools**
+   - Technical documentation and integration guides
+   - Smart contract interfaces and ABIs
+   - Testing tools and verification
+   - Hook adapter patterns and examples
+
+---
+
+## 3. User Flows
+
+### User Flow 1: Hook Developer Journey
+
+**Goal:** Deploy a hook and compete to serve pools
+
+**Journey:**
+```
+1. Landing Page
+   → User clicks "I am a hook developer"
+   → Enters Hook Developer Dashboard
+
+2. Hook Developer Dashboard
+   → View existing hooks or "Deploy New Hook"
+   → Navigate to Hook Deployment Form
+
+3. Hook Deployment
+   → Fill hook specifications:
+     - Hook name and description
+     - Category/functionality (e.g., fee management)
+     - Contract address
+     - Audit reports (optional)
+     - Performance metrics
+     - Pricing/staking requirements
+   → Submit deployment transaction
+   → Hook appears in marketplace
+
+4. Marketplace Competition
+   → Browse pools seeking hooks in their category
+   → View pool requirements and specifications
+   → Participate in auction/competition:
+     - Stake tokens or bid to serve pool
+     - Set performance parameters
+   → Wait for pool selection
+
+5. Hook Management
+   → View hook adoption status
+   → Monitor pools using the hook
+   → Track revenue and earnings
+   → Update hook specifications
+   → Manage staking and bids
+
+6. Revenue & Analytics
+   → View earnings from pools
+   → Track performance metrics
+   → Analyze pool adoption trends
+   → Optimize hook offering
+```
+
+### User Flow 2: Protocol Designer Journey
+
+**Goal:** Create a protocol, define hook requirements, and manage pools
+
+**Journey:**
+```
+1. Landing Page
+   → User clicks "I am a protocol designer"
+   → Enters Protocol Designer Dashboard
+
+2. Protocol Registration
+   → Click "Create Protocol"
+   → Fill protocol information:
+     - Protocol name
+     - Fee recipient address (wallet connect)
+     - Protocol description
+   → Submit registration transaction
+   → Protocol created successfully
+
+3. Define Hook Requirements
+   → Specify required hook categories:
+     - Fee management hooks
+     - Liquidity management hooks
+     - Oracle hooks
+     - Compliance hooks
+     - etc.
+   → Define hook specifications per category
+   → Set quality requirements (security, audits, etc.)
+
+4. Create Pool
+   → Click "Create Pool" in protocol dashboard
+   → Fill pool configuration:
+     - Token pair (token0, token1)
+     - Fee tier (0.01%, 0.05%, 0.3%, 1%)
+     - Tick spacing (auto-filled)
+   → Browse available hooks matching requirements
+   → Select hook(s) for pool integration
+   → Preview pool configuration
+   → Submit pool creation transaction
+
+5. Pool Management
+   → View all pools in protocol dashboard
+   → Monitor pool performance:
+     - Revenue contribution
+     - TVL
+     - Volume (24h)
+     - Hook performance
+   → Switch hooks if needed (contestability)
+   → Configure pool parameters
+
+6. Protocol Analytics
+   → View protocol-level revenue
+   → Track pool performance
+   → Analyze hook effectiveness
+   → Optimize hook selection
+```
+
+### User Flow 3: Integrator Journey (BETA)
+
+**Goal:** Integrate Hook Bazaar into existing systems and applications
+
+**Journey:**
+```
+1. Landing Page
+   → User clicks "I am an integrator" (BETA label visible)
+   → Enters Integrator Portal
+
+2. Integration Documentation
+   → Access technical documentation
+   → Review integration guides
+   → Explore API references
+   → Study code examples
+
+3. Integration Tools
+   → Access smart contract interfaces
+   → Download ABIs and SDKs
+   → Use testing tools
+   → Review hook adapter patterns
+
+4. Implementation
+   → Integrate Hook Bazaar contracts
+   → Connect to marketplace APIs
+   → Implement hook selection logic
+   → Test integration
+
+5. Support & Community
+   → Access support resources
+   → Join developer community
+   → Report issues
+   → Request features
+```
+
+---
+
+## 4. Page Structure
+
+### Home Page Sections
+
+#### **Hero Section**
+A dynamic hero section introducing Hook Bazaar with key value proposition, featuring geometric forms, diagonal elements, and the logo. Includes primary CTA buttons for user type selection.
+
+#### **Problem Statement Section**
+Describes the core problem: pools lack agency over hook selection, leading to market failures. Uses asymmetric layout with geometric shapes and high contrast.
+
+#### **Solution Overview Section**
+Explains how Hook Bazaar solves the problem through contestable markets, hook marketplace, and pool agency. Features diagonal elements and angular animations.
+
+#### **Features Section**
+Highlights 5-7 core features with geometric icons and cards. Each feature card has angular design, gold accents, and clear hierarchy.
+
+#### **User Type Selection Section**
+Three large, angular cards/buttons:
+- "I am a hook developer" → Routes to Hook Developer Dashboard
+- "I am a protocol designer" → Routes to Protocol Designer Dashboard
+- "I am an integrator" (BETA label) → Routes to Integrator Portal
+
+#### **Statistics/Metrics Section**
+Key platform metrics displayed with geometric forms: total hooks, protocols, pools, TVL. Angular charts or visualizations.
+
+#### **Contact Section**
+Social media links, community links, and contact information. Geometric icons, angular layout. Links to:
+- Twitter/X
+- Discord
+- GitHub
+- Email
+- Documentation
+
+#### **Footer**
+Navigation links, legal information, and decorative elements (Greek key pattern, laurel leaves). Includes links to:
+- About (routes to About page)
+- Tech Docs (routes to Documentation)
+- Contact (routes to Contact page with socials)
+- App (routes to user type selection)
+
+### Supporting Pages (Routes from Home)
+
+#### **About Page**
+- **About Us Section**: Mission, vision, team (if applicable)
+- **Tech Docs Section**: Link to technical documentation
+- Routes back to home
+
+#### **Contact Page**
+- **Social Media Links**: Twitter, Discord, GitHub, etc.
+- **Contact Form**: Optional contact form
+- **Community Links**: Links to community resources
+- Routes back to home
+
+#### **App Pages** (User Type Routes)
+
+**Hook Developer Dashboard**
+- Hook deployment interface
+- Marketplace browsing
+- Competition/auction participation
+- Revenue tracking
+- Hook management
+
+**Protocol Designer Dashboard**
+- Protocol registration
+- Pool creation
+- Hook selection interface
+- Protocol analytics
+- Pool management
+
+**Integrator Portal** (BETA)
+- Integration documentation
+- API references
+- SDK downloads
+- Code examples
+- Testing tools
+
+---
+
+## Home Page Section Specifications
+
+### Section 1: Hero Section
+
+**Purpose:** First impression, value proposition, primary navigation
+
+**Content:**
+- Hook Bazaar logo (centered or offset)
+- Main headline: "A Marketplace for Uniswap V4 Hooks"
+- Subheadline: "Empowering pools with agency over hook selection"
+- Description: Brief explanation of the platform
+- Primary CTAs: Three angular buttons for user types
+- Visual: Geometric background with diagonal elements, speed lines
+
+**Design Elements:**
+- Asymmetric layout
+- Diagonal geometric shapes
+- Gold accents on primary CTAs
+- Angular animations on scroll
+- High contrast
+
+**Components:**
+- Logo component
+- Hero text (headline, subheadline, description)
+- User type selector buttons (3 large angular cards)
+- Background geometric pattern
+
+---
+
+### Section 2: Problem Statement
+
+**Purpose:** Educate users about the problem Hook Bazaar solves
+
+**Content:**
+- Headline: "Pools Lack Agency Over Hook Selection"
+- Problem points:
+  - Missing two-sided market mechanism
+  - High deployment costs
+  - Allocation inefficiency
+  - Competition suppression
+- Visual: Geometric illustrations representing market failures
+
+**Design Elements:**
+- Asymmetric grid layout
+- Angular cards for each problem point
+- Terracotta accents for problem emphasis
+- Diagonal lines suggesting disruption
+
+**Components:**
+- Section headline
+- Problem cards (4-5 cards)
+- Geometric illustrations
+- Background pattern
+
+---
+
+### Section 3: Solution Overview
+
+**Purpose:** Explain how Hook Bazaar solves the problem
+
+**Content:**
+- Headline: "A Contestable Market for Hooks"
+- Solution points:
+  - Hook marketplace with competition
+  - Pool agency and selection
+  - Revenue sharing mechanisms
+  - Quality-driven matching
+- Visual: Geometric flow diagram showing solution
+
+**Design Elements:**
+- Diagonal composition
+- Gold accents for solution emphasis
+- Angular flow diagrams
+- Speed lines showing movement
+
+**Components:**
+- Section headline
+- Solution cards/points
+- Flow diagram
+- CTAs to learn more
+
+---
+
+### Section 4: Features Section
+
+**Purpose:** Showcase core platform features
+
+**Content:**
+- Headline: "Platform Features"
+- Feature cards (5-7):
+  1. Hook Marketplace & Discovery
+  2. Protocol Creation & Management
+  3. Pool Creation & Hook Selection
+  4. Hook Developer Dashboard
+  5. Auction & Competition Mechanism
+  6. Revenue Tracking & Analytics
+  7. Integration Tools
+
+**Design Elements:**
+- Asymmetric grid (12 columns)
+- Angular feature cards
+- Geometric icons for each feature
+- Alternating layout (left-right)
+- Gold/Blue color alternation
+
+**Components:**
+- Section headline
+- Feature cards (7 cards)
+- Geometric icons
+- Feature descriptions
+
+---
+
+### Section 5: User Type Selection
+
+**Purpose:** Primary navigation to user-specific dashboards
+
+**Content:**
+- Headline: "Get Started"
+- Three large selection cards:
+  1. "I am a hook developer"
+     - Description: Deploy hooks and compete for pool integration
+     - Icon: Geometric hook symbol
+  2. "I am a protocol designer"
+     - Description: Create protocols and select hooks for pools
+     - Icon: Geometric protocol symbol
+  3. "I am an integrator" (BETA label)
+     - Description: Integrate Hook Bazaar into your application
+     - Icon: Geometric integration symbol
+
+**Design Elements:**
+- Three large angular cards (equal or asymmetric sizing)
+- Hover effects: Diagonal shift, angular shadow
+- Gold border on hover
+- BETA label: Terracotta badge, angular shape
+- High contrast
+
+**Components:**
+- Section headline
+- User type cards (3 cards)
+- BETA badge component
+- Navigation handlers
+
+---
+
+### Section 6: Statistics/Metrics
+
+**Purpose:** Show platform adoption and key metrics
+
+**Content:**
+- Headline: "Platform Statistics"
+- Metrics (4-6):
+  - Total Hooks Deployed
+  - Active Protocols
+  - Total Pools
+  - Total TVL
+  - Total Volume (24h)
+  - Hook Developers
+
+**Design Elements:**
+- Angular metric cards
+- Geometric charts/visualizations
+- Gold numbers, Blue labels
+- Diagonal layout
+- Animated counters (on scroll)
+
+**Components:**
+- Section headline
+- Metric cards (6 cards)
+- Chart/visualization components
+- Counter animations
+
+---
+
+### Section 7: Contact Section
+
+**Purpose:** Provide contact information and social links
+
+**Content:**
+- Headline: "Connect With Us"
+- Social media links:
+  - Twitter/X (icon + link)
+  - Discord (icon + link)
+  - GitHub (icon + link)
+  - Email (icon + link)
+- Community links:
+  - Documentation
+  - Support
+  - Community forum
+
+**Design Elements:**
+- Angular social icons
+- Asymmetric layout
+- Gold accents on hover
+- Geometric background pattern
+- Greek key pattern divider
+
+**Components:**
+- Section headline
+- Social media icons (angular, geometric)
+- Links list
+- Background pattern
+
+---
+
+### Section 8: Footer
+
+**Purpose:** Site navigation, legal, decorative closure
+
+**Content:**
+- Navigation links:
+  - Home
+  - About (→ About page)
+  - Tech Docs (→ Documentation)
+  - Contact (→ Contact page)
+  - App (→ User type selection)
+- Legal links:
+  - Terms of Service
+  - Privacy Policy
+- Decorative elements:
+  - Greek key pattern border
+  - Laurel leaves (simplified geometric)
+- Copyright notice
+
+**Design Elements:**
+- Deep Blue background
+- Gold text/accents
+- Greek key pattern border
+- Angular layout
+- Geometric decorations
+
+**Components:**
+- Navigation links
+- Legal links
+- Decorative border
+- Copyright text
+
+---
+
+## Design Implementation Notes
+
+### Layout Structure
+- **Container**: Max width 1440px, centered
+- **Grid**: 12-column grid with 24px gutters
+- **Spacing**: 8px grid system (64px between major sections)
+- **Asymmetry**: Prefer asymmetric compositions over symmetric
+
+### Color Usage
+- **Primary Actions**: Gold (#FFD700)
+- **Secondary Actions**: Deep Blue (#003366)
+- **Accents**: Terracotta (#CD853F)
+- **Backgrounds**: White or Marble Light (#F5F5F0)
+- **Text**: Black or Deep Blue
+
+### Typography
+- **Headings**: Space Grotesk, Bold 700
+- **Body**: Crimson Pro, Regular 400
+- **Headline sizes**: H1 (64px), H2 (48px), H3 (36px)
+- **Body size**: 16px
+
+### Interactive Elements
+- **Buttons**: Angular rectangles, sharp corners, 2px border
+- **Hover**: Diagonal shift, angular shadow, color change
+- **Animations**: 200-400ms, angular easing, diagonal movement
+- **Transitions**: Sharp, geometric (not smooth curves)
+
+### Geometric Elements
+- **Shapes**: Triangles, rectangles, circles, polygons
+- **Angles**: 30°, 45°, 60°, 90° only
+- **Decorative**: Greek key patterns, laurel leaves (geometric), speed lines
+- **Overlap**: Encourage overlapping geometric forms
+
+---
+
+## Technical Considerations
+
+### Responsive Breakpoints
+- **Mobile**: 320px - 767px
+- **Tablet**: 768px - 1023px
+- **Desktop**: 1024px - 1439px
+- **Large**: 1440px+
+
+### Performance
+- Optimize geometric animations
+- Lazy load sections below fold
+- Optimize images with geometric overlays
+- Use CSS transforms for animations
+
+### Accessibility
+- Maintain 4.5:1 contrast ratio
+- Keyboard navigation support
+- Screen reader friendly
+- Focus states with angular borders
+
+---
+
+## AI Agent Prompt Template
+
+```
+Design the Hook Bazaar home page following these specifications:
+
+**Design System**: Follow UI_DESIGN_GUIDELINES.md constraints
+- Italian Futurism + Ancient Greek Bazaar aesthetic
+- Geometric, angular forms (no rounded corners except circles)
+- Colors: Gold #FFD700, Deep Blue #003366, Terracotta #CD853F
+- Typography: Space Grotesk (headings), Crimson Pro (body)
+- Asymmetric layouts, diagonal elements
+
+**Required Sections**:
+1. Hero Section (logo, headline, user type CTAs)
+2. Problem Statement (4-5 problem points)
+3. Solution Overview (solution points)
+4. Features Section (7 feature cards)
+5. User Type Selection (3 large cards with BETA label)
+6. Statistics/Metrics (6 metrics)
+7. Contact Section (social links)
+8. Footer (navigation, legal, decorative)
+
+**User Types**:
+- Hook Developer (routes to dashboard)
+- Protocol Designer (routes to dashboard)
+- Integrator (BETA label, routes to portal)
+
+**Design Rules**:
+- 12-column grid, 8px spacing system
+- Angular cards, sharp corners
+- Diagonal elements, speed lines
+- Greek key patterns, laurel leaves (geometric)
+- Angular animations (200-400ms)
+- High contrast
+- Asymmetric compositions
+
+**DO NOT USE**:
+- Rounded corners (except circles)
+- Smooth animations
+- Symmetric layouts
+- Pastel colors
+- Organic shapes
+```
+
+---
+
+This document provides complete specifications for AI agents to design and implement the Hook Bazaar home page following the Italian Futurism + Ancient Greek Bazaar aesthetic while maintaining clear user flows and feature presentation.
+
+
+# ALL PAGES ARCHITECRTURE
+
+
+## Design System Reference
+**All pages must follow:** `UI_DESIGN_GUIDELINES.md`
+
+**Core Design Principles:**
+- Italian Futurism + Ancient Greek Bazaar aesthetic
+- Geometric, angular forms (no rounded corners except circles)
+- Color palette: Gold (#FFD700), Deep Blue (#003366), Terracotta (#CD853F)
+- Typography: Space Grotesk (headings), Crimson Pro (body)
+- Asymmetric layouts, diagonal elements
+- Angular animations (200-400ms)
+
+---
+
+## Page 1: Home Page
+
+### **Page Name**: Home / Landing Page
+
+### **Purpose**: 
+First impression and primary entry point. Introduces Hook Bazaar, explains the problem it solves, showcases features, and provides navigation to user-specific dashboards.
+
+### **Layout Structure**: 
+- **Header**: Fixed/sticky navigation (logo, nav links, connect wallet)
+- **Hero Section**: Full-width, asymmetric layout
+- **Problem Statement**: Asymmetric grid layout
+- **Solution Overview**: Diagonal composition
+- **Features**: Asymmetric grid (12 columns)
+- **User Type Selection**: Three large cards
+- **Statistics/Metrics**: Asymmetric grid
+- **Contact Section**: Asymmetric layout
+- **Footer**: Deep Blue background, navigation links
+
+### **Key Components**:
+1. **Navigation Header**
+   - Logo component (angular, geometric)
+   - Navigation links (About, Tech Docs, Contact, App)
+   - Connect Wallet button (angular, Gold background)
+   - Angular border bottom (2px Deep Blue)
+
+2. **Hero Section**
+   - Logo (240px × 60px, centered/offset)
+   - Main headline text component
+   - Subheadline text component
+   - Description text component
+   - User type selector buttons (3 large angular cards)
+   - Background geometric pattern (diagonal lines, speed lines)
+
+3. **Problem Statement Cards** (4-5 cards)
+   - Angular card components
+   - Geometric icon components
+   - Problem description text
+   - Terracotta accent borders
+
+4. **Solution Points** (4-5 points)
+   - Angular solution cards
+   - Flow diagram components
+   - Gold accent elements
+   - Speed lines visual
+
+5. **Feature Cards** (7 cards)
+   - Angular feature card components
+   - Geometric icons (angular, 2px stroke)
+   - Feature descriptions
+   - Alternating Gold/Blue accents
+
+6. **User Type Cards** (3 cards)
+   - Large angular card components (400px × 300px)
+   - Geometric icons (80px × 80px)
+   - CTA buttons (angular, Gold background)
+   - BETA badge component (Terracotta, angular)
+
+7. **Metric Cards** (6 cards)
+   - Angular metric card components
+   - Counter animation components
+   - Chart/visualization components
+   - Gold numbers, Deep Blue labels
+
+8. **Contact Section**
+   - Social media icon components (angular, geometric)
+   - Link components
+   - Background pattern (geometric)
+
+9. **Footer**
+   - Navigation link components
+   - Legal link components
+   - Decorative border (Greek key pattern)
+   - Copyright text component
+
+### **Interactive Elements**:
+- **Navigation Links**: Click to navigate to pages
+- **Connect Wallet Button**: Opens wallet connection modal
+- **User Type Cards**: Click to navigate to respective dashboards
+- **Social Media Icons**: Click to open external links (Twitter, Discord, GitHub, Email)
+- **Counter Animations**: Trigger on scroll into view
+- **Hover Effects**: Angular rotation, diagonal shift, color change
+- **Scroll Animations**: Angular slide-in, fade-in with rotation
+
+### **Navigation**:
+- **To**: About Page (`/about`)
+- **To**: Contact Page (`/contact`)
+- **To**: Tech Docs (`/docs` or external)
+- **To**: Hook Developer Dashboard (`/app/hook-developer`)
+- **To**: Protocol Designer Dashboard (`/app/protocol-designer`)
+- **To**: Integrator Portal (`/app/integrator`)
+- **From**: All other pages can navigate back to home
+
+### **Content**:
+- **Headline**: "A Marketplace for Uniswap V4 Hooks"
+- **Subheadline**: "Empowering pools with agency over hook selection"
+- **Description**: Brief explanation of platform value proposition
+- **Problem Points**: 4-5 market failure descriptions
+- **Solution Points**: 4-5 solution descriptions
+- **Features**: 7 feature descriptions
+- **Metrics**: Dynamic data (hooks, protocols, pools, TVL, volume, developers)
+- **Social Links**: Twitter/X, Discord, GitHub, Email
+
+### **States**:
+- **Loading**: Angular loading spinner, geometric shapes animating
+- **Error**: Angular error card with Terracotta accent
+- **Empty**: Angular empty state with geometric icon
+- **Success**: Angular success message with Gold accent
+
+---
+
+## Page 2: About Page
+
+### **Page Name**: About
+
+### **Purpose**: 
+Provide information about Hook Bazaar's mission, vision, team (if applicable), and link to technical documentation.
+
+### **Layout Structure**:
+- **Header**: Same navigation as home page
+- **Hero Section**: Angular headline, asymmetric layout
+- **About Us Section**: Asymmetric grid layout
+- **Tech Docs Section**: Angular card with link
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Hero Section**
+   - Page headline ("About Hook Bazaar")
+   - Angular decorative elements
+   - Background geometric pattern
+
+2. **About Us Card**
+   - Angular card component
+   - Mission statement
+   - Vision statement
+   - Company values (if applicable)
+   - Team section (if applicable)
+
+3. **Tech Docs Card**
+   - Large angular card component
+   - Link to documentation
+   - Description
+   - Angular CTA button
+
+4. **Back to Home Button**
+   - Angular button component
+   - Gold background
+   - Navigates to home
+
+### **Interactive Elements**:
+- **Tech Docs Link**: Navigate to documentation
+- **Back to Home Button**: Navigate to home page
+- **Hover Effects**: Angular card animations
+
+### **Navigation**:
+- **To**: Home Page (`/`)
+- **To**: Tech Docs (`/docs` or external)
+- **From**: Home Page (footer link)
+
+### **Content**:
+- **Mission**: "Our mission is to enable..."
+- **Vision**: "We envision a future where..."
+- **Tech Docs Link**: "Access Technical Documentation"
+- **Team Information**: (Optional, if available)
+
+### **States**:
+- **Loading**: Angular spinner
+- **Error**: Angular error state
+
+---
+
+## Page 3: Contact Page
+
+### **Page Name**: Contact
+
+### **Purpose**: 
+Provide contact information, social media links, and optional contact form for users to reach out.
+
+### **Layout Structure**:
+- **Header**: Same navigation as home page
+- **Hero Section**: Angular headline
+- **Contact Section**: Asymmetric grid layout
+- **Social Media Section**: Angular icon grid
+- **Contact Form** (Optional): Angular form component
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Hero Section**
+   - Page headline ("Connect With Us")
+   - Angular decorative elements
+
+2. **Social Media Grid**
+   - Angular icon components (48px × 48px)
+   - Link components
+   - Labels (optional)
+
+3. **Contact Form** (Optional)
+   - Angular form component
+   - Input fields (angular rectangles)
+   - Submit button (angular, Gold background)
+   - Form validation messages
+
+4. **Community Links**
+   - Angular card components
+   - Documentation link
+   - Support link
+   - Community forum link
+
+### **Interactive Elements**:
+- **Social Media Icons**: Click to open external links
+- **Contact Form**: Submit form (if implemented)
+- **Form Inputs**: Angular focus states (Gold border)
+- **Hover Effects**: Angular icon rotation
+
+### **Navigation**:
+- **To**: Home Page (`/`)
+- **To**: External links (Twitter, Discord, GitHub)
+- **From**: Home Page (footer link)
+
+### **Content**:
+- **Social Media Links**: Twitter/X, Discord, GitHub, Email
+- **Community Links**: Documentation, Support, Community Forum
+- **Contact Form Fields**: Name, Email, Subject, Message (if implemented)
+
+### **States**:
+- **Loading**: Angular spinner on form submit
+- **Error**: Angular error message (Terracotta accent)
+- **Success**: Angular success message (Gold accent)
+- **Empty**: Default state
+
+---
+
+## Page 4: Hook Developer Dashboard
+
+### **Page Name**: Hook Developer Dashboard
+
+### **Purpose**: 
+Main interface for hook developers to deploy hooks, manage existing hooks, compete in auctions, track revenue, and monitor performance.
+
+### **Layout Structure**:
+- **Header**: Navigation + user wallet info
+- **Left Sidebar** (Optional): Navigation menu (angular items)
+- **Main Content Area**: Dashboard grid (asymmetric)
+- **Right Panel** (Optional): Quick stats or actions
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Dashboard Header**
+   - Page title ("Hook Developer Dashboard")
+   - User wallet address display (angular card)
+   - "Deploy New Hook" button (angular, Gold background)
+
+2. **Hook List/Grid**
+   - Angular card components for each hook
+   - Hook name, category, status
+   - Quick stats (pools using, revenue)
+   - Action buttons (view, edit, manage)
+
+3. **Stats Cards**
+   - Total hooks deployed (angular card)
+   - Total revenue (angular card)
+   - Active pools (angular card)
+   - Pending bids (angular card)
+
+4. **Hook Card Component**
+   - Angular card (sharp corners)
+   - Hook icon (geometric)
+   - Hook name and category
+   - Status badge (angular, Gold/Terracotta)
+   - Quick stats
+   - Action buttons
+
+5. **Empty State**
+   - Angular empty state component
+   - Geometric icon
+   - "Deploy Your First Hook" CTA
+
+6. **Filter/Search Bar**
+   - Angular input component
+   - Category filter dropdown
+   - Status filter dropdown
+
+### **Interactive Elements**:
+- **Deploy New Hook Button**: Navigate to Hook Deployment Form
+- **Hook Cards**: Click to view hook details
+- **Edit Button**: Navigate to hook edit form
+- **Manage Button**: Navigate to hook management page
+- **Filter/Search**: Filter hooks by category/status
+- **Wallet Connection**: Connect/disconnect wallet
+
+### **Navigation**:
+- **To**: Hook Deployment Form (`/app/hook-developer/deploy`)
+- **To**: Hook Details Page (`/app/hook-developer/hooks/:id`)
+- **To**: Hook Management (`/app/hook-developer/hooks/:id/manage`)
+- **To**: Marketplace (`/app/hook-developer/marketplace`)
+- **To**: Revenue Analytics (`/app/hook-developer/analytics`)
+- **From**: Home Page (user type selection)
+
+### **Content**:
+- **User Hooks**: List of deployed hooks with:
+  - Hook name
+  - Category/functionality
+  - Status (active, pending, inactive)
+  - Number of pools using hook
+  - Revenue earned
+  - Last updated timestamp
+- **Statistics**: Dashboard metrics
+- **Actions**: Quick actions for common tasks
+
+### **States**:
+- **Loading**: Angular skeleton loaders (geometric shapes)
+- **Empty**: "Deploy Your First Hook" with angular CTA
+- **Error**: Angular error card with retry button
+- **No Wallet**: "Connect Wallet" prompt (angular card)
+
+---
+
+## Page 5: Hook Deployment Form
+
+### **Page Name**: Hook Deployment Form
+
+### **Purpose**: 
+Allow hook developers to deploy new hooks by filling in specifications, metadata, and requirements.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Angular form (centered, max-width)
+- **Form Sections**: Angular cards for each section
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Form Header**
+   - Page title ("Deploy New Hook")
+   - Back button (angular)
+   - Progress indicator (optional, angular steps)
+
+2. **Form Sections** (Angular cards):
+   - **Basic Information Card**
+     - Hook name input (angular rectangle)
+     - Description textarea (angular rectangle)
+     - Category selector (angular dropdown)
+   
+   - **Contract Details Card**
+     - Contract address input (angular rectangle)
+     - Network selector (angular dropdown)
+     - Verification status
+   
+   - **Specifications Card**
+     - Functionality description textarea
+     - Technical requirements input
+     - Compatibility notes
+   
+   - **Quality & Audits Card**
+     - Audit report upload (angular)
+     - Security score input
+     - Performance metrics input
+   
+   - **Pricing & Staking Card**
+     - Staking requirements input
+     - Pricing model selector
+     - Performance parameters
+
+3. **Form Actions**
+   - Cancel button (angular, Deep Blue border)
+   - Preview button (angular, Terracotta)
+   - Submit button (angular, Gold background)
+
+4. **Preview Modal** (Optional)
+   - Angular modal component
+   - Preview hook card
+   - Confirm or edit
+
+### **Interactive Elements**:
+- **Form Inputs**: Angular focus states (Gold border)
+- **Dropdowns**: Angular dropdown components
+- **File Upload**: Angular upload component
+- **Preview**: Open preview modal
+- **Submit**: Trigger deployment transaction
+- **Cancel**: Navigate back to dashboard
+- **Validation**: Real-time validation messages (angular)
+
+### **Navigation**:
+- **To**: Hook Developer Dashboard (after deployment)
+- **To**: Hook Details Page (after deployment)
+- **From**: Hook Developer Dashboard (Deploy New Hook button)
+
+### **Content**:
+- **Form Fields**:
+  - Hook name (required)
+  - Description (required)
+  - Category (required: fee management, liquidity management, etc.)
+  - Contract address (required)
+  - Network (required)
+  - Functionality description
+  - Audit reports (optional)
+  - Staking requirements
+  - Performance parameters
+
+### **States**:
+- **Loading**: Angular spinner on submit
+- **Error**: Angular error messages per field
+- **Validation**: Angular validation indicators
+- **Success**: Angular success message redirect to hook details
+- **Transaction Pending**: Angular transaction status
+
+---
+
+## Page 6: Hook Details Page
+
+### **Page Name**: Hook Details
+
+### **Purpose**: 
+Display comprehensive information about a specific hook, including specs, performance metrics, pools using it, and management options.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Asymmetric grid layout
+- **Left Column**: Hook information cards
+- **Right Column**: Stats and actions
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Hook Header Card**
+   - Hook icon (geometric, large)
+   - Hook name and category
+   - Status badge (angular)
+   - Action buttons (edit, manage)
+
+2. **Information Cards**:
+   - **Specifications Card** (angular)
+     - Description
+     - Technical details
+     - Compatibility info
+   
+   - **Audit & Security Card** (angular)
+     - Audit reports links
+     - Security score
+     - Verification status
+   
+   - **Performance Metrics Card** (angular)
+     - Gas efficiency
+     - Execution speed
+     - Success rate
+
+3. **Stats Cards**:
+   - Pools using hook (angular card)
+   - Total revenue (angular card)
+   - Adoption rate (angular card)
+   - Charts/visualizations (angular)
+
+4. **Pools List**
+   - Angular card components for each pool
+   - Pool address, token pair
+   - Revenue contribution
+   - Link to pool details
+
+5. **Action Panel**
+   - Edit specifications button
+   - Manage staking button
+   - Participate in auctions button
+   - View analytics button
+
+### **Interactive Elements**:
+- **Edit Button**: Navigate to edit form
+- **Manage Button**: Navigate to management page
+- **Pool Cards**: Click to view pool details
+- **Charts**: Interactive angular charts
+- **Action Buttons**: Various navigation actions
+
+### **Navigation**:
+- **To**: Hook Edit Form (`/app/hook-developer/hooks/:id/edit`)
+- **To**: Hook Management (`/app/hook-developer/hooks/:id/manage`)
+- **To**: Pool Details (`/app/pools/:id`)
+- **To**: Analytics (`/app/hook-developer/hooks/:id/analytics`)
+- **From**: Hook Developer Dashboard (hook card click)
+
+### **Content**:
+- **Hook Information**: All hook specifications
+- **Performance Data**: Real-time or historical metrics
+- **Pool List**: Pools currently using this hook
+- **Revenue Data**: Earnings breakdown
+
+### **States**:
+- **Loading**: Angular skeleton loaders
+- **Error**: Angular error card
+- **Empty Pools**: "No pools using this hook yet"
+
+---
+
+## Page 7: Hook Marketplace
+
+### **Page Name**: Hook Marketplace
+
+### **Purpose**: 
+Browse and discover available hooks by category, filter by quality attributes, compare competing hooks, and view hook details.
+
+### **Layout Structure**:
+- **Header**: Navigation + search/filter bar
+- **Main Content**: Asymmetric grid layout
+- **Left Sidebar**: Filters (category, quality, etc.)
+- **Main Grid**: Hook cards grid
+- **Right Panel** (Optional): Comparison panel
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Search & Filter Bar**
+   - Search input (angular rectangle)
+   - Category filter dropdown
+   - Quality filter dropdown
+   - Sort selector
+
+2. **Filter Sidebar**
+   - Category filters (angular checkboxes)
+   - Quality attributes filters
+   - Price range filter
+   - Status filters
+
+3. **Hook Grid**
+   - Angular hook card components
+   - Hook preview (icon, name, category)
+   - Quick stats (pools, revenue)
+   - "View Details" button
+
+4. **Hook Comparison Panel** (Optional)
+   - Angular comparison cards
+   - Side-by-side comparison
+   - "Select" buttons
+
+5. **Empty State**
+   - Angular empty state component
+   - "No hooks found" message
+
+### **Interactive Elements**:
+- **Search**: Filter hooks by name/search term
+- **Filters**: Apply multiple filters
+- **Hook Cards**: Click to view hook details
+- **Comparison**: Select hooks for comparison
+- **Sort**: Sort by various criteria
+
+### **Navigation**:
+- **To**: Hook Details Page (`/app/marketplace/hooks/:id`)
+- **To**: Comparison View (`/app/marketplace/compare`)
+- **From**: Hook Developer Dashboard, Protocol Designer Dashboard
+
+### **Content**:
+- **Hook List**: All available hooks with:
+  - Hook name and category
+  - Developer info
+  - Quality indicators
+  - Performance metrics
+  - Adoption statistics
+
+### **States**:
+- **Loading**: Angular skeleton grid
+- **Empty**: "No hooks found" with angular icon
+- **Error**: Angular error card
+
+---
+
+## Page 8: Protocol Designer Dashboard
+
+### **Page Name**: Protocol Designer Dashboard
+
+### **Purpose**: 
+Main interface for protocol designers to create protocols, define hook requirements, create pools, and manage protocol operations.
+
+### **Layout Structure**:
+- **Header**: Navigation + user wallet info
+- **Left Sidebar** (Optional): Navigation menu
+- **Main Content Area**: Dashboard grid (asymmetric)
+- **Right Panel** (Optional): Quick stats
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Dashboard Header**
+   - Page title ("Protocol Designer Dashboard")
+   - User wallet address display
+   - "Create Protocol" button (angular, Gold background)
+
+2. **Protocol List/Grid**
+   - Angular card components for each protocol
+   - Protocol name, fee recipient
+   - Quick stats (pools, revenue)
+   - Action buttons (view, manage, create pool)
+
+3. **Stats Cards**
+   - Total protocols (angular card)
+   - Total pools (angular card)
+   - Total revenue (angular card)
+   - Active hooks (angular card)
+
+4. **Protocol Card Component**
+   - Angular card (sharp corners)
+   - Protocol icon (geometric)
+   - Protocol name and fee recipient
+   - Status badge
+   - Quick stats (pools, revenue)
+   - Action buttons
+
+5. **Empty State**
+   - Angular empty state component
+   - "Create Your First Protocol" CTA
+
+### **Interactive Elements**:
+- **Create Protocol Button**: Navigate to Protocol Registration Form
+- **Protocol Cards**: Click to view protocol details
+- **Create Pool Button**: Navigate to Pool Creation Form
+- **Manage Button**: Navigate to protocol management
+- **Wallet Connection**: Connect/disconnect wallet
+
+### **Navigation**:
+- **To**: Protocol Registration Form (`/app/protocol-designer/create`)
+- **To**: Protocol Details (`/app/protocol-designer/protocols/:id`)
+- **To**: Pool Creation Form (`/app/protocol-designer/pools/create`)
+- **To**: Hook Marketplace (`/app/marketplace`)
+- **From**: Home Page (user type selection)
+
+### **Content**:
+- **User Protocols**: List of protocols with:
+  - Protocol name
+  - Fee recipient address
+  - Number of pools
+  - Total revenue
+  - Status
+- **Statistics**: Dashboard metrics
+
+### **States**:
+- **Loading**: Angular skeleton loaders
+- **Empty**: "Create Your First Protocol" with angular CTA
+- **Error**: Angular error card
+- **No Wallet**: "Connect Wallet" prompt
+
+---
+
+## Page 9: Protocol Registration Form
+
+### **Page Name**: Protocol Registration Form
+
+### **Purpose**: 
+Allow protocol designers to register a new protocol by providing protocol information and fee recipient address.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Angular form (centered, max-width)
+- **Form Card**: Single angular card
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Form Header**
+   - Page title ("Create Protocol")
+   - Back button (angular)
+
+2. **Registration Form Card** (Angular card):
+   - Protocol name input (angular rectangle)
+   - Fee recipient address input (angular rectangle)
+   - Wallet connect button (angular, Gold)
+   - Protocol description textarea (angular rectangle)
+   - Optional fields (logo, website, etc.)
+
+3. **Form Actions**
+   - Cancel button (angular, Deep Blue border)
+   - Submit button (angular, Gold background)
+
+4. **Transaction Status**
+   - Angular status indicator
+   - Transaction hash display
+   - Success confirmation
+
+### **Interactive Elements**:
+- **Form Inputs**: Angular focus states (Gold border)
+- **Wallet Connect**: Connect wallet to auto-fill fee recipient
+- **Submit**: Trigger registration transaction
+- **Cancel**: Navigate back to dashboard
+- **Validation**: Real-time validation
+
+### **Navigation**:
+- **To**: Protocol Designer Dashboard (after registration)
+- **To**: Protocol Details Page (after registration)
+- **From**: Protocol Designer Dashboard (Create Protocol button)
+
+### **Content**:
+- **Form Fields**:
+  - Protocol name (required)
+  - Fee recipient address (required)
+  - Protocol description (optional)
+  - Logo URL (optional)
+  - Website URL (optional)
+
+### **States**:
+- **Loading**: Angular spinner on submit
+- **Error**: Angular error messages
+- **Validation**: Angular validation indicators
+- **Success**: Angular success message redirect
+- **Transaction Pending**: Angular transaction status
+
+---
+
+## Page 10: Protocol Details Page
+
+### **Page Name**: Protocol Details
+
+### **Purpose**: 
+Display comprehensive information about a protocol, including pools, revenue, hook requirements, and management options.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Asymmetric grid layout
+- **Left Column**: Protocol information cards
+- **Right Column**: Stats and actions
+- **Pools Section**: Pools list/grid
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Protocol Header Card**
+   - Protocol icon (geometric)
+   - Protocol name and fee recipient
+   - Status badge
+   - Action buttons (edit, manage)
+
+2. **Information Cards**:
+   - **Protocol Info Card** (angular)
+     - Description
+     - Fee recipient address
+     - Created date
+   
+   - **Hook Requirements Card** (angular)
+     - Required hook categories
+     - Specifications per category
+     - Quality requirements
+
+3. **Stats Cards**:
+   - Total pools (angular card)
+   - Total revenue (angular card)
+   - Total TVL (angular card)
+   - Charts/visualizations (angular)
+
+4. **Pools Grid**
+   - Angular pool card components
+   - Pool address, token pair
+   - Hook(s) used
+   - Revenue contribution
+   - Link to pool details
+
+5. **Action Panel**
+   - Create Pool button (angular, Gold)
+   - Edit Protocol button
+   - Define Hook Requirements button
+   - View Analytics button
+
+### **Interactive Elements**:
+- **Create Pool Button**: Navigate to Pool Creation Form
+- **Pool Cards**: Click to view pool details
+- **Edit Button**: Navigate to edit form
+- **Charts**: Interactive angular charts
+- **Action Buttons**: Various navigation actions
+
+### **Navigation**:
+- **To**: Pool Creation Form (`/app/protocol-designer/pools/create`)
+- **To**: Pool Details (`/app/pools/:id`)
+- **To**: Edit Protocol (`/app/protocol-designer/protocols/:id/edit`)
+- **To**: Analytics (`/app/protocol-designer/protocols/:id/analytics`)
+- **From**: Protocol Designer Dashboard (protocol card click)
+
+### **Content**:
+- **Protocol Information**: All protocol details
+- **Pool List**: All pools under this protocol
+- **Revenue Data**: Aggregated revenue information
+- **Hook Requirements**: Categories and specifications
+
+### **States**:
+- **Loading**: Angular skeleton loaders
+- **Error**: Angular error card
+- **Empty Pools**: "Create Your First Pool" with angular CTA
+
+---
+
+## Page 11: Pool Creation Form
+
+### **Page Name**: Pool Creation Form
+
+### **Purpose**: 
+Allow protocol designers to create pools with token pairs, fee tiers, and hook selection from marketplace.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Angular form (centered, max-width)
+- **Form Sections**: Angular cards for each section
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Form Header**
+   - Page title ("Create Pool")
+   - Back button (angular)
+   - Progress indicator (optional)
+
+2. **Form Sections** (Angular cards):
+   - **Pool Configuration Card**
+     - Token 0 selector (angular input + token selector modal)
+     - Token 1 selector (angular input + token selector modal)
+     - Fee tier selector (angular dropdown: 0.01%, 0.05%, 0.3%, 1%)
+     - Tick spacing display (auto-filled, read-only)
+   
+   - **Hook Selection Card**
+     - Browse marketplace button (angular)
+     - Selected hook display (angular card)
+     - Hook details preview
+     - Change hook button
+   
+   - **Pool Preview Card**
+     - Pool configuration summary
+     - Token pair display
+     - Fee tier display
+     - Selected hook display
+     - Estimated costs
+
+3. **Form Actions**
+   - Cancel button (angular, Deep Blue border)
+   - Preview button (angular, Terracotta)
+   - Submit button (angular, Gold background)
+
+4. **Token Selector Modal**
+   - Angular modal component
+   - Token search input
+   - Token list (angular cards)
+   - Popular tokens section
+
+5. **Hook Marketplace Modal**
+   - Angular modal component
+   - Hook filters
+   - Hook grid
+   - Selection interface
+
+### **Interactive Elements**:
+- **Token Selectors**: Open token selector modal
+- **Fee Tier Selector**: Angular dropdown
+- **Browse Marketplace**: Open hook marketplace modal
+- **Hook Selection**: Select hook from marketplace
+- **Preview**: Show pool preview
+- **Submit**: Trigger pool creation transaction
+- **Cancel**: Navigate back
+- **Validation**: Real-time validation
+
+### **Navigation**:
+- **To**: Protocol Designer Dashboard (after creation)
+- **To**: Pool Details Page (after creation)
+- **To**: Hook Marketplace (via modal)
+- **From**: Protocol Details Page (Create Pool button)
+
+### **Content**:
+- **Form Fields**:
+  - Token 0 address (required)
+  - Token 1 address (required)
+  - Fee tier (required)
+  - Hook selection (required)
+  - Pool name (optional)
+
+### **States**:
+- **Loading**: Angular spinner on submit
+- **Error**: Angular error messages
+- **Validation**: Angular validation indicators
+- **Success**: Angular success message redirect
+- **Transaction Pending**: Angular transaction status
+
+---
+
+## Page 12: Pool Details Page
+
+### **Page Name**: Pool Details
+
+### **Purpose**: 
+Display comprehensive information about a pool, including token pair, hooks, performance metrics, and management options.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Asymmetric grid layout
+- **Left Column**: Pool information cards
+- **Right Column**: Stats and actions
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Pool Header Card**
+   - Token pair display (angular, geometric icons)
+   - Pool address
+   - Status badge
+   - Action buttons (manage, switch hook)
+
+2. **Information Cards**:
+   - **Pool Configuration Card** (angular)
+     - Token pair
+     - Fee tier
+     - Tick spacing
+     - Protocol info
+   
+   - **Hook Info Card** (angular)
+     - Selected hook(s) display
+     - Hook details
+     - Hook performance
+     - Switch hook button
+
+3. **Stats Cards**:
+   - TVL (angular card)
+   - Volume 24h (angular card)
+   - Revenue (angular card)
+   - Charts/visualizations (angular)
+
+4. **Performance Metrics**
+   - Angular metric cards
+   - Historical data charts
+   - Comparison metrics
+
+5. **Action Panel**
+   - Switch Hook button (angular, Terracotta)
+   - Configure Pool button
+   - View Analytics button
+
+### **Interactive Elements**:
+- **Switch Hook Button**: Navigate to hook switching interface
+- **Charts**: Interactive angular charts
+- **Action Buttons**: Various navigation actions
+- **Hook Cards**: Click to view hook details
+
+### **Navigation**:
+- **To**: Hook Switching Interface (`/app/pools/:id/switch-hook`)
+- **To**: Hook Details (`/app/marketplace/hooks/:id`)
+- **To**: Analytics (`/app/pools/:id/analytics`)
+- **From**: Protocol Details Page (pool card click)
+
+### **Content**:
+- **Pool Information**: All pool configuration details
+- **Hook Information**: Selected hook(s) details
+- **Performance Data**: Real-time and historical metrics
+- **Revenue Data**: Earnings breakdown
+
+### **States**:
+- **Loading**: Angular skeleton loaders
+- **Error**: Angular error card
+
+---
+
+## Page 13: Integrator Portal
+
+### **Page Name**: Integrator Portal (BETA)
+
+### **Purpose**: 
+Provide integration documentation, APIs, SDKs, code examples, and testing tools for developers integrating Hook Bazaar.
+
+### **Layout Structure**:
+- **Header**: Navigation + BETA badge
+- **Main Content**: Asymmetric grid layout
+- **Left Sidebar**: Documentation navigation
+- **Main Content Area**: Documentation content
+- **Right Panel** (Optional): Quick links
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Portal Header**
+   - Page title ("Integrator Portal")
+   - BETA badge (angular, Terracotta)
+   - Quick navigation
+
+2. **Documentation Sections**:
+   - **Getting Started Card** (angular)
+     - Introduction
+     - Quick start guide
+     - Prerequisites
+   
+   - **API Reference Card** (angular)
+     - Endpoints list
+     - Request/response examples
+     - Authentication
+   
+   - **SDK Downloads Card** (angular)
+     - SDK links
+     - Installation guides
+     - Version information
+   
+   - **Code Examples Card** (angular)
+     - Integration examples
+     - Code snippets
+     - Best practices
+   
+   - **Testing Tools Card** (angular)
+     - Testing interfaces
+     - Verification tools
+     - Test network info
+
+3. **Navigation Sidebar**
+   - Angular menu items
+   - Section links
+   - Active state indicators
+
+4. **Code Block Components**
+   - Angular code blocks
+   - Syntax highlighting
+   - Copy button
+
+5. **Download Buttons**
+   - Angular button components
+   - SDK download links
+   - ABI download links
+
+### **Interactive Elements**:
+- **Navigation Links**: Scroll to sections or navigate
+- **Code Copy**: Copy code snippets
+- **Downloads**: Download SDKs/ABIs
+- **External Links**: Open documentation in new tab
+
+### **Navigation**:
+- **To**: External documentation (if applicable)
+- **To**: GitHub repository
+- **From**: Home Page (Integrator user type selection)
+
+### **Content**:
+- **Documentation**: Technical integration guides
+- **API References**: All API endpoints
+- **Code Examples**: Integration examples
+- **SDK Information**: Download links and versions
+- **Testing Tools**: Test network information
+
+### **States**:
+- **Loading**: Angular spinner
+- **Error**: Angular error card
+
+---
+
+## Page 14: Hook Management Page
+
+### **Page Name**: Hook Management
+
+### **Purpose**: 
+Allow hook developers to manage hook specifications, staking, bids, and monitor pool adoption.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Asymmetric grid layout
+- **Left Column**: Management sections
+- **Right Column**: Stats and actions
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Management Header**
+   - Hook name and icon
+   - Status indicator
+   - Quick actions
+
+2. **Management Sections**:
+   - **Specifications Card** (angular)
+     - Edit specifications button
+     - Current specifications display
+   
+   - **Staking Management Card** (angular)
+     - Current staking amount
+     - Adjust staking button
+     - Staking history
+   
+   - **Bids Management Card** (angular)
+     - Active bids list
+     - Create new bid button
+     - Bid history
+   
+   - **Pool Adoption Card** (angular)
+     - Pools using hook list
+     - Adoption metrics
+     - Performance per pool
+
+3. **Action Buttons**
+   - Edit Specifications (angular, Gold)
+   - Adjust Staking (angular, Terracotta)
+   - Create Bid (angular, Gold)
+   - View Analytics (angular, Deep Blue)
+
+### **Interactive Elements**:
+- **Edit Specifications**: Navigate to edit form
+- **Adjust Staking**: Open staking adjustment modal
+- **Create Bid**: Navigate to bid creation form
+- **Pool Links**: Navigate to pool details
+
+### **Navigation**:
+- **To**: Hook Edit Form (`/app/hook-developer/hooks/:id/edit`)
+- **To**: Bid Creation Form (`/app/hook-developer/hooks/:id/bids/create`)
+- **To**: Pool Details (`/app/pools/:id`)
+- **From**: Hook Details Page (Manage button)
+
+### **Content**:
+- **Hook Specifications**: Current and editable specs
+- **Staking Information**: Current staking, history
+- **Bids**: Active and historical bids
+- **Pool Adoption**: Pools using the hook
+
+### **States**:
+- **Loading**: Angular skeleton loaders
+- **Error**: Angular error card
+- **Empty**: Empty state messages
+
+---
+
+## Page 15: Analytics Page (Hook Developer)
+
+### **Page Name**: Hook Analytics
+
+### **Purpose**: 
+Display comprehensive analytics for hook developers including revenue, performance metrics, adoption trends, and optimization insights.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Asymmetric grid layout
+- **Charts Section**: Angular chart components
+- **Metrics Grid**: Angular metric cards
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Analytics Header**
+   - Hook name
+   - Time range selector (angular dropdown)
+   - Export button (angular)
+
+2. **Revenue Charts**
+   - Angular chart component (geometric)
+   - Revenue over time
+   - Revenue by pool breakdown
+
+3. **Performance Metrics Cards**
+   - Angular metric cards
+   - Gas efficiency
+   - Execution speed
+   - Success rate
+   - Adoption rate
+
+4. **Adoption Trends**
+   - Angular chart component
+   - Pools over time
+   - Adoption curve
+
+5. **Insights Card**
+   - Angular card component
+   - Recommendations
+   - Optimization suggestions
+
+### **Interactive Elements**:
+- **Time Range Selector**: Filter data by time range
+- **Charts**: Interactive angular charts
+- **Export**: Export analytics data
+- **Segment Data**: Click to drill down
+
+### **Navigation**:
+- **To**: Hook Details Page
+- **To**: Hook Management Page
+- **From**: Hook Details Page (View Analytics button)
+
+### **Content**:
+- **Revenue Data**: Historical and current revenue
+- **Performance Metrics**: All performance indicators
+- **Adoption Data**: Pool adoption trends
+- **Insights**: Recommendations and analysis
+
+### **States**:
+- **Loading**: Angular skeleton loaders
+- **Error**: Angular error card
+- **Empty**: "No data available" message
+
+---
+
+## Page 16: Analytics Page (Protocol Designer)
+
+### **Page Name**: Protocol Analytics
+
+### **Purpose**: 
+Display comprehensive analytics for protocol designers including protocol revenue, pool performance, hook effectiveness, and optimization insights.
+
+### **Layout Structure**:
+- **Header**: Navigation + back button
+- **Main Content**: Asymmetric grid layout
+- **Charts Section**: Angular chart components
+- **Metrics Grid**: Angular metric cards
+- **Footer**: Same as home page
+
+### **Key Components**:
+1. **Analytics Header**
+   - Protocol name
+   - Time range selector (angular dropdown)
+   - Export button (angular)
+
+2. **Revenue Charts**
+   - Angular chart component (geometric)
+   - Protocol revenue over time
+   - Revenue by pool breakdown
+
+3. **Pool Performance Cards**
+   - Angular metric cards per pool
+   - Pool TVL
+   - Pool volume
+   - Pool revenue
+   - Hook performance
+
+4. **Hook Effectiveness Analysis**
+   - Angular chart component
+   - Hook performance comparison
+   - Hook adoption analysis
+
+5. **Insights Card**
+   - Angular card component
+   - Optimization recommendations
+   - Hook selection insights
+
+### **Interactive Elements**:
+- **Time Range Selector**: Filter data by time range
+- **Charts**: Interactive angular charts
+- **Pool Cards**: Click to view pool details
+- **Export**: Export analytics data
+
+### **Navigation**:
+- **To**: Protocol Details Page
+- **To**: Pool Details Page
+- **From**: Protocol Details Page (View Analytics button)
+
+### **Content**:
+- **Protocol Revenue**: Aggregated revenue data
+- **Pool Performance**: Individual pool metrics
+- **Hook Analysis**: Hook effectiveness data
+- **Insights**: Recommendations
+
+### **States**:
+- **Loading**: Angular skeleton loaders
+- **Error**: Angular error card
+- **Empty**: "No data available" message
+
+---
+
+## Common Components Across All Pages
+
+### **Navigation Header**
+- Logo (angular, geometric)
+- Navigation links (angular menu items)
+- Connect Wallet button (angular, Gold)
+- Angular border bottom (2px Deep Blue)
+- Hover effects: Angular rotation, color change
+
+### **Footer**
+- Navigation links (angular text links)
+- Legal links (angular text links)
+- Social media icons (angular, geometric)
+- Greek key pattern border (Gold)
+- Deep Blue background
+- Gold text/accents
+
+### **Angular Buttons**
+- Primary: Gold background (#FFD700), Deep Blue text (#003366), 2px border, sharp corners
+- Secondary: Deep Blue background (#003366), Gold text (#FFD700), 2px border, sharp corners
+- Accent: Terracotta background (#CD853F), White text, 2px Gold border, sharp corners
+- Hover: Diagonal shift (-1deg), angular shadow, color change
+
+### **Angular Cards**
+- Background: White (#FFFFFF) or Marble Light (#F5F5F0)
+- Border: 2px solid Deep Blue (#003366) or Gold (#FFD700)
+- Shape: Angular rectangle (clip-path for sharp corners)
+- Padding: 24px internal
+- Hover: Diagonal shift, angular shadow
+
+### **Loading States**
+- Angular spinner (geometric shapes rotating)
+- Skeleton loaders (angular shapes)
+- Progress indicators (angular steps)
+
+### **Error States**
+- Angular error card (Terracotta accent)
+- Error message text
+- Retry button (angular, Gold)
+
+### **Empty States**
+- Angular empty state component
+- Geometric icon
+- Message text
+- CTA button (if applicable)
+
+---
+
+## Design Consistency Rules
+
+### **All Pages Must Include:**
+1. Angular, geometric design elements
+2. Sharp corners (no rounded except circles)
+3. Asymmetric layouts where possible
+4. Diagonal elements and speed lines
+5. Gold, Deep Blue, Terracotta color palette
+6. Space Grotesk headings, Crimson Pro body text
+7. Angular animations (200-400ms)
+8. High contrast for accessibility
+
+### **All Pages Must NOT Include:**
+1. Rounded corners (except circles)
+2. Smooth, curved animations
+3. Symmetric layouts (unless necessary)
+4. Pastel colors
+5. Organic shapes
+6. Smooth gradients
+
+---
+
+This comprehensive document provides detailed specifications for all pages in the Hook Bazaar application, ensuring consistent implementation of the Italian Futurism + Ancient Greek Bazaar aesthetic across the entire platform.
+
+
+
+
+# COMPLETE DESIGN SYSTEM
+
+# Complete Design System: Hook Bazaar
+
+## Design System Overview
+
+**Application Type**: Two-sided marketplace platform for DeFi (Uniswap V4 hooks)
+**Industry**: DeFi, Blockchain, Cryptocurrency
+**Design Aesthetic**: Italian Futurism + Ancient Greek Bazaar (Olympus DAO-inspired)
+**Target Users**: Hook developers, Protocol designers, Integrators
+
+**Primary Design Reference**: [Olympus DAO](https://www.olympusdao.finance/) - Clean, modern DeFi interface with dark mode, prominent stats, elegant spacing
+
+**Core Principles**:
+- Dark mode primary (deep navy backgrounds)
+- Geometric, angular forms (no rounded corners except circles)
+- High contrast color palette (gold on dark navy)
+- Asymmetric layouts (Futurist dynamism)
+- Classical proportions (Greek harmony)
+- Dynamic, energetic animations
+- 3D JavaScript features for enhanced interactivity
+
+---
+
+## 1. Color Palette
+
+### Primary Color
+**Gold (Primary)**
+- **Hex Code**: `#FFD700`
+- **RGB**: `rgb(255, 215, 0)`
+- **Usage**: Primary actions, CTAs, highlights, important elements
+- **Variants**:
+  - Gold Secondary: `#FFA500` (RGB: 255, 165, 0)
+  - Gold Dark: `#DAA520` (RGB: 218, 165, 32)
+
+### Secondary Color
+**Deep Blue (Secondary)**
+- **Hex Code**: `#003366`
+- **RGB**: `rgb(0, 51, 102)`
+- **Usage**: Secondary actions, borders, primary text, backgrounds
+- **Variants**:
+  - Blue Secondary: `#0066CC` (RGB: 0, 102, 204)
+  - Blue Dark: `#001F3F` (RGB: 0, 31, 63)
+
+### Accent Color
+**Orange-Red (Logo-Inspired Accent)**
+- **Hex Code**: `#E85A4F`
+- **RGB**: `rgb(232, 90, 79)`
+- **Usage**: Accents from logo, visual highlights, interactive elements
+- **Variants**:
+  - Orange-Red Dark: `#CD5C5C` (RGB: 205, 92, 92)
+
+**Terracotta (Secondary Accent)**
+- **Hex Code**: `#CD853F`
+- **RGB**: `rgb(205, 133, 63)`
+- **Usage**: Additional accents, warnings, BETA badges
+- **Variants**:
+  - Terracotta Secondary: `#B87333` (RGB: 184, 115, 51)
+
+### Background Colors
+
+**Dark Mode** (Primary):
+- **Deepest Navy**: `#000814` (RGB: 0, 8, 20)
+  - Usage: Primary background, main page background (from logo)
+- **Dark Navy**: `#001F3F` (RGB: 0, 31, 63)
+  - Usage: Secondary backgrounds, card backgrounds, elevated surfaces
+- **Dark Gray**: `#1A1A1A` (RGB: 26, 26, 26)
+  - Usage: Elevated card backgrounds, modal backgrounds
+
+**Light Mode** (Not Implemented - Dark Mode Only):
+- Currently not supported, dark mode only
+
+### Text Colors
+
+**Primary Text** (Dark Mode):
+- **White**: `#FFFFFF` (RGB: 255, 255, 255)
+  - Usage: Main body text, headings (on dark backgrounds)
+- **Gold**: `#FFD700` (RGB: 255, 215, 0)
+  - Usage: Emphasized text, headings, important information
+
+**Secondary Text**:
+- **Light Gray**: `#F5F5F0` (RGB: 245, 245, 240)
+  - Usage: Secondary text, labels, hints
+- **Medium Gray**: `#9E9E9E` (RGB: 158, 158, 158)
+  - Usage: Tertiary text, placeholders
+
+**Disabled Text**:
+- **Disabled**: `#9E9E9E` (RGB: 158, 158, 158)
+  - Usage: Disabled form fields, inactive elements
+  - Opacity: 0.6
+
+**Text on Colored Backgrounds**:
+- **Text on Gold**: Use Deep Navy `#000814` or Black `#000000` (minimum 4.5:1 contrast)
+- **Text on Dark Navy**: Use White `#FFFFFF` or Gold `#FFD700` (minimum 4.5:1 contrast)
+- **Text on Orange-Red**: Use White `#FFFFFF` (minimum 4.5:1 contrast)
+- **Text on Terracotta**: Use White `#FFFFFF` (minimum 4.5:1 contrast)
+
+### Status Colors
+
+**Success**:
+- **Primary**: `#28A745` (RGB: 40, 167, 69)
+- **Background**: `#D4EDDA` (RGB: 212, 237, 218)
+- **Usage**: Success messages, completed states, positive indicators
+
+**Error**:
+- **Primary**: `#DC3545` (RGB: 220, 53, 69)
+- **Background**: `#F8D7DA` (RGB: 248, 215, 218)
+- **Usage**: Error messages, failed states, validation errors
+- **Alternative**: Use Terracotta `#CD853F` for error emphasis (design system variant)
+
+**Warning**:
+- **Primary**: `#FFC107` (RGB: 255, 193, 7)
+- **Background**: `#FFF3CD` (RGB: 255, 243, 205)
+- **Usage**: Warning messages, caution states
+- **Alternative**: Use Terracotta `#CD853F` for warnings (design system variant)
+
+**Info**:
+- **Primary**: `#0066CC` (RGB: 0, 102, 204) - Uses Blue Secondary
+- **Background**: `#D1ECF1` (RGB: 209, 236, 241)
+- **Usage**: Informational messages, neutral states
+
+### Color Usage Rules
+
+**Primary Actions**:
+- Use Gold `#FFD700` for primary buttons, CTAs, important actions
+- Text color: Deep Navy `#000814` or Black `#000000`
+
+**Secondary Actions**:
+- Use Deep Blue `#003366` for secondary buttons
+- Text color: White `#FFFFFF` or Gold `#FFD700`
+
+**Accents**:
+- Use Orange-Red `#E85A4F` for logo-inspired accents (primary accent)
+- Use Terracotta `#CD853F` for additional accents, warnings, BETA badges
+- Use sparingly for visual interest
+
+**Borders**:
+- Primary: Gold `#FFD700` (2px solid) - for cards and important elements
+- Secondary: Deep Blue `#003366` (2px solid)
+- Hover: Gold `#FFD700` (2px solid) with glow effect
+
+**Backgrounds**:
+- Primary: Deepest Navy `#000814` (main page background)
+- Secondary: Dark Navy `#001F3F` (card backgrounds)
+- Elevated: Dark Gray `#1A1A1A` (modals, elevated cards)
+
+---
+
+## 2. Typography
+
+### Font Families
+
+**Headings (Futurist-Inspired)**:
+- **Primary**: `Space Grotesk`
+- **Fallback**: `-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`
+- **Style**: Geometric, angular, modern
+- **Usage**: All headings (H1-H6), UI labels, buttons
+
+**Body Text (Classical-Inspired)**:
+- **Primary**: `Crimson Pro`
+- **Fallback**: `Georgia, 'Times New Roman', serif`
+- **Style**: Elegant, readable, classical
+- **Usage**: Body text, descriptions, paragraphs
+
+**Monospace** (Code/Technical):
+- **Primary**: `'Courier New', monospace`
+- **Usage**: Code blocks, addresses, technical data
+- **Alternative**: `'Fira Code', monospace` (if available)
+
+**Decorative** (Optional):
+- **Greek-Inspired**: Use sparingly for special elements only
+- **Usage**: Limited decorative text, logo elements
+
+### Font Sizes
+
+**Desktop Typography Scale**:
+
+**Headings** (Space Grotesk):
+- **H1**: `64px` / Line Height: `72px` (1.125) / Weight: `700` (Bold)
+- **H2**: `48px` / Line Height: `56px` (1.167) / Weight: `700` (Bold)
+- **H3**: `36px` / Line Height: `44px` (1.222) / Weight: `700` (Bold)
+- **H4**: `28px` / Line Height: `36px` (1.286) / Weight: `600` (Semi-Bold)
+- **H5**: `24px` / Line Height: `32px` (1.333) / Weight: `600` (Semi-Bold)
+- **H6**: `20px` / Line Height: `28px` (1.4) / Weight: `600` (Semi-Bold)
+
+**Body Text** (Crimson Pro):
+- **Body Large**: `18px` / Line Height: `28px` (1.556) / Weight: `400` (Regular)
+- **Body**: `16px` / Line Height: `24px` (1.5) / Weight: `400` (Regular)
+- **Body Small**: `14px` / Line Height: `20px` (1.429) / Weight: `400` (Regular)
+- **Caption**: `12px` / Line Height: `16px` (1.333) / Weight: `500` (Medium) - Space Grotesk
+
+**Mobile Typography Scale**:
+- **H1 Mobile**: `40px` / Line Height: `48px` (1.2) / Weight: `700`
+- **H2 Mobile**: `32px` / Line Height: `40px` (1.25) / Weight: `700`
+- **H3 Mobile**: `28px` / Line Height: `36px` (1.286) / Weight: `700`
+- **Body Mobile**: `16px` / Line Height: `24px` (1.5) / Weight: `400`
+- **Body Small Mobile**: `14px` / Line Height: `20px` (1.429) / Weight: `400`
+
+### Font Weights
+
+**Space Grotesk** (Headings):
+- **300**: Light (not used)
+- **400**: Regular (rarely used for headings)
+- **500**: Medium (captions, labels)
+- **600**: Semi-Bold (H4-H6)
+- **700**: Bold (H1-H3, buttons)
+
+**Crimson Pro** (Body):
+- **400**: Regular (standard body text)
+- **500**: Medium (emphasis, not commonly used)
+- **700**: Bold (not used - use Space Grotesk for bold)
+
+### Line Heights
+
+**Headings**:
+- **Tight**: 1.2-1.4 (for H1-H3)
+- **Normal**: 1.4-1.5 (for H4-H6)
+
+**Body Text**:
+- **Comfortable**: 1.5-1.75 (for readability)
+- **Body Large**: 1.556
+- **Body**: 1.5
+- **Body Small**: 1.429
+
+**Letter Spacing**:
+- **Headings**: `-0.02em` (tight, geometric)
+- **Body**: `0em` (normal)
+- **Uppercase Text**: `0.05em` (buttons, labels)
+
+---
+
+## 3. Spacing System
+
+### Base Scale (8px Grid System)
+
+All spacing values are multiples of 8px for consistency:
+
+- **XS (Extra Small)**: `8px` - Tight spacing, icon padding
+- **SM (Small)**: `16px` - Compact spacing, form fields
+- **MD (Medium)**: `24px` - Standard spacing, card padding
+- **LG (Large)**: `32px` - Generous spacing, section spacing
+- **XL (Extra Large)**: `48px` - Large spacing, major sections
+- **2XL**: `64px` - Very large spacing, section breaks
+- **3XL**: `96px` - Extra large spacing, hero sections
+- **4XL**: `128px` - Maximum spacing, major page sections
+
+### Spacing Usage Rules
+
+**Component Internal Padding**:
+- Cards: `24px` (MD)
+- Buttons: `16px` vertical, `32px` horizontal (SM/LG)
+- Input fields: `12px` vertical, `16px` horizontal
+- Modal: `32px` (LG)
+
+**Component Spacing**:
+- Between cards: `32px` (LG)
+- Between sections: `64px` (2XL) minimum
+- Between form fields: `24px` (MD)
+- Between buttons: `16px` (SM)
+
+**Layout Spacing**:
+- Container padding: `48px` desktop, `24px` mobile
+- Section padding: `128px` top/bottom (4XL)
+- Grid gutter: `24px` (MD)
+
+**Vertical Rhythm**:
+- Maintain consistent vertical spacing
+- Use multiples of 8px
+- Align elements to 8px grid
+
+---
+
+## 4. Component Styles
+
+### Button Styles
+
+#### Primary Button (Dark Mode)
+- **Background**: Gold `#FFD700`
+- **Text Color**: Deep Navy `#000814` or Black `#000000`
+- **Border**: `2px solid` Deep Blue `#003366`
+- **Padding**: `16px 32px` (SM vertical, LG horizontal)
+- **Font**: Space Grotesk, Bold 700, 16px
+- **Text Transform**: Uppercase
+- **Letter Spacing**: `0.05em`
+- **Shape**: Angular rectangle (sharp corners via clip-path)
+- **Box Shadow**: Gold glow `0 0 20px rgba(255, 215, 0, 0.2)`
+- **Hover State**:
+  - Background: Dark Gold `#DAA520`
+  - Transform: `rotate(-1deg) translateY(-2px)`
+  - Box Shadow: Enhanced gold glow `0 0 30px rgba(255, 215, 0, 0.4)`
+- **Active State**: Darker background
+- **Disabled State**: Opacity 0.6, cursor not-allowed
+
+#### Secondary Button (Dark Mode)
+- **Background**: Dark Navy `#001F3F`
+- **Text Color**: White `#FFFFFF` or Gold `#FFD700`
+- **Border**: `2px solid` Gold `#FFD700`
+- **Padding**: `16px 32px`
+- **Font**: Space Grotesk, Bold 700, 16px
+- **Text Transform**: Uppercase
+- **Shape**: Angular rectangle
+- **Hover State**:
+  - Background: Deep Blue `#003366`
+  - Transform: `rotate(-1deg) translateY(-2px)`
+  - Box Shadow: Gold glow `0 0 20px rgba(255, 215, 0, 0.3)`
+
+#### Accent Button
+- **Background**: Orange-Red `#E85A4F` (logo-inspired)
+- **Text Color**: White `#FFFFFF`
+- **Border**: `2px solid` Gold `#FFD700`
+- **Padding**: `16px 32px`
+- **Font**: Space Grotesk, Bold 700, 16px
+- **Shape**: Angular rectangle
+- **Usage**: Logo-inspired accents, visual highlights
+- **Hover State**: Darker orange-red, angular shift, gold glow
+
+#### Ghost Button (Dark Mode)
+- **Background**: Transparent
+- **Text Color**: White `#FFFFFF` or Gold `#FFD700`
+- **Border**: `2px solid` Gold `#FFD700` or Deep Blue `#003366`
+- **Padding**: `16px 32px`
+- **Font**: Space Grotesk, Medium 500, 16px
+- **Shape**: Angular rectangle
+- **Hover State**: Gold background, Deep Navy text
+
+#### Button Sizes
+
+**Large**:
+- Padding: `20px 40px`
+- Font Size: `18px`
+- Usage: Hero CTAs, prominent actions
+
+**Medium** (Default):
+- Padding: `16px 32px`
+- Font Size: `16px`
+- Usage: Standard buttons
+
+**Small**:
+- Padding: `12px 24px`
+- Font Size: `14px`
+- Usage: Compact spaces, secondary actions
+
+**Icon Button**:
+- Padding: `12px` (square)
+- Font Size: `16px`
+- Usage: Icon-only buttons
+
+### Input Field Styles
+
+**Base Input** (Dark Mode):
+- **Border**: `2px solid` Deep Blue `#003366` or Gold `#FFD700`
+- **Border Radius**: `0` (sharp corners - angular rectangle)
+- **Background**: Dark Navy `#001F3F` or Dark Gray `#1A1A1A`
+- **Padding**: `12px 16px` (vertical, horizontal)
+- **Font**: Crimson Pro, Regular 400, 16px
+- **Color**: White `#FFFFFF`
+- **Placeholder**: Medium Gray `#9E9E9E` at 0.6 opacity
+
+**Focus State**:
+- **Border**: `2px solid` Gold `#FFD700`
+- **Outline**: None (replaced by border color change)
+- **Background**: Dark Navy `#001F3F`
+- **Box Shadow**: Gold glow `0 0 15px rgba(255, 215, 0, 0.3)`
+
+**Error State**:
+- **Border**: `2px solid` Error `#DC3545` or Orange-Red `#E85A4F`
+- **Background**: Error background with dark mode adaptation
+
+**Disabled State**:
+- **Background**: Dark Gray `#1A1A1A`
+- **Border**: `2px solid` Medium Gray `#9E9E9E`
+- **Text**: Medium Gray `#9E9E9E`
+- **Cursor**: `not-allowed`
+
+**Input Sizes**:
+- **Large**: Padding `16px 20px`, Font `18px`
+- **Medium** (Default): Padding `12px 16px`, Font `16px`
+- **Small**: Padding `8px 12px`, Font `14px`
+
+### Card Styles
+
+**Base Card** (Dark Mode):
+- **Background**: Dark Navy `#001F3F` or Dark Gray `#1A1A1A`
+- **Border**: `2px solid` Gold `#FFD700` or Deep Blue `#003366`
+- **Border Radius**: `0` (sharp corners - angular rectangle via clip-path)
+- **Padding**: `24px` (MD)
+- **Shape**: Angular rectangle (clip-path for sharp corners)
+- **Shadow**: Angular shadow with Gold glow (not rounded)
+  - Offset: `4px 4px` diagonal
+  - Color: Gold glow `0 0 20px rgba(255, 215, 0, 0.2)`
+- **Color**: White `#FFFFFF` for text
+- **Hover State**:
+  - Transform: `rotate(-0.5deg) translateY(-4px)`
+  - Border Color: Gold `#FFD700`
+  - Shadow: Enhanced gold glow `0 0 30px rgba(255, 215, 0, 0.3)`
+
+**Card Variants**:
+- **Primary Card**: Gold border `#FFD700`, Dark Navy background
+- **Secondary Card**: Deep Blue border `#003366`, Dark Navy background
+- **Accent Card**: Orange-Red border `#E85A4F`, Dark Navy background
+- **Elevated Card**: Enhanced shadow, offset diagonal, Dark Gray background
+
+### Border Radius Standards
+
+**Important**: The design system uses **sharp, angular corners** with **no rounded borders** except for circles.
+
+**Standard Application**:
+- **Angular Rectangles**: Use `clip-path: polygon()` for sharp, angular corners
+- **Circles**: `border-radius: 50%` (only exception)
+- **Other Shapes**: Triangles, polygons - use `clip-path` or geometric shapes
+- **No Rounded Corners**: Do not use `border-radius` for rectangles or other shapes
+
+**Angular Corner Examples**:
+- **Slight Angular**: `clip-path: polygon(0% 0%, 95% 0%, 100% 5%, 100% 100%, 5% 100%, 0% 95%)`
+- **Moderate Angular**: `clip-path: polygon(0% 0%, 98% 0%, 100% 2%, 100% 100%, 2% 100%, 0% 98%)`
+- **Sharp Angular**: `clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)` (perfect rectangle)
+
+### Shadow/Elevation Levels
+
+**Important**: Shadows are **angular** (not rounded) to match the Futurist aesthetic.
+
+**Elevation Levels**:
+
+**Level 0** (No Shadow):
+- Usage: Default state, flat elements
+
+**Level 1** (Subtle Angular Shadow with Glow):
+- `box-shadow: 2px 2px 0 rgba(0, 51, 102, 0.1), 0 0 15px rgba(255, 215, 0, 0.1)`
+- Usage: Cards, subtle elevation
+
+**Level 2** (Standard Angular Shadow with Glow):
+- `box-shadow: 4px 4px 0 rgba(0, 51, 102, 0.15), 0 0 20px rgba(255, 215, 0, 0.2)`
+- Usage: Hover states, interactive cards
+
+**Level 3** (Enhanced Angular Shadow with Glow):
+- `box-shadow: 6px 6px 0 rgba(0, 51, 102, 0.2), -4px -4px 0 rgba(255, 215, 0, 0.1), 0 0 25px rgba(255, 215, 0, 0.3)`
+- Usage: Focused elements, modals
+
+**Level 4** (Maximum Angular Shadow with Glow):
+- `box-shadow: 8px 8px 0 rgba(0, 51, 102, 0.25), -6px -6px 0 rgba(255, 215, 0, 0.15), 0 0 30px rgba(255, 215, 0, 0.4)`
+- Usage: Modals, overlays, important elements
+
+**Angular Shadow Rules**:
+- All shadows use diagonal offset (not vertical only)
+- Multiple shadows can create angular depth
+- Use color: Deep Blue for shadows
+- Gold glow effects for dark mode depth
+- Combine angular shadows with gold glow for elevation
+
+---
+
+## 5. Layout Grid
+
+### Container Max-Width
+
+**Desktop Container**:
+- **Max Width**: `1440px`
+- **Padding**: `48px` left/right (desktop)
+- **Margin**: `0 auto` (centered)
+
+**Tablet Container**:
+- **Max Width**: `1024px`
+- **Padding**: `32px` left/right
+
+**Mobile Container**:
+- **Max Width**: `100%`
+- **Padding**: `24px` left/right
+
+### Grid Columns
+
+**Desktop Grid**:
+- **Columns**: `12 columns`
+- **Column Width**: Calculated based on container width minus gutters
+- **Usage**: Asymmetric layouts, flexible content distribution
+
+**Tablet Grid**:
+- **Columns**: `8 columns` (or 12 columns with adjusted spacing)
+- **Usage**: Maintains structure on smaller screens
+
+**Mobile Grid**:
+- **Columns**: `4 columns` (or single column)
+- **Usage**: Stacked layout, simplified structure
+
+### Gutter Sizes
+
+**Desktop Gutters**:
+- **Gutter Size**: `24px` (MD spacing)
+- **Between Columns**: `24px`
+- **Between Rows**: `24px`
+
+**Tablet Gutters**:
+- **Gutter Size**: `24px` (maintained)
+
+**Mobile Gutters**:
+- **Gutter Size**: `16px` (SM spacing)
+- **Between Columns**: `16px`
+- **Between Rows**: `16px`
+
+### Responsive Breakpoints
+
+**Mobile**:
+- **Range**: `320px - 767px`
+- **Layout**: Single column, stacked
+- **Grid**: 4 columns (or single column)
+- **Padding**: `24px` sides
+- **Typography**: Mobile sizes
+
+**Tablet**:
+- **Range**: `768px - 1023px`
+- **Layout**: Two columns, guided grid
+- **Grid**: 8 columns
+- **Padding**: `32px` sides
+- **Typography**: Medium sizes
+
+**Desktop**:
+- **Range**: `1024px - 1439px`
+- **Layout**: Multi-column, asymmetric
+- **Grid**: 12 columns
+- **Padding**: `48px` sides
+- **Typography**: Full desktop sizes
+
+**Large Desktop**:
+- **Range**: `1440px+`
+- **Layout**: Full asymmetric grid
+- **Grid**: 12 columns
+- **Container**: Max `1440px`, centered
+- **Padding**: `48px` sides
+- **Typography**: Full desktop sizes
+
+### Grid Usage Rules
+
+**Asymmetric Layouts**:
+- Prefer asymmetric column spans
+- Example: 5 columns + 7 columns = 12 columns
+- Example: 4 columns + 8 columns = 12 columns
+- Rotate elements slightly for dynamism: `rotate(-0.5deg)` or `rotate(0.5deg)`
+
+**Diagonal Elements**:
+- Use diagonal grid lines where appropriate
+- Clip-path for diagonal sections
+- Overlapping elements across grid boundaries
+
+**Golden Ratio**:
+- Use golden ratio (1.618) for key proportions
+- Example: Column ratios, card dimensions
+- Maintains classical harmony
+
+**Spacing Consistency**:
+- Always use 8px grid multiples
+- Maintain consistent gutters
+- Align elements to grid
+
+---
+
+## 6. Additional Design System Elements
+
+### Iconography
+
+**Icon Style**:
+- **Geometric**: Angular, geometric forms
+- **Line Weight**: `2px` stroke for consistency
+- **Shapes**: Triangles, rectangles, circles, polygons
+- **Angles**: 30°, 45°, 60°, 90° only
+- **No Rounded Corners**: Except circles
+
+**Icon Sizes**:
+- **XS**: `16px × 16px` - Small indicators
+- **SM**: `24px × 24px` - Inline icons
+- **MD**: `32px × 32px` - Standard icons
+- **LG**: `48px × 48px` - Large icons
+- **XL**: `80px × 80px` - Hero icons
+
+**Icon Colors** (Dark Mode):
+- **Primary**: Gold `#FFD700`
+- **Accent**: Orange-Red `#E85A4F` (logo-inspired)
+- **Secondary**: Terracotta `#CD853F`
+- **Neutral**: White `#FFFFFF` or Light Gray `#F5F5F0`
+
+### Decorative Elements
+
+**Greek Key Pattern**:
+- **Usage**: Borders, dividers, footer elements
+- **Color**: Gold `#FFD700` or Orange-Red `#E85A4F` (logo-inspired)
+- **Style**: Angular, repeating pattern
+- **Width**: `8px` pattern repetition
+- **On Dark**: Use Gold for visibility
+
+**Laurel Leaves**:
+- **Usage**: Decorative frames, section headers
+- **Style**: Geometric, simplified version
+- **Color**: Gold `#FFD700` (primary) or Orange-Red `#E85A4F` (accent)
+- **Size**: Variable based on context
+
+**Speed Lines**:
+- **Usage**: Motion indicators, loading states, backgrounds
+- **Style**: Diagonal lines at 45°
+- **Color**: Gold `#FFD700` at low opacity (0.1-0.2) on dark backgrounds
+- **Pattern**: Repeating diagonal lines
+
+**Geometric Patterns**:
+- **Usage**: Backgrounds, overlays
+- **Style**: Angular, repeating patterns
+- **Colors**: Gold `#FFD700`, Orange-Red `#E85A4F` (logo colors)
+- **Opacity**: 0.05-0.1 for backgrounds on dark navy
+
+### Animation Standards
+
+**Duration**:
+- **Fast**: `200ms` - Quick interactions, hover states
+- **Standard**: `300ms` - Standard transitions
+- **Slow**: `400ms` - Complex animations, page transitions
+
+**Easing**:
+- **Angular Easing**: `cubic-bezier(0.4, 0, 0.2, 1)` - Sharp, angular curves
+- **No Smooth Curves**: Avoid smooth, rounded easing functions
+- **Direction**: Diagonal movement preferred
+
+**Animation Types**:
+- **Fade In**: Angular fade with rotation
+- **Slide In**: Diagonal slide with rotation
+- **Scale**: Angular scale with rotation
+- **Rotate**: At standard angles (30°, 45°, 60°, 90°)
+
+**Hover Animations**:
+- **Transform**: `rotate(-1deg) translateY(-2px)` or similar
+- **Duration**: `200ms`
+- **Easing**: Angular easing curve
+- **Shadow**: Enhanced angular shadow with gold glow
+
+### 3D JavaScript Features
+
+#### Framework & Libraries
+
+**Primary Framework**:
+- **React Three Fiber**: For React-based implementations
+- **Three.js**: For vanilla JavaScript implementations
+- **Alternative**: Drei helpers for React Three Fiber
+
+#### 3D Implementation Guidelines
+
+**3D Elements**:
+- **Geometric Shapes**: Angular 3D forms (cubes, pyramids, abstract shapes)
+- **Low-Poly Style**: Stylized, geometric, angular 3D models
+- **Parallax Effects**: 3D depth on scroll
+- **Interactive 3D**: Rotating geometric elements on hover
+- **Hero 3D Backgrounds**: Subtle 3D geometric patterns
+
+**3D Style Rules**:
+- **Angular Geometry**: Use sharp edges, not smooth curves
+- **Colors**: Use logo colors (Deep Navy #000814, Gold #FFD700, Orange-Red #E85A4F)
+- **Lighting**: Dramatic lighting with Gold highlights
+- **Materials**: Metallic Gold with navy glow (emissive)
+- **Animations**: Angular rotation at standard angles (30°, 45°, 60°, 90°)
+- **Performance**: Low-poly models, optimize for WebGL
+
+**3D Use Cases**:
+- **Hero Sections**: 3D geometric background elements
+- **Stats Cards**: 3D rotating geometric icons
+- **Loading States**: 3D angular geometric spinners
+- **Interactive Elements**: 3D hover effects on cards
+- **Background Patterns**: Subtle 3D geometric depth
+
+**Material Properties**:
+- **Gold Material**: 
+  - Metalness: 0.8-0.9
+  - Roughness: 0.1-0.2
+  - Emissive: Deep Navy (#000814)
+  - Emissive Intensity: 0.1-0.2
+- **Orange-Red Material**:
+  - Metalness: 0.6
+  - Roughness: 0.3
+  - Emissive: Deep Navy (#000814)
+  - Emissive Intensity: 0.1
+
+**Performance Considerations**:
+- Use low-poly models for performance
+- Implement lazy loading for 3D elements
+- Optimize textures and materials
+- Use CSS transforms where possible
+- Consider WebGL fallbacks
+- Limit number of 3D objects in viewport
+- Use instancing for repeated elements
+
+### Form Elements
+
+**Dropdown/Select** (Dark Mode):
+- **Border**: `2px solid` Deep Blue `#003366` or Gold `#FFD700`
+- **Shape**: Angular rectangle
+- **Background**: Dark Navy `#001F3F`
+- **Text**: White `#FFFFFF`
+- **Focus**: Gold border `#FFD700` with glow
+- **Options**: Angular styling, Dark Navy background
+
+**Checkbox/Radio** (Dark Mode):
+- **Shape**: Angular square (checkbox) or circle (radio)
+- **Border**: `2px solid` Deep Blue `#003366` or Gold `#FFD700`
+- **Background**: Dark Navy `#001F3F`
+- **Checked**: Gold background `#FFD700`, Deep Navy checkmark
+- **Size**: `20px × 20px` (standard)
+
+**Textarea** (Dark Mode):
+- **Border**: `2px solid` Deep Blue `#003366` or Gold `#FFD700`
+- **Shape**: Angular rectangle
+- **Background**: Dark Navy `#001F3F`
+- **Text**: White `#FFFFFF`
+- **Padding**: `12px 16px`
+- **Resize**: Allow vertical resize only
+
+**Label** (Dark Mode):
+- **Font**: Space Grotesk, Medium 500, 14px
+- **Color**: White `#FFFFFF` or Gold `#FFD700`
+- **Spacing**: `8px` below label, `8px` above input
+
+### Modal/Dialog Styles (Dark Mode)
+
+**Modal Container**:
+- **Background**: Dark Navy `#001F3F` or Dark Gray `#1A1A1A`
+- **Border**: `2px solid` Gold `#FFD700`
+- **Shape**: Angular rectangle
+- **Padding**: `32px` (LG)
+- **Max Width**: `600px` (standard), `800px` (large)
+- **Shadow**: Level 4 angular shadow with gold glow
+- **Text**: White `#FFFFFF`
+
+**Modal Overlay**:
+- **Background**: Black `#000000` at 0.7 opacity
+- **Animation**: Angular fade in
+
+**Modal Header**:
+- **Border Bottom**: `2px solid` Gold `#FFD700`
+- **Padding**: `24px` (MD)
+- **Font**: Space Grotesk, Bold 700, 24px
+- **Color**: Gold `#FFD700` or White `#FFFFFF`
+
+**Modal Actions**:
+- **Button Spacing**: `16px` (SM)
+- **Alignment**: Right-aligned or centered
+
+### Badge/Tag Styles
+
+**Status Badge**:
+- **Shape**: Angular rectangle
+- **Padding**: `4px 12px`
+- **Font**: Space Grotesk, Medium 500, 12px
+- **Border Radius**: `0` (sharp corners)
+- **Sizes**: Small (12px), Medium (14px), Large (16px)
+
+**Badge Variants** (Dark Mode):
+- **Active**: Gold background `#FFD700`, Deep Navy text `#000814`
+- **Pending**: Terracotta background `#CD853F`, White text
+- **Inactive**: Dark Gray background `#1A1A1A`, Light Gray text `#F5F5F0`
+- **BETA**: Orange-Red background `#E85A4F`, White text, angular shape
+
+### Tooltip Styles (Dark Mode)
+
+**Tooltip Container**:
+- **Background**: Dark Navy `#001F3F` or Dark Gray `#1A1A1A`
+- **Text Color**: White `#FFFFFF` or Gold `#FFD700`
+- **Border**: `2px solid` Gold `#FFD700`
+- **Padding**: `8px 12px`
+- **Font**: Space Grotesk, Regular 400, 12px
+- **Shape**: Angular rectangle
+- **Shadow**: Level 2 angular shadow with gold glow
+- **Arrow**: Angular triangle (if used)
+
+### Loading States
+
+**Spinner** (Dark Mode):
+- **Shape**: Angular geometric shapes rotating
+- **Size**: `40px × 40px` (standard)
+- **Colors**: Gold `#FFD700` and Orange-Red `#E85A4F` (logo colors)
+- **Background**: Dark Navy `#001F3F`
+- **Animation**: Angular rotation, not smooth
+- **Glow**: Gold emissive glow effect
+
+**Skeleton Loader** (Dark Mode):
+- **Background**: Dark Navy `#001F3F` with shimmer
+- **Shape**: Angular rectangles
+- **Animation**: Angular pulse/shimmer with gold glow
+- **Height**: Match content height
+
+**Progress Bar** (Dark Mode):
+- **Background**: Dark Navy `#001F3F` or Dark Gray `#1A1A1A`
+- **Progress Fill**: Gold `#FFD700` or Orange-Red `#E85A4F`
+- **Shape**: Angular rectangle
+- **Height**: `8px` (standard)
+
+---
+
+## 7. Accessibility Standards
+
+### Color Contrast
+
+**Text Contrast Ratios**:
+- **Normal Text**: Minimum 4.5:1 contrast ratio
+- **Large Text** (18px+): Minimum 3:1 contrast ratio
+- **Interactive Elements**: Minimum 3:1 contrast ratio
+
+**Contrast Matrix** (Dark Mode):
+- **White on Deep Navy**: 15.8:1 ✓
+- **Gold on Deep Navy**: 9.5:1 ✓
+- **White on Dark Navy**: 12.6:1 ✓
+- **Gold on Dark Navy**: 8.9:1 ✓
+- **White on Orange-Red**: 3.8:1 ✓ (for large text)
+- **Deep Navy on Gold**: 9.5:1 ✓
+
+### Focus States
+
+**Focus Indicators**:
+- **Border**: `3px solid` Gold `#FFD700`
+- **Outline**: None (border replaces outline)
+- **Shape**: Angular rectangle
+- **All Interactive Elements**: Must have visible focus state
+
+### Keyboard Navigation
+
+**Tab Order**:
+- Logical flow through page
+- Skip links for main content
+- Keyboard shortcuts (if applicable)
+
+**Keyboard Interactions**:
+- **Enter/Space**: Activate buttons
+- **Escape**: Close modals
+- **Arrow Keys**: Navigate lists, dropdowns
+
+### Screen Reader Support
+
+**Semantic HTML**:
+- Use proper heading hierarchy (H1-H6)
+- Use semantic elements (nav, main, section, article)
+- ARIA labels for icons
+- Alt text for images
+
+**Form Labels**:
+- All inputs must have associated labels
+- Use `aria-describedby` for help text
+- Use `aria-invalid` for error states
+
+---
+
+## 8. Design Tokens (CSS Variables)
+
+### Complete CSS Variable Set
+
+```css
+:root {
+  /* Colors - Logo-Inspired Dark Mode */
+  --color-primary: #FFD700;
+  --color-primary-light: #FFA500;
+  --color-primary-dark: #DAA520;
+  
+  /* Colors - Background (Logo-Inspired) */
+  --color-bg-darkest: #000814;      /* Deepest navy - primary background */
+  --color-bg-dark: #001F3F;         /* Dark navy - secondary background */
+  --color-bg-elevated: #1A1A1A;     /* Dark gray - elevated surfaces */
+  
+  /* Colors - Secondary */
+  --color-secondary: #003366;
+  --color-secondary-light: #0066CC;
+  --color-secondary-dark: #001F3F;
+  
+  /* Colors - Accent (Logo-Inspired) */
+  --color-accent: #E85A4F;           /* Orange-Red from logo */
+  --color-accent-dark: #CD5C5C;
+  --color-accent-alt: #CD853F;       /* Terracotta */
+  --color-accent-alt-dark: #B87333;
+  
+  /* Colors - Neutrals */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-gray-light: #F5F5F0;
+  --color-gray-medium: #9E9E9E;
+  --color-gray-dark: #1A1A1A;
+  --color-disabled: #9E9E9E;
+  
+  /* Colors - Status */
+  --color-success: #28A745;
+  --color-success-bg: rgba(40, 167, 69, 0.1);
+  --color-error: #DC3545;
+  --color-error-bg: rgba(220, 53, 69, 0.1);
+  --color-warning: #FFC107;
+  --color-warning-bg: rgba(255, 193, 7, 0.1);
+  --color-info: #0066CC;
+  --color-info-bg: rgba(0, 102, 204, 0.1);
+  
+  /* Typography - Fonts */
+  --font-heading: 'Space Grotesk', -apple-system, sans-serif;
+  --font-body: 'Crimson Pro', Georgia, serif;
+  --font-mono: 'Courier New', monospace;
+  
+  /* Typography - Sizes */
+  --font-size-h1: 64px;
+  --font-size-h2: 48px;
+  --font-size-h3: 36px;
+  --font-size-h4: 28px;
+  --font-size-h5: 24px;
+  --font-size-h6: 20px;
+  --font-size-body-lg: 18px;
+  --font-size-body: 16px;
+  --font-size-body-sm: 14px;
+  --font-size-caption: 12px;
+  
+  /* Typography - Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+  
+  /* Typography - Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.5;
+  --line-height-loose: 1.75;
+  
+  /* Spacing */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 24px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+  --space-4xl: 128px;
+  
+  /* Layout - Grid */
+  --grid-columns: 12;
+  --grid-gutter: 24px;
+  --container-max-width: 1440px;
+  --container-padding-desktop: 48px;
+  --container-padding-mobile: 24px;
+  
+  /* Layout - Breakpoints */
+  --breakpoint-mobile: 320px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1024px;
+  --breakpoint-large: 1440px;
+  
+  /* Borders */
+  --border-width: 2px;
+  --border-style: solid;
+  --border-color-primary: var(--color-primary);
+  --border-color-accent: var(--color-accent);
+  
+  /* Shadows */
+  --shadow-level-1: 2px 2px 0 rgba(0, 51, 102, 0.1), 0 0 15px rgba(255, 215, 0, 0.1);
+  --shadow-level-2: 4px 4px 0 rgba(0, 51, 102, 0.15), 0 0 20px rgba(255, 215, 0, 0.2);
+  --shadow-level-3: 6px 6px 0 rgba(0, 51, 102, 0.2), -4px -4px 0 rgba(255, 215, 0, 0.1), 0 0 25px rgba(255, 215, 0, 0.3);
+  --shadow-level-4: 8px 8px 0 rgba(0, 51, 102, 0.25), -6px -6px 0 rgba(255, 215, 0, 0.15), 0 0 30px rgba(255, 215, 0, 0.4);
+  
+  /* Angles */
+  --angle-sharp: 0deg;
+  --angle-diagonal-1: 30deg;
+  --angle-diagonal-2: 45deg;
+  --angle-diagonal-3: 60deg;
+  
+  /* Animation */
+  --animation-fast: 200ms;
+  --animation-standard: 300ms;
+  --animation-slow: 400ms;
+  --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 3D Variables */
+  --3d-depth: 20px;
+  --3d-glow: rgba(255, 215, 0, 0.3);
+  --3d-glow-orange: rgba(232, 90, 79, 0.2);
+}
+```
+
+---
+
+## 9. Component Examples
+
+### Button Component Example (Dark Mode)
+
+```css
+.btn {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: var(--border-width) var(--border-style) var(--border-color-primary);
+  padding: var(--space-sm) var(--space-lg);
+  clip-path: polygon(0% 0%, 95% 0%, 100% 5%, 100% 100%, 5% 100%, 0% 95%);
+  transition: all var(--animation-fast) var(--animation-easing);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-bg-darkest);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+  transform: rotate(-1deg) translateY(-2px);
+  box-shadow: var(--shadow-level-2);
+}
+```
+
+### Card Component Example (Dark Mode)
+
+```css
+.card {
+  background: var(--color-bg-dark);
+  border: var(--border-width) var(--border-style) var(--border-color-primary);
+  padding: var(--space-md);
+  clip-path: polygon(0% 0%, 98% 0%, 100% 2%, 100% 100%, 2% 100%, 0% 98%);
+  transition: all var(--animation-standard) var(--animation-easing);
+  color: var(--color-white);
+}
+
+.card:hover {
+  transform: rotate(-0.5deg) translateY(-4px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-level-2);
+}
+```
+
+### Input Component Example (Dark Mode)
+
+```css
+.input {
+  font-family: var(--font-body);
+  font-size: var(--font-size-body);
+  border: var(--border-width) var(--border-style) var(--color-secondary);
+  padding: 12px var(--space-sm);
+  background: var(--color-bg-dark);
+  color: var(--color-white);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  transition: border-color var(--animation-fast) var(--animation-easing);
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.input:disabled {
+  background: var(--color-gray-dark);
+  border-color: var(--color-disabled);
+  color: var(--color-disabled);
+  opacity: 0.6;
+}
+```
+
+### 3D Geometric Element Example
+
+```javascript
+// React Three Fiber example for 3D angular geometric shape
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useRef } from 'react';
+import { Mesh } from 'three';
+
+function AngularGeometric() {
+  const meshRef = useRef<Mesh>(null);
+  
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x += delta * 0.5;
+      meshRef.current.rotation.y += delta * 0.5;
+    }
+  });
+  
+  return (
+    <mesh ref={meshRef}>
+      <boxGeometry args={[2, 2, 2]} />
+      <meshStandardMaterial 
+        color="#FFD700" 
+        metalness={0.8}
+        roughness={0.2}
+        emissive="#000814"
+        emissiveIntensity={0.1}
+      />
+    </mesh>
+  );
+}
+
+// Usage in component
+<Canvas>
+  <ambientLight intensity={0.5} />
+  <pointLight position={[10, 10, 10]} intensity={1} color="#FFD700" />
+  <AngularGeometric />
+</Canvas>
+```
+
+---
+
+## 10. Design System Best Practices
+
+### DO's
+
+✅ **DO Use**:
+- Dark mode backgrounds (deep navy)
+- Angular, geometric shapes
+- Sharp corners (via clip-path)
+- Asymmetric layouts
+- Diagonal elements
+- High contrast colors (gold on dark navy)
+- Angular animations
+- 8px grid spacing
+- Golden ratio proportions
+- Greek key patterns (sparingly)
+- Speed lines for motion
+- 3D JavaScript features (Three.js/React Three Fiber)
+- Gold glow effects for depth
+- Logo colors (deep navy, gold, orange-red)
+
+### DON'Ts
+
+❌ **DON'T Use**:
+- Rounded corners (except circles)
+- Smooth, curved animations
+- Symmetric layouts (unless necessary)
+- Pastel colors
+- Organic shapes
+- Smooth gradients
+- Border-radius for rectangles
+- Rounded shadows
+- Light backgrounds (use dark mode)
+- Light mode color schemes
+
+### Consistency Rules
+
+1. **Always** use design tokens (CSS variables)
+2. **Always** follow 8px spacing grid
+3. **Always** use angular shapes (no rounded corners except circles)
+4. **Always** maintain 4.5:1 contrast ratio
+5. **Always** use asymmetric layouts where possible
+6. **Always** include focus states for accessibility
+7. **Always** use Space Grotesk for headings, Crimson Pro for body
+8. **Always** apply angular animations (200-400ms)
+
+---
+
+## 11. Implementation Checklist
+
+### Design Phase
+- [ ] All colors use defined palette (logo-inspired)
+- [ ] Dark mode backgrounds implemented
+- [ ] Typography follows type scale
+- [ ] All shapes are geometric (no organic forms)
+- [ ] Sharp corners (except circles)
+- [ ] Asymmetric compositions
+- [ ] Diagonal elements included
+- [ ] Greek key pattern used appropriately
+- [ ] Laurel leaves decorative elements
+- [ ] High contrast maintained
+- [ ] 8px grid system followed
+- [ ] 3D JavaScript features planned
+
+### Development Phase
+- [ ] CSS variables defined (dark mode)
+- [ ] Angular buttons with clip-path
+- [ ] Geometric cards with sharp corners (dark backgrounds)
+- [ ] Angular animations (not smooth)
+- [ ] Greek key borders implemented
+- [ ] Speed lines pattern added
+- [ ] Asymmetric grid layout
+- [ ] Diagonal sections where appropriate
+- [ ] High contrast maintained
+- [ ] Typography system implemented
+- [ ] Accessibility standards met
+- [ ] 3D JavaScript features integrated (Three.js/React Three Fiber)
+- [ ] Gold glow effects implemented
+- [ ] Dark mode color scheme applied throughout
+
+---
+
+This complete design system provides comprehensive guidelines for implementing the Hook Bazaar platform with consistent Italian Futurism + Ancient Greek Bazaar aesthetic (Olympus DAO-inspired) across all components and pages.
+
+**Key Updates**:
+- Dark mode primary (deep navy backgrounds)
+- Logo-inspired color palette (deep navy, gold, orange-red)
+- 3D JavaScript features for enhanced interactivity
+- Gold glow effects for dark mode depth
+- Modern DeFi interface style (Olympus DAO-inspired)
+
+
+
