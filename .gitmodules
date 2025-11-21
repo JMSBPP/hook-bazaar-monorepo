@@ -10,3 +10,9 @@
 [submodule "contracts/lib/foundry-devops"]
 	path = contracts/lib/foundry-devops
 	url = https://github.com/Cyfrin/foundry-devops
+[submodule "contracts/lib/compose-extensions"]
+	path = contracts/lib/compose-extensions
+	url = https://github.com/JMSBPP/compose-extensions
+[submodule "contracts/lib/euler-vault-kit"]
+	path = contracts/lib/euler-vault-kit
+	url = https://github.com/euler-xyz/euler-vault-kit

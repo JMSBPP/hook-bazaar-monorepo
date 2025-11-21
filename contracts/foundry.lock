@@ -1,9 +1,9 @@
 {
-  "lib/v4-periphery": {
-    "rev": "3779387e5d296f39df543d23524b050f89a62917"
-  },
   "lib/Compose": {
     "rev": "69b7003f8b5b969cb4a1e9842926608aeb945187"
+  },
+  "lib/compose-extensions": {
+    "rev": "5a6907179ec47e4301137199c0b0b4ca8049a83a"
   },
   "lib/forge-std": {
     "tag": {
@@ -16,5 +16,8 @@
       "name": "0.4.0",
       "rev": "efff097a87e70c3d15661c9f2a2daeae0b33d5d5"
     }
+  },
+  "lib/v4-periphery": {
+    "rev": "3779387e5d296f39df543d23524b050f89a62917"
   }
 }

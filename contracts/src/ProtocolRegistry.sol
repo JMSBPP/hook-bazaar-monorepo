@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+/* // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
 import {DiamondCutFacet} from "Compose/src/diamond/DiamondCutFacet.sol";
@@ -16,8 +16,7 @@ interface IProtocolRegistry{
     
 }
 
-contract ProtocolFactory is DiamondCutFacet{
-    error FunctionNotFound(bytes4 selector);
+contract ProtocolFactory is DiamondCutFacet{    error FunctionNotFound(bytes4 selector);
 
 
     bytes32 constant PROTOCOL_ENGINEER = bytes32(uint256(0x01));
@@ -117,3 +116,4 @@ contract ProtocolFactory is DiamondCutFacet{
 //         return string.concat("protocols/",Strings.toString(id));
 //     }
 // }
+ */

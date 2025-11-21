@@ -33,8 +33,13 @@ Thus it needs to have roles initially defined by the owner
 
 - Once the token is created the ERC1155Receiver is a created ProtocolAdmin at run-time
 
-(THE ONLY ADDRESS THAT CAN WRITE THE PROTOCOL ADMIN is the 
-address specified by the protocol as the executor)
+(THE ONLY ADDRESS THAT CAN WRITE TO THE PROTOCOL ADMIN is the 
+address specified by the protocol as the executor.)
+
+(THE ONLY ADDRESS THAT CAN SET THE ROLE OF EXECUTOR FOR THE
+PROTOCOL ADMIN IS THE OWNER, WHICH IS THE DEPLOYER, THAT IS, THE PROTOCOL_FACTORY.)
+
+What are the pre-conditions, requirements, and restrictions for someone to create a protocol?
 
 
 This ProtocolAdmin is a clone (because all PortocolAdmins have the same interface)
