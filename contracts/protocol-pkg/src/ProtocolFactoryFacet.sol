@@ -56,6 +56,9 @@ contract ProtocolFactoryFacet is IProtocolFactory{
         // TODO: Check the facet implementations are valid
     }
 
+    // TODO: This needs to check protocolAdmin is compliant and tokenId
+    // is compliant too
+
     function create_protocol(address _protocol_admin, uint256 _token_id) external{
 
         // TODO: This library must also expose a payload to the protocol admin

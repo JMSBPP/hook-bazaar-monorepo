@@ -1,0 +1,20 @@
+## Architecture
+
+```mermaid
+sequenceDiagram
+
+    User->>AdminClient:createProtocol(name)
+    AdminClient ->> AdminClient:nextTokenId 
+    AdminClient->>AdminPanel: protocol_manager(nextTokenId)
+    AdminPanel->>AdminRegistry: protocol_manager(nextTokenId)
+    AdminRegistry-->>AdminPanel:admin_manager
+    AdminPanel-->>AdminClient:admin_manager
+    AdminClient->>AdminPanel:createProtocol(name, admin_manager,nextTokenId)
+    AdminPanel->>ProtocolFactory:createProtocol(name, admin_manager,nextTokenId)
+    ProtocolFactory->>ERC1155:mint(admin_manager, nextTokenId,1)
+    ERC1155->>ProtocolAdminManager:onERC1155Received(nextTokenId,1)
+    ProtocolAdminManager->>ERC1155:setTokenURI(nextTokenId, name)
+    ProtocolAdminManager->>AdminPanel:unlockPoolCreation(nextTokenId)
+    AdminPanel->>AdminPanel:diamondCut(IAdminClient.createPool)
+```
+

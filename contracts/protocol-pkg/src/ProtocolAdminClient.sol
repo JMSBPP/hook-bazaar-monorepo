@@ -54,8 +54,8 @@ abstract contract ProtocolAdminClient is IProtocolAdminClient{
 
         // address _protocol_factory = IProtocolAdminPanel($.admin_panel).registry();
         uint256 _token_id = $.nextTokenId;
-        address _protocol_admin_operator = IProtocolAdminRegistry($.admin_panel).deploy_admin_operator(_token_id);
-        IProtocolFactory($.admin_panel).create_protocol(_protocol_admin_operator, _token_id);
+        address _protocol_admin_manager = IProtocolAdminRegistry($.admin_panel).protocol_manager(_token_id);
+        IProtocolFactory($.admin_panel).create_protocol(_protocol_admin_manager, _token_id);
         // NOTE: Here it deploys and assigns a protocolAdmin
         // contract to the caller if it does not have one
         // already, if it has one it a

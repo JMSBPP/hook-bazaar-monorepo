@@ -78,7 +78,7 @@ contract ProtocolAdminPanel is IProtocolAdminPanel, BaseDiamond{
                 _interface[0x03] = IGenericFactory.isProxy.selector;
                 _interface[0x04] = IGenericFactory.getProxyListLength.selector;
                 _interface[0x05] = IGenericFactory.getProxyListSlice.selector;
-                _interface[0x06] = IProtocolAdminRegistry.deploy_admin_operator.selector;
+                _interface[0x06] = IProtocolAdminRegistry.protocol_manager.selector;
 
                 LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
                 _cut[0x00] = LibDiamond.FacetCut(_protocol_factory, LibDiamond.FacetCutAction.Add, _interface);
