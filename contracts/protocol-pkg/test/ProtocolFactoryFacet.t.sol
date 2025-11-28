@@ -27,7 +27,7 @@ contract ProtocolFactoryFacetTest is Test{
         assertEq(protocol_factory_facet, IProtocolFactory(protocol_factory_facet).__self());
         //=============TEST=======================
         vm.startPrank(proxy_helper);
-        IProtocolFactory(proxy_helper).initialize("http://localhost:3000/metadata/");
+        IProtocolFactory(proxy_helper).__initialize("http://localhost:3000/metadata/");
         vm.stopPrank();
 
         //============POST-CONDITIONS=============
@@ -39,7 +39,7 @@ contract ProtocolFactoryFacetTest is Test{
     function test__unit__createProtocolMustSucceed() public {
         //============PRE-CONDITIONS=============
         vm.startPrank(proxy_helper);
-        IProtocolFactory(proxy_helper).initialize("http://localhost:3000/metadata/");
+        IProtocolFactory(proxy_helper).__initialize("http://localhost:3000/metadata/");
         vm.stopPrank();
 
         vm.startPrank(proxy_helper);

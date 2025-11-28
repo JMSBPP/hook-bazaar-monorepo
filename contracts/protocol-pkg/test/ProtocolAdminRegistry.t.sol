@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
+
 import {Test, console2} from "forge-std/Test.sol";
 import "../src/ProtocolAdminRegistry.sol";
 import {ProxyHelper} from "./helpers/ProxyHelper.sol";
@@ -24,21 +25,21 @@ contract ProtocolAdminRegistryTest is Test{
 
         //====================TEST============================
         vm.startPrank(proxy_helper);
-        IProtocolAdminRegistry(protocol_admin_registry).initialize();
+        IProtocolAdminRegistry(proxy_helper)._initialize();
 
         
         vm.stopPrank();
         //===============POST-CONDITIONS==================
-        assertTrue(IProtocolAdminRegistry(protocol_admin_registry).isUpgradeAdmin(proxy_helper));
-        assertEq(IProtocolAdminRegistry(protocol_admin_registry).upgradeAdmin(),proxy_helper);
-        assertNotEq(address(0x00), IProtocolAdminRegistry(protocol_admin_registry).protocol_admin_template());
+        assertTrue(IProtocolAdminRegistry(proxy_helper).isUpgradeAdmin(proxy_helper));
+        assertEq(IProtocolAdminRegistry(proxy_helper).upgradeAdmin(),proxy_helper);
+        assertNotEq(address(0x00), IProtocolAdminRegistry(proxy_helper).protocol_admin_template());
 
     }
 
     function test__unit__deployAdminManagerMustSucceed() public{
         //=================PRE-CONDITIONS=========================
         vm.startPrank(proxy_helper);
-        IProtocolAdminRegistry(proxy_helper).initialize();
+        IProtocolAdminRegistry(proxy_helper)._initialize();
         vm.stopPrank();
 
 

@@ -30,7 +30,7 @@ interface IProtocolFactory{
     error ProtocolFactoryFacetNotDelegateCall();
     error ProtocolFactoryFacetInvalidDelegateCaller();
 
-    function initialize(string calldata _baseURI) external;
+    function __initialize(string calldata _baseURI) external;
     function baseURI() external view returns(string memory);
     function adminPanel() external view returns(address);
     function create_protocol(string calldata _name, address _protocol_admin, uint256 _token_id) external;
@@ -105,7 +105,7 @@ contract ProtocolFactoryFacet is IProtocolFactory{
 
     // This is called on regular call by the protocolAdminPanel
 
-    function initialize(string calldata _baseURI) external initializer{
+    function __initialize(string calldata _baseURI) external initializer{
         ProtocolFactoryStorage storage $ = getStorage();
         // TODO: Stronger check to ensure the caller is the ProtocolAdminPanel,
         // HINT: Introspection on diamond interface id
@@ -160,6 +160,8 @@ contract ProtocolFactoryFacet is IProtocolFactory{
         LibERC1155.ERC1155Storage storage e1155$ = LibERC1155.getStorage();
         return e1155$.tokenURIs[_id];
    }
+
+   fallback() external payable{}
 
 
 

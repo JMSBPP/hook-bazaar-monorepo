@@ -45,8 +45,11 @@ contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
     // TODO: This needs to be owned by the protocol deployer
     
     constructor(){
+
+        ProtocolAdminPanelStorage storage $ = getStorage();
         LibOwner.OwnerStorage storage o$ = LibOwner.getStorage();
         o$.owner = msg.sender;
+        $._initialized = false;
     }
 
     function initialize(
@@ -59,57 +62,39 @@ contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
         ProtocolAdminPanelStorage storage $ = getStorage();
         if ($._initialized) revert ProtocolAdminPanelAlreadyInitialized();
         // TODO: Introspection checks ...
-        try IProtocolFactory(_protocol_factory).initialize(_baseURI) {
-            {
-                bytes4[] memory  _interface = new bytes4[](uint256(0x08));
-                
-                _interface[0x00] = IERC1155.balanceOf.selector;
-                _interface[0x01] = IERC1155.balanceOfBatch.selector;
-                _interface[0x02] = IERC1155.setApprovalForAll.selector;
-                _interface[0x03] = IERC1155.isApprovedForAll.selector;
-                _interface[0x04] = IERC1155.safeTransferFrom.selector;
-                _interface[0x05] = IERC1155.safeBatchTransferFrom.selector;
-                _interface[0x06] = IERC1155.uri.selector;
-                _interface[0x07] = IProtocolFactory.create_protocol.selector;
 
-                LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
-                _cut[0x00] = LibDiamond.FacetCut(_protocol_factory, LibDiamond.FacetCutAction.Add, _interface);
-                IDiamond(address(this)).call_diamondCut(_cut,_protocol_factory,bytes(""));
+        {
+            bytes4[] memory  _interface = new bytes4[](uint256(0x06));
+            
+            _interface[0x00] = IProtocolFactory.__initialize.selector;
+            _interface[0x01] = IProtocolFactory.adminPanel.selector;
+            _interface[0x02] = IProtocolFactory.baseURI.selector;
+            _interface[0x03] = IProtocolFactory.create_protocol.selector;
+            _interface[0x04] = IERC1155.balanceOf.selector;
+            _interface[0x05] = IERC1155.uri.selector;
+            
+            LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
+            _cut[0x00] = LibDiamond.FacetCut(_protocol_factory, LibDiamond.FacetCutAction.Add, _interface);
+            IDiamond(address(this)).call_diamondCut(_cut, _protocol_factory, abi.encodeCall(IProtocolFactory.__initialize, _baseURI));
 
-            }
+        }
+        {   
+            bytes4[] memory  _interface = new bytes4[](uint256(0x05));
+
+            _interface[0x00] = IProtocolAdminRegistry._initialize.selector;
+            _interface[0x01] = IProtocolAdminRegistry.protocol_manager.selector;
+            _interface[0x02] = IProtocolAdminRegistry.protocol_admin_template.selector;
+            _interface[0x03] = IProtocolAdminRegistry.upgradeAdmin.selector;
+            _interface[0x04] = IProtocolAdminRegistry.isUpgradeAdmin.selector;
 
 
-        } catch (bytes memory _reason){
-            if (_reason.length == uint256(0x00)){
-                revert ProtocolAdminPanelInvalidProtocolFactoryInstance(_protocol_factory);
-            }
+            LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
+            _cut[0x00] = LibDiamond.FacetCut(_protocol_admin_registry, LibDiamond.FacetCutAction.Add, _interface);
+            IDiamond(address(this)).call_diamondCut(_cut, _protocol_admin_registry, abi.encodeCall(IProtocolAdminRegistry._initialize, ()));
+
         }
 
-        try IProtocolAdminRegistry(_protocol_admin_registry).initialize(){
-            {   
-                bytes4[] memory  _interface = new bytes4[](uint256(0x07));
-
-                _interface[0x00] = IGenericFactory.setImplementation.selector;
-                _interface[0x01] = IGenericFactory.setUpgradeAdmin.selector;
-                _interface[0x02] = IGenericFactory.getProxyConfig.selector;
-                _interface[0x03] = IGenericFactory.isProxy.selector;
-                _interface[0x04] = IGenericFactory.getProxyListLength.selector;
-                _interface[0x05] = IGenericFactory.getProxyListSlice.selector;
-                _interface[0x06] = IProtocolAdminRegistry.protocol_manager.selector;
-
-                LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
-                _cut[0x00] = LibDiamond.FacetCut(_protocol_factory, LibDiamond.FacetCutAction.Add, _interface);
-                IDiamond(address(this)).call_diamondCut(_cut,_protocol_factory,bytes(""));
-
-            }
-
-            $._initialized = true;
-
-        } catch (bytes memory _reason){
-            if (_reason.length == uint256(0x00)){
-                revert ProtocolAdminPanelInvalidProtocolAdminRegistry(_protocol_admin_registry);
-            }
-        }
+        $._initialized = true;
 
     }
     // TODO: It must verify the _account is compliant

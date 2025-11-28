@@ -11,4 +11,4 @@ sequenceDiagram
     ProtocolFactory->>ERC1155:mint(admin_manager, nextTokenId,1)
     ERC1155->>ProtocolAdminManager:onERC1155Received(nextTokenId,1)
     ProtocolAdminManager->>ERC1155:setTokenURI(nextTokenId, name)
-    AdminClient->>AdminPanel:unlock(admin_manager,IPoolCreator)
+    AdminClient->>AdminPanel:unlock(admin_manager,IPoolCreator.create_pool.selector)

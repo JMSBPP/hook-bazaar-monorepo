@@ -11,12 +11,18 @@ import  "./ProtocolAdminPanel.sol";
 interface IProtocolAdminClient{
     error ProtocolAdminClientUninitialized();
     error ProtocolAdminClientUnSetAdminClient();
+
     function initialize() external;
-        function initialize_admin_panel(
+
+    function initialize_admin_panel(
         address _protocol_admin_registry,
         address _protocol_factory,
         string calldata _baseURI
+
     ) external;
+    function adminPanel() external view returns(address);
+    function nextTokenId() external view returns(uint256);
+
     function create_protocol(string calldata _name) external returns(uint256);
     function create_pool(bytes calldata _encoded_pool_key) external returns(bytes32);
 }
@@ -35,6 +41,16 @@ contract ProtocolAdminClient is IProtocolAdminClient{
         ProtocolAdminClientStorage storage $ = getStorage();
         $.nextTokenId = uint256(0x01);
 
+    }
+
+    function nextTokenId() public view returns(uint256){
+        ProtocolAdminClientStorage storage $ = getStorage();
+        return $.nextTokenId;
+    }
+
+    function adminPanel() public view returns(address){
+        ProtocolAdminClientStorage storage $ = getStorage();
+        return $.admin_panel;
     }
 
     function getStorage() internal pure returns (ProtocolAdminClientStorage storage s) {
@@ -120,5 +136,5 @@ contract ProtocolAdminClient is IProtocolAdminClient{
         return _token_id;
     }
 
-    function create_pool(bytes calldata _encoded_pool_key) external returns(bytes32){}
+    function create_pool(bytes calldata _encoded_pool_key) external initialized returns(bytes32){}
 }
