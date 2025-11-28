@@ -5,3 +5,6 @@ cache/
 
 # TODO files
 TODO.md
+
+# Environment variables
+.env

@@ -20,6 +20,7 @@ interface IProtocolAdminClient{
         string calldata _baseURI
 
     ) external;
+    event ProtocolCreated(address indexed protocolCaller, uint256 indexed tokenId, address indexed protocolAdminManager);
     function adminPanel() external view returns(address);
     function nextTokenId() external view returns(uint256);
 
@@ -133,9 +134,8 @@ contract ProtocolAdminClient is IProtocolAdminClient, IERC165{
         uint256 _token_id = $.nextTokenId;
         address _protocol_admin_manager = IProtocolAdminRegistry($.admin_panel).protocol_manager(_token_id);
         IProtocolFactory($.admin_panel).create_protocol(_name, _protocol_admin_manager, _token_id);
-        // NOTE: Here it deploys and assigns a protocolAdmin
-        // contract to the caller if it does not have one
-        // already, if it has one it a
+
+        emit ProtocolCreated(msg.sender, _token_id,_protocol_admin_manager);
         
         return _token_id;
     }

@@ -113,9 +113,5 @@ contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
 
         // NOTE: After checks
         // If first time enabling create pool. Enable it
-        
-
-
-
 
 }

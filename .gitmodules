@@ -22,3 +22,6 @@
 [submodule "contracts/protocol-pkg/lib/compose-extensions"]
 	path = contracts/protocol-pkg/lib/compose-extensions
 	url = https://github.com/JMSBPP/compose-extensions
+[submodule "contracts/protocol-pkg/lib/foundry-devops"]
+	path = contracts/protocol-pkg/lib/foundry-devops
+	url = https://github.com/Cyfrin/foundry-devops

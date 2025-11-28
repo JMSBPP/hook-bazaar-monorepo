@@ -8,15 +8,22 @@ auto_detect_remappings = false
 solc_version = '0.8.30'
 evm_version = "prague"
 bytecode_hash = "none"
-
+ffi = true
 skip = [
     "lib/compose-extensions/lib/**"
 ]
 
+fs_permissions = [
+    { access = "read", path = "./broadcast" },
+    { access = "read", path = "./reports" },
+]
+
+
 remappings = [
     "forge-std/=lib/forge-std/src/",
     "Compose/=lib/Compose/src/",
-    "compose-extensions/=lib/compose-extensions/src/"
+    "compose-extensions/=lib/compose-extensions/src/",
+    "foundry-devops/=lib/foundry-devops/src/"
 ]
 
 

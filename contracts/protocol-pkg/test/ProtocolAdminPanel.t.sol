@@ -18,6 +18,7 @@ contract ProtocolAdminPanelTest is Test{
     address protocol_deployer = makeAddr("deployer");
     address any_caller = makeAddr("anyCaller");
 
+    address erc165;
 
 
     function setUp() public{
@@ -26,7 +27,7 @@ contract ProtocolAdminPanelTest is Test{
 
         protocol_factory_facet = address(new ProtocolFactoryFacet());
         protocol_admin_registry = address(new ProtocolAdminRegistry());
-
+        erc165 = address(new ERC165Facet());
         vm.stopPrank();
 
     }
@@ -63,7 +64,7 @@ contract ProtocolAdminPanelTest is Test{
         vm.stopPrank();
         vm.startPrank(protocol_deployer);
 
-        IProtocolAdminPanel(protocol_admin_panel).initialize(address(0x01),protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
+        IProtocolAdminPanel(protocol_admin_panel).initialize(erc165,protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
 
         vm.stopPrank();
         //====================TEST============================
@@ -85,7 +86,7 @@ contract ProtocolAdminPanelTest is Test{
         vm.stopPrank();
         vm.startPrank(protocol_deployer);
 
-        IProtocolAdminPanel(protocol_admin_panel).initialize(address(0x012),protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
+        IProtocolAdminPanel(protocol_admin_panel).initialize(erc165,protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
 
         vm.stopPrank();
 
