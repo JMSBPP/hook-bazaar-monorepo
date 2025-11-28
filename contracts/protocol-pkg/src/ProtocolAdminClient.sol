@@ -28,7 +28,7 @@ interface IProtocolAdminClient{
 }
 
 
-contract ProtocolAdminClient is IProtocolAdminClient{
+contract ProtocolAdminClient is IProtocolAdminClient, IERC165{
     
     bytes32 constant PROTOCOL_ADMIN_CLIENT_POSITION = keccak256("hook-bazaar.protocol.admin-client");    
 
@@ -97,6 +97,7 @@ contract ProtocolAdminClient is IProtocolAdminClient{
         o$.owner = msg.sender;
         // TODO: Strong check for admin panel impl contract
         ProtocolAdminClientStorage storage $  = getStorage();
+        // LibERC165.registerInterface(type(IProtocolAdminClient).interfaceId);
         $.admin_panel = address(new ProtocolAdminPanel());
 
     }
@@ -105,7 +106,8 @@ contract ProtocolAdminClient is IProtocolAdminClient{
         if (LibInitializable.getInitializedVersion() == uint256(0x00)) revert ProtocolAdminClientUninitialized();
         _;
     }
-
+    // TODO: Possible protection needed for delegate calls
+    
     function initialize_admin_panel(
         address _protocol_admin_registry,
         address _protocol_factory,
@@ -113,8 +115,10 @@ contract ProtocolAdminClient is IProtocolAdminClient{
     ) external initialized {
         ProtocolAdminClientStorage storage $ = getStorage();
         LibOwner.requireOwner();
-        IProtocolAdminPanel($.admin_panel).initialize(_protocol_admin_registry, _protocol_factory, _baseURI);
+        IProtocolAdminPanel($.admin_panel).initialize(address(this),_protocol_admin_registry, _protocol_factory, _baseURI);
     }
+
+
 
     
     function create_protocol(string calldata _name) external initialized returns(uint256){
@@ -137,4 +141,8 @@ contract ProtocolAdminClient is IProtocolAdminClient{
     }
 
     function create_pool(bytes calldata _encoded_pool_key) external initialized returns(bytes32){}
+    
+    function supportsInterface(bytes4 interfaceID) external view returns (bool){
+        return interfaceID == type(IProtocolAdminClient).interfaceId;
+    }
 }

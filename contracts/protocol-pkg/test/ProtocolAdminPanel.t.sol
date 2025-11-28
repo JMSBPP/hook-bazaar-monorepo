@@ -4,6 +4,7 @@ pragma solidity 0.8.30;
 import {Test, console2} from "forge-std/Test.sol";
 import "../src/ProtocolAdminPanel.sol";
 import "../src/ProtocolFactoryFacet.sol";
+import {ERC165Facet} from "Compose/interfaceDetection/ERC165/ERC165Facet.sol";
 
 contract ProtocolAdminPanelTest is Test{
 
@@ -39,7 +40,7 @@ contract ProtocolAdminPanelTest is Test{
 
         //====================TEST============================
         vm.startPrank(protocol_deployer);
-        IProtocolAdminPanel(protocol_admin_panel).initialize(protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
+        IProtocolAdminPanel(protocol_admin_panel).initialize(address(new ERC165Facet()),protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
         vm.stopPrank();
         //================POST-CONDITIONS=====================
         //============================FACTORY=====================================================
@@ -62,7 +63,7 @@ contract ProtocolAdminPanelTest is Test{
         vm.stopPrank();
         vm.startPrank(protocol_deployer);
 
-        IProtocolAdminPanel(protocol_admin_panel).initialize(protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
+        IProtocolAdminPanel(protocol_admin_panel).initialize(address(0x01),protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
 
         vm.stopPrank();
         //====================TEST============================
@@ -84,7 +85,7 @@ contract ProtocolAdminPanelTest is Test{
         vm.stopPrank();
         vm.startPrank(protocol_deployer);
 
-        IProtocolAdminPanel(protocol_admin_panel).initialize(protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
+        IProtocolAdminPanel(protocol_admin_panel).initialize(address(0x012),protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
 
         vm.stopPrank();
 

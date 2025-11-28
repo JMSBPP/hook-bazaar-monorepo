@@ -6,6 +6,8 @@ import {LibInitializable} from "compose-extensions/libraries/LibInitializable.so
 import {LibAccessControl} from "Compose/access/AccessControl/LibAccessControl.sol";
 
 import "./ProtocolAdminManager.sol";
+import "./ProtocolAdminClient.sol";
+import {IERC165} from "forge-std/interfaces/IERC165.sol";
 
 interface IVersionControl{
     // TODO: This needs protection for attackers altering versions on re-entrancy or multicalls
@@ -20,6 +22,7 @@ interface IProtocolAdminRegistry{
     error ProtocolAdminRegistryUninitialized();
     error ProtocolAdminRegistryNotDelegateCall();
     error ProtocolAdminRegistryInvalidDelegateCaller();
+    error ProtocolAdminRegistryInvalidContextCall();
     error ProtocolAdminRegistryInvalidInitializer();
 
     function __self() external view returns(address);
@@ -36,6 +39,8 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry{
     address immutable public __self;
     // type(uint64).max/2
     uint64 constant STARTER_VERSION = uint64(0x7fffffffffffffff);
+    
+    // bytes4 constant CREATE_PROTOCOL_CLIENT_SIG = 0x8df28d95;
     
     constructor(){
         __self = address(this);
@@ -136,13 +141,28 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry{
     }
 
 
+     
 
     function protocol_manager(uint256 _tokenId) external initialized returns(address){
         if (_tokenId == uint256(0x00)) revert ProtocolAdminRegistryInvalidTokenId();
         ProtocolAdminRegistryStorage storage $ = getStorage();
 
         if ($.protocol_managers[_tokenId] == address(0x00)){
+            // NOTE: This protects for the delegate call
+            
             onlyAdminPanel();
+            // TODO: Now we need protection for the Context to be msg.sender == protocolAdminClient AND 
+            // msg.sig == IProtocolAdminClient.create_protocol.selector
+            // msg.sender == protocolAdminClient needs to be checked with introspection on CLient since
+            // Regiostry does not reference client
+
+            // TODO: This
+            // if (
+            //     !IERC165(address(this)).supportsInterface(type(IProtocolAdminClient).interfaceId)
+            //     ||
+            //     _parentSig != CREATE_PROTOCOL_CLIENT_SIG
+            // ) revert ProtocolAdminRegistryInvalidContextCall();
+
             $.protocol_managers[_tokenId] = LibGenericFactory.createProxy(protocol_admin_template(), false, abi.encode(msg.sender));
         }
 

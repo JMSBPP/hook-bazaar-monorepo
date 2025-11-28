@@ -19,7 +19,7 @@ interface IProtocolAdminPanel{
     error InvalidDeployer(address);
     error ProtocolAdminPanelInvalidProtocolFactoryInstance(address);
     error ProtocolAdminPanelInvalidProtocolAdminRegistry(address);
-    function initialize(address _protocol_admin_registry, address _protocol_factory, string calldata _baseURI) external;
+    function initialize(address _client,address _protocol_admin_registry, address _protocol_factory, string calldata _baseURI) external;
 
 }
 
@@ -53,6 +53,7 @@ contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
     }
 
     function initialize(
+        address _client,
         address _protocol_admin_registry,
         address _protocol_factory,
         string calldata _baseURI
@@ -86,11 +87,19 @@ contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
             _interface[0x02] = IProtocolAdminRegistry.protocol_admin_template.selector;
             _interface[0x03] = IProtocolAdminRegistry.upgradeAdmin.selector;
             _interface[0x04] = IProtocolAdminRegistry.isUpgradeAdmin.selector;
-
+            // _interface[0x05] = IERC165.supportsInterface.selector;
 
             LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
             _cut[0x00] = LibDiamond.FacetCut(_protocol_admin_registry, LibDiamond.FacetCutAction.Add, _interface);
             IDiamond(address(this)).call_diamondCut(_cut, _protocol_admin_registry, abi.encodeCall(IProtocolAdminRegistry._initialize, ()));
+
+        }
+        {
+            bytes4[] memory  _interface = new bytes4[](uint256(0x01));
+            _interface[0x00] = IERC165.supportsInterface.selector;
+            LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
+            _cut[0x00] = LibDiamond.FacetCut(_client, LibDiamond.FacetCutAction.Add, _interface);
+            IDiamond(address(this)).call_diamondCut(_cut, address(0x00),bytes(""));
 
         }
 

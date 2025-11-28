@@ -71,6 +71,7 @@ contract ProtocolAdminClientTest is Test{
         
         //=======================TEST================================
         vm.startPrank(any_caller);
+    
         IProtocolAdminClient(protocol_admin_client).create_protocol("DefiHub");
         vm.stopPrank();
         //=====================POST-CONDITIONS=====================
