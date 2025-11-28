@@ -133,7 +133,7 @@ contract ProtocolAdminRegistry is IProtocolAdminRegistry{
 
         if ($.protocol_managers[_tokenId] == address(0x00)){
             onlyAdminPanel();
-            $.protocol_managers[_tokenId] = LibGenericFactory.createProxy(protocol_admin_template(), false, abi.encode(_tokenId));
+            $.protocol_managers[_tokenId] = LibGenericFactory.createProxy(protocol_admin_template(), false, abi.encode(msg.sender));
         }
 
         return $.protocol_managers[_tokenId];

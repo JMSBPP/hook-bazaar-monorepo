@@ -8,24 +8,28 @@ import {ERC1155Facet} from "Compose/token/ERC1155/ERC1155Facet.sol";
 import "./ProtocolFactoryFacet.sol";
 import "./ProtocolAdminRegistry.sol";
 import "compose-extensions/GenericFactory/GenericFactoryFacet.sol";
+import {LibOwner} from "Compose/access/Owner/LibOwner.sol";
 
 // // NOTE: This contract is the interaction point for protocol
 // // developers, AI agents 
+
+
 interface IProtocolAdminPanel{
+    error ProtocolAdminPanelAlreadyInitialized();
     error InvalidDeployer(address);
     error ProtocolAdminPanelInvalidProtocolFactoryInstance(address);
     error ProtocolAdminPanelInvalidProtocolAdminRegistry(address);
-    function initialize(address _protocol_admin_registry, address _protocol_factory) external;
+    function initialize(address _protocol_admin_registry, address _protocol_factory, string calldata _baseURI) external;
 
 }
 
 // TODO: To be considered : IERC5169
 // TODO: To be considered: IERC1155Receiver
 
-contract ProtocolAdminPanel is IProtocolAdminPanel, BaseDiamond{
+contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
     
     struct ProtocolAdminPanelStorage{
-        uint256 data;
+        bool _initialized;
     }
 
     bytes32 constant PROTOCOL_ADMIN_PANEL_STORAGE = keccak256("hook-bazaar.protocol.admin-panel");    
@@ -38,11 +42,24 @@ contract ProtocolAdminPanel is IProtocolAdminPanel, BaseDiamond{
             s.slot := position
         }
     }
+    // TODO: This needs to be owned by the protocol deployer
+    
+    constructor(){
+        LibOwner.OwnerStorage storage o$ = LibOwner.getStorage();
+        o$.owner = msg.sender;
+    }
 
-    function initialize(address _protocol_admin_registry, address _protocol_factory) external{
+    function initialize(
+        address _protocol_admin_registry,
+        address _protocol_factory,
+        string calldata _baseURI
+    ) external{
+        LibOwner.requireOwner();
+
         ProtocolAdminPanelStorage storage $ = getStorage();
+        if ($._initialized) revert ProtocolAdminPanelAlreadyInitialized();
         // TODO: Introspection checks ...
-        try IProtocolFactory(_protocol_factory).initialize() {
+        try IProtocolFactory(_protocol_factory).initialize(_baseURI) {
             {
                 bytes4[] memory  _interface = new bytes4[](uint256(0x08));
                 
@@ -86,6 +103,8 @@ contract ProtocolAdminPanel is IProtocolAdminPanel, BaseDiamond{
 
             }
 
+            $._initialized = true;
+
         } catch (bytes memory _reason){
             if (_reason.length == uint256(0x00)){
                 revert ProtocolAdminPanelInvalidProtocolAdminRegistry(_protocol_admin_registry);
@@ -93,6 +112,15 @@ contract ProtocolAdminPanel is IProtocolAdminPanel, BaseDiamond{
         }
 
     }
+    // TODO: It must verify the _account is compliant
+    // with the adminManager, msg.sender MUST be
+    // ProtocolAdminClient
+        // NOTE: Checks
+
+        // NOTE: After checks
+        // If first time enabling create pool. Enable it
+        
+
 
 
 
