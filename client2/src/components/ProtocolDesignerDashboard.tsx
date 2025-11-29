@@ -1,32 +1,140 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, DollarSign, Layers, Plus, TrendingUp } from 'lucide-react';
 import Navigation from './Navigation';
 import Footer from './Footer';
+import CreateProtocolDialog from './protocol/CreateProtocolDialog';
+import ProtocolDetailsDialog from './protocol/ProtocolDetailsDialog';
+import { useWallet } from '../hooks/useWallet';
+import type { Protocol } from '../types';
+
+interface ProtocolDetailsFormData {
+  website: string;
+  roles: string;
+  twitter?: string;
+  discord?: string;
+  github?: string;
+}
 
 interface ProtocolDesignerDashboardProps {
-  onNavigate: (page: string) => void;
+  onNavigate?: (page: string) => void;
 }
 
 export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesignerDashboardProps) {
-  const stats = [
-    { icon: Layers, label: 'Total Protocols', value: '2', color: 'primary' },
-    { icon: TrendingUp, label: 'Total Pools', value: '8', color: 'secondary' },
-    { icon: DollarSign, label: 'Total Revenue', value: '$45,230', color: 'accent' },
-  ];
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { address } = useWallet();
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedProtocol, setSelectedProtocol] = useState<Protocol | null>(null);
 
-  const protocols = [
+  const [protocols, setProtocols] = useState<Protocol[]>([
     {
+      id: '1',
       name: 'DeFi Protocol Alpha',
+      feeRecipient: '0x0000000000000000000000000000000000000000',
       pools: 5,
       revenue: '$28,450',
       status: 'active',
     },
     {
+      id: '2',
       name: 'Liquidity Hub Beta',
+      feeRecipient: '0x0000000000000000000000000000000000000000',
       pools: 3,
       revenue: '$16,780',
       status: 'active',
     },
+  ]);
+
+  const stats = [
+    { icon: Layers, label: 'Total Protocols', value: String(protocols.length), color: 'primary' },
+    { icon: TrendingUp, label: 'Total Pools', value: '8', color: 'secondary' },
+    { icon: DollarSign, label: 'Total Revenue', value: '$45,230', color: 'accent' },
   ];
+
+  const handleCreateProtocolSuccess = (
+    protocolId: bigint, 
+    chainId: number, 
+    protocolName: string, 
+    feeRecipient?: string
+  ) => {
+    // Create a new protocol entry with the name and fee recipient from the transaction
+    const newProtocol: Protocol = {
+      id: `protocol-${protocolId.toString()}`,
+      name: protocolName || `Protocol ${protocolId.toString()}`,
+      feeRecipient: feeRecipient || address || '0x0000000000000000000000000000000000000000',
+      pools: 0,
+      revenue: '$0',
+      status: 'active',
+      chainId,
+      creator: address, // The caller/deployer
+      protocolId: protocolId.toString(),
+    };
+    setProtocols([...protocols, newProtocol]);
+    setCreateDialogOpen(false);
+    
+    // Automatically open ProtocolDetailsDialog after success
+    // Small delay to allow confetti to show first
+    setTimeout(() => {
+      setSelectedProtocol(newProtocol);
+      setDetailsDialogOpen(true);
+    }, 3500); // Open after dialog closes (3s) + small buffer
+  };
+
+  // Handle protocol creation from CreateProtocolPage route
+  useEffect(() => {
+    const state = location.state as { 
+      newProtocol?: { 
+        protocolId: string; 
+        chainId: number; 
+        protocolName?: string; 
+        feeRecipient?: string;
+      } 
+    } | null;
+    if (state?.newProtocol) {
+      const { protocolId, chainId, protocolName, feeRecipient } = state.newProtocol;
+      // Check if protocol already exists
+      const exists = protocols.some((p) => p.protocolId === protocolId);
+      if (!exists) {
+        const newProtocol: Protocol = {
+          id: `protocol-${protocolId}`,
+          name: protocolName || `Protocol ${protocolId}`,
+          feeRecipient: feeRecipient || address || '0x0000000000000000000000000000000000000000',
+          pools: 0,
+          revenue: '$0',
+          status: 'active',
+          chainId,
+          creator: address, // The deployer
+          protocolId,
+        };
+        setProtocols([...protocols, newProtocol]);
+        
+        // Automatically open ProtocolDetailsDialog after protocol is created
+        // Delay to allow confetti and navigation to complete
+        setTimeout(() => {
+          setSelectedProtocol(newProtocol);
+          setDetailsDialogOpen(true);
+        }, 4000);
+      }
+      // Clear location state
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, address, protocols, navigate, location.pathname]);
+
+  const handleViewDetails = (protocol: Protocol) => {
+    setSelectedProtocol(protocol);
+    setDetailsDialogOpen(true);
+  };
+
+  const handleSaveProtocolDetails = (
+    protocol: Protocol,
+    data: ProtocolDetailsFormData
+  ) => {
+    setProtocols(
+      protocols.map((p) => (p.id === protocol.id ? protocol : p))
+    );
+  };
 
   return (
     <div className="min-h-screen">
@@ -43,7 +151,7 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
       >
         <div className="container-custom">
           <button
-            onClick={() => onNavigate('home')}
+            onClick={() => navigate('/')}
             className="flex items-center gap-2 mb-8 font-heading transition-colors duration-200"
             style={{
               color: 'var(--color-secondary)',
@@ -85,6 +193,13 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
             </div>
 
             <button
+              onClick={() => {
+                if (!address) {
+                  alert('Please connect your wallet first');
+                  return;
+                }
+                setCreateDialogOpen(true);
+              }}
               className="angular-clip-button px-6 py-3 font-heading uppercase tracking-wider transition-all duration-200 hover:-translate-y-1 hover:rotate-[-1deg] flex items-center gap-2"
               style={{
                 background: 'var(--color-primary)',
@@ -184,7 +299,7 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {protocols.map((protocol, index) => (
               <div
-                key={index}
+                key={protocol.id}
                 className="angular-clip p-6 transition-all duration-300 hover:-translate-y-1 hover:rotate-[-0.5deg]"
                 style={{
                   background:
@@ -226,6 +341,17 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
                       {protocol.status}
                     </span>
                   </div>
+                  {protocol.chainId && (
+                    <p
+                      className="text-xs"
+                      style={{
+                        color: index % 2 === 0 ? 'var(--color-marble-light)' : 'var(--color-accent)',
+                      }}
+                    >
+                      Chain ID: {protocol.chainId}
+                      {protocol.protocolId && ` • Protocol ID: ${protocol.protocolId}`}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-6">
@@ -279,6 +405,7 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
 
                 <div className="flex gap-3">
                   <button
+                    onClick={() => handleViewDetails(protocol)}
                     className="angular-clip-button flex-1 px-4 py-2 font-heading uppercase tracking-wider transition-all duration-200"
                     style={{
                       background: index % 2 === 0 ? 'var(--color-primary)' : 'var(--color-white)',
@@ -313,7 +440,24 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
         </div>
       </section>
 
-      <Footer onNavigate={onNavigate} />
+      <Footer onNavigate={(page) => navigate(`/${page}`)} />
+
+      {/* Create Protocol Dialog */}
+      <CreateProtocolDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={handleCreateProtocolSuccess}
+      />
+
+      {/* Protocol Details Dialog */}
+      {selectedProtocol && (
+        <ProtocolDetailsDialog
+          open={detailsDialogOpen}
+          onOpenChange={setDetailsDialogOpen}
+          protocol={selectedProtocol}
+          onSave={handleSaveProtocolDetails}
+        />
+      )}
     </div>
   );
 }
