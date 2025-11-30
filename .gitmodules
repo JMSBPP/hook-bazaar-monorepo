@@ -25,3 +25,6 @@
 [submodule "contracts/protocol-pkg/lib/foundry-devops"]
 	path = contracts/protocol-pkg/lib/foundry-devops
 	url = https://github.com/Cyfrin/foundry-devops
+[submodule "contracts/protocol-pkg/lib/openzeppelin-contracts"]
+	path = contracts/protocol-pkg/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts

@@ -22,12 +22,12 @@ sequenceDiagram
 
 | Network | Contract | Address | Description |
 |---------|----------|---------|-------------|
-| Unichain Sepolia | ProtocolAdminClient | [`0x957e136698d545abb754b279f3c8e0717568f027`](https://unichain-sepolia.blockscout.com/address/0x957e136698d545abb754b279f3c8e0717568f027) | Main admin client contract for protocol management |
-| Unichain Sepolia | ProtocolAdminRegistry | [`0x6af90ec19fc3bf2e0f507a8c331bd1bd371ad879`](https://unichain-sepolia.blockscout.com/address/0x6af90ec19fc3bf2e0f507a8c331bd1bd371ad879) | Registry for protocol admin managers |
-| Unichain Sepolia | ProtocolFactoryFacet | [`0x07762d20b4601ff482ef77f97306754c8a0cb399`](https://unichain-sepolia.blockscout.com/address/0x07762d20b4601ff482ef77f97306754c8a0cb399) | Factory facet for creating protocol instances |
+| Unichain Sepolia | ProtocolAdminClient | [`0xca7cbe4739eab3e0b7ebf5418ec37ecfe6bde564`](https://unichain-sepolia.blockscout.com/address/0xca7cbe4739eab3e0b7ebf5418ec37ecfe6bde564) | Main admin client contract for protocol management |
+| Unichain Sepolia | ProtocolAdminRegistry | [`0x713b2a2f0fd8aa7699a2540cf64c7a6967775c01`](https://unichain-sepolia.blockscout.com/address/0x713b2a2f0fd8aa7699a2540cf64c7a6967775c01) | Registry for protocol admin managers |
+| Unichain Sepolia | ProtocolFactoryFacet | [`0x3aacf294a760c88044d6c245bb9582286c5b81c3`](https://unichain-sepolia.blockscout.com/address/0x3aacf294a760c88044d6c245bb9582286c5b81c3) | Factory facet for creating protocol instances |
 
 
-**Deployment Transaction**: [`0x018b4e4aa92a571c567f06385062c755adad4683dc3c6d9d381843a785ab74b6`](https://unichain-sepolia.blockscout.com/tx/0x018b4e4aa92a571c567f06385062c755adad4683dc3c6d9d381843a785ab74b6)
+**Deployment Transaction**: [`0xe68607c970aa37d9dd34eb85658a86af54ced4f189842ac249822e2856b72546`](https://unichain-sepolia.blockscout.com/tx/0xe68607c970aa37d9dd34eb85658a86af54ced4f189842ac249822e2856b72546)
 
 > **Note**: Deploy using `make deploy flag=--all`
 
