@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.30;
+pragma solidity >=0.8.30;
 
 import "compose-extensions/BaseDiamond.sol";
-import "./LibHooks.sol";
+import "@uniswap/v4-periphery/src/utils/BaseHook.sol";
 import "compose-extensions/libraries/LibInitializable.sol";
+import "Compose/access/AccessControl/LibAccessControl.sol";
+import "./types/HookSelectors.sol";
 
 interface IMasterHook{
     error MasterHookUninitiialized();
@@ -11,9 +13,30 @@ interface IMasterHook{
     function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external;
 }
 
+contract AllHook is BaseHook{
+    constructor(address _poolManager) BaseHook(IPoolManager(_poolManager)){}
+
+    function getHookPermissions() public pure override returns (Hooks.Permissions memory){
+        return Hooks.Permissions(true,true,true,true,true,true,true,true,true,true,true,true,true,true);
+    }
+}
 
 contract MasterHook is BaseDiamond, IMasterHook{
-    error MasterHookUninitiialized();
+    bytes32 constant PROTOCOL_ADMIN = keccak256("protocol-admin");
+    bytes32 constant STORAGE_POSITION = keccak256("hook-bazar.hooks");
+    
+    struct MasterHookStorage{
+        IPoolManager poolManager;
+    }
+
+    function getStorage() internal pure returns (MasterHookStorage storage $) {
+        bytes32 position = STORAGE_POSITION;
+        assembly {
+            $.slot := position
+        }
+    }
+
+
     modifier initializer() {
         // solhint-disable-next-line var-name-mixedcase
         LibInitializable.InitializableStorage storage $ = LibInitializable.getStorage();
@@ -48,11 +71,14 @@ contract MasterHook is BaseDiamond, IMasterHook{
     
 
     function initialize(address _poolManager) external initializer{
-        LibHooks.HookStorage storage $ = LibHooks.getStorage();
+        MasterHookStorage storage $ = getStorage();
+        LibAccessControl.setRoleAdmin(LibAccessControl.DEFAULT_ADMIN_ROLE, PROTOCOL_ADMIN);
+        LibAccessControl.grantRole(PROTOCOL_ADMIN, msg.sender);
+
         $.poolManager = IPoolManager(_poolManager);
         {
               
-            bytes4[] memory  _interface = new bytes4[](uint256(0x06));
+            bytes4[] memory  _interface = new bytes4[](uint256(0x10));
             
             _interface[0x00] = IHooks.beforeInitialize.selector;
             _interface[0x01] = IHooks.afterInitialize.selector;
@@ -61,11 +87,16 @@ contract MasterHook is BaseDiamond, IMasterHook{
             _interface[0x04] = IHooks.beforeRemoveLiquidity.selector;
             _interface[0x05] = IHooks.afterRemoveLiquidity.selector;
             _interface[0x06] = IHooks.beforeSwap.selector;
-            _interface[0x07] = IHooks.afterSwap.selector;
+            _interface[0x07] = IHooks.afterSwap.selector; 
+            _interface[0x08] = IHooks.beforeDonate.selector;
+            _interface[0x09] = IHooks.afterDonate.selector;
+    
+
             
             LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
-            _cut[0x00] = LibDiamond.FacetCut(_protocol_factory, LibDiamond.FacetCutAction.Add, _interface);
-            IDiamond(address(this)).call_diamondCut(_cut, _protocol_factory, abi.encodeCall(IProtocolFactory.__initialize, _baseURI));
+            address allHook = address(new AllHook(_poolManager));
+            _cut[0x00] = LibDiamond.FacetCut(allHook, LibDiamond.FacetCutAction.Add, _interface);
+            IDiamond(address(this)).diamondCut(_cut, address(0x00), abi.encode("0x00"));
         }
 
     }
@@ -75,80 +106,28 @@ contract MasterHook is BaseDiamond, IMasterHook{
         _;
     }
 
+    modifier onlyProtocolAdmin(){
+        LibAccessControl.requireRole(PROTOCOL_ADMIN, msg.sender);
+        _;
+    }
 
-    function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external initialized{}
+
+    function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external initialized onlyProtocolAdmin {}
+
+    // TODO: This needs to be protected to be only allowed once a amreket transaction has been ccompleted to acquire, plug the hook
+    function addHook(IHooks _hook) external initialized onlyProtocolAdmin{
+        // TODO: First get the permissions, this is done by dissecting the hook address
+        bytes4[] memory _hookSelectors = LibHookSelectors.hookSelectors(_hook);
+
+        // LibDiamond.replaceFunctions(address(_hook), _hookSelectors);
 
 
-    function beforeInitialize(address sender, PoolKey calldata key, uint160 sqrtPriceX96) external returns (bytes4);
 
-    /// @notice The hook called after the state of a pool is initialized
-    /// @param sender The initial msg.sender for the initialize call
-    /// @param key The key for the pool being initialized
-    /// @param sqrtPriceX96 The sqrt(price) of the pool as a Q64.96
-    /// @param tick The current tick after the state of a pool is initialized
-    /// @return bytes4 The function selector for the hook
-    function afterInitialize(address sender, PoolKey calldata key, uint160 sqrtPriceX96, int24 tick)
-        external
-        returns (bytes4);
+        // TODO: Add to the facet the interface selectos associated with such permissions
 
-    function beforeAddLiquidity(
-        address sender,
-        PoolKey calldata key,
-        ModifyLiquidityParams calldata params,
-        bytes calldata hookData
-    ) external returns (bytes4);
+    }
 
-    function afterAddLiquidity(
-        address sender,
-        PoolKey calldata key,
-        ModifyLiquidityParams calldata params,
-        BalanceDelta delta,
-        BalanceDelta feesAccrued,
-        bytes calldata hookData
-    ) external returns (bytes4, BalanceDelta);
 
-    function beforeRemoveLiquidity(
-        address sender,
-        PoolKey calldata key,
-        ModifyLiquidityParams calldata params,
-        bytes calldata hookData
-    ) external returns (bytes4);
 
-    function afterRemoveLiquidity(
-        address sender,
-        PoolKey calldata key,
-        ModifyLiquidityParams calldata params,
-        BalanceDelta delta,
-        BalanceDelta feesAccrued,
-        bytes calldata hookData
-    ) external returns (bytes4, BalanceDelta);
-
-    function beforeSwap(address sender, PoolKey calldata key, SwapParams calldata params, bytes calldata hookData)
-        external
-        returns (bytes4, BeforeSwapDelta, uint24);
-
-    function afterSwap(
-        address sender,
-        PoolKey calldata key,
-        SwapParams calldata params,
-        BalanceDelta delta,
-        bytes calldata hookData
-    ) external returns (bytes4, int128);
-
-    function beforeDonate(
-        address sender,
-        PoolKey calldata key,
-        uint256 amount0,
-        uint256 amount1,
-        bytes calldata hookData
-    ) external returns (bytes4);
-
-    function afterDonate(
-        address sender,
-        PoolKey calldata key,
-        uint256 amount0,
-        uint256 amount1,
-        bytes calldata hookData
-    ) external returns (bytes4);
 }
 
