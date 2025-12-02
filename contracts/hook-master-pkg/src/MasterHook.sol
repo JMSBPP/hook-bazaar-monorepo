@@ -1,25 +1,18 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.30;
+pragma solidity ^0.8.0;
 
 import "compose-extensions/BaseDiamond.sol";
-import "@uniswap/v4-periphery/src/utils/BaseHook.sol";
+import "./AllHook.sol";
 import "compose-extensions/libraries/LibInitializable.sol";
 import "Compose/access/AccessControl/LibAccessControl.sol";
 import "./types/HookSelectors.sol";
 
 interface IMasterHook{
     error MasterHookUninitiialized();
-    function initialize(address _poolManager) external;
+    function initialize(address _poolManager, address _allHookImpl) external;
     function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external;
 }
 
-contract AllHook is BaseHook{
-    constructor(address _poolManager) BaseHook(IPoolManager(_poolManager)){}
-
-    function getHookPermissions() public pure override returns (Hooks.Permissions memory){
-        return Hooks.Permissions(true,true,true,true,true,true,true,true,true,true,true,true,true,true);
-    }
-}
 
 contract MasterHook is BaseDiamond, IMasterHook{
     bytes32 constant PROTOCOL_ADMIN = keccak256("protocol-admin");
@@ -53,8 +46,8 @@ contract MasterHook is BaseDiamond, IMasterHook{
         bool initialSetup = initialized == 0 && isTopLevelCall;
         bool construction = initialized == 1 && address(this).code.length == 0;
 
-        revert LibInitializable.InvalidInitialization();
         if (!initialSetup && !construction) {
+            revert LibInitializable.InvalidInitialization();
         }
 
         $._initialized = 1;
@@ -70,33 +63,29 @@ contract MasterHook is BaseDiamond, IMasterHook{
 
     
 
-    function initialize(address _poolManager) external initializer{
+    function initialize(address _poolManager, address _allHookImpl) external initializer{
         MasterHookStorage storage $ = getStorage();
         LibAccessControl.setRoleAdmin(LibAccessControl.DEFAULT_ADMIN_ROLE, PROTOCOL_ADMIN);
         LibAccessControl.grantRole(PROTOCOL_ADMIN, msg.sender);
 
         $.poolManager = IPoolManager(_poolManager);
         {
-              
-            bytes4[] memory  _interface = new bytes4[](uint256(0x10));
+            bytes4[] memory _interface = new bytes4[](10);
             
-            _interface[0x00] = IHooks.beforeInitialize.selector;
-            _interface[0x01] = IHooks.afterInitialize.selector;
-            _interface[0x02] = IHooks.beforeAddLiquidity.selector;
-            _interface[0x03] = IHooks.afterAddLiquidity.selector;
-            _interface[0x04] = IHooks.beforeRemoveLiquidity.selector;
-            _interface[0x05] = IHooks.afterRemoveLiquidity.selector;
-            _interface[0x06] = IHooks.beforeSwap.selector;
-            _interface[0x07] = IHooks.afterSwap.selector; 
-            _interface[0x08] = IHooks.beforeDonate.selector;
-            _interface[0x09] = IHooks.afterDonate.selector;
+            _interface[0] = IHooks.beforeInitialize.selector;
+            _interface[1] = IHooks.afterInitialize.selector;
+            _interface[2] = IHooks.beforeAddLiquidity.selector;
+            _interface[3] = IHooks.afterAddLiquidity.selector;
+            _interface[4] = IHooks.beforeRemoveLiquidity.selector;
+            _interface[5] = IHooks.afterRemoveLiquidity.selector;
+            _interface[6] = IHooks.beforeSwap.selector;
+            _interface[7] = IHooks.afterSwap.selector; 
+            _interface[8] = IHooks.beforeDonate.selector;
+            _interface[9] = IHooks.afterDonate.selector;
     
-
-            
-            LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
-            address allHook = address(new AllHook(_poolManager));
-            _cut[0x00] = LibDiamond.FacetCut(allHook, LibDiamond.FacetCutAction.Add, _interface);
-            IDiamond(address(this)).diamondCut(_cut, address(0x00), abi.encode("0x00"));
+            LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](1);
+            _cut[0] = LibDiamond.FacetCut(_allHookImpl, LibDiamond.FacetCutAction.Add, _interface);
+            this._diamondCut(_cut, address(0x00), abi.encode("0x00"));
         }
 
     }
@@ -116,15 +105,8 @@ contract MasterHook is BaseDiamond, IMasterHook{
 
     // TODO: This needs to be protected to be only allowed once a amreket transaction has been ccompleted to acquire, plug the hook
     function addHook(IHooks _hook) external initialized onlyProtocolAdmin{
-        // TODO: First get the permissions, this is done by dissecting the hook address
         bytes4[] memory _hookSelectors = LibHookSelectors.hookSelectors(_hook);
-
-        // LibDiamond.replaceFunctions(address(_hook), _hookSelectors);
-
-
-
-        // TODO: Add to the facet the interface selectos associated with such permissions
-
+        this._replaceFunctions(address(_hook), _hookSelectors);
     }
 
 

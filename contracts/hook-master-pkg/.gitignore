@@ -12,3 +12,5 @@ docs/
 
 # Dotenv file
 .env
+# Docs related files
+TODO.md

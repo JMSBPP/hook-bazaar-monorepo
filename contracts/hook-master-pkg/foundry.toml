@@ -2,13 +2,25 @@
 src = "src"
 out = "out"
 libs = ["lib"]
-auto_detect_remappings = false
+
 
 remappings = [
     "forge-std/=lib/forge-std/src/",
     "@uniswap/v4-periphery/=lib/v4-periphery/",
     "@uniswap/v4-core/=lib/v4-periphery/lib/v4-core/",
     "Compose/=lib/compose-extensions/lib/Compose/src/",
-    "compose-extensions/=lib/compose-extensions/src/"
+    "compose-extensions/=lib/compose-extensions/src/",
+    "@openzeppelin/=lib/v4-periphery/lib/permit2/lib/openzeppelin-contracts/"
 ]
+
+compiler_restrictions = [
+    {path = "src/**", solc_version = ">=0.8.30", evm_version = "prague"},
+    {path = "lib/v4-periphery/**", solc_version = "=0.8.26", evm_version = "cancun"},
+    {path = "lib/compose-extensions/**", solc_vesion = "=0.8.26", evm_version = "prague"}
+]
+
+[rpc_endpoints]
+
+mainnet = "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

@@ -29,3 +29,6 @@
 [submodule "contracts/hook-master-pkg/lib/compose-extensions"]
 	path = contracts/hook-master-pkg/lib/compose-extensions
 	url = https://github.com/JMSBPP/compose-extensions
+[submodule "contracts/hook-master-pkg/lib/openzeppelin-contracts"]
+	path = contracts/hook-master-pkg/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
