@@ -16,7 +16,7 @@ remappings = [
 compiler_restrictions = [
     {path = "src/**", solc_version = ">=0.8.30", evm_version = "prague"},
     {path = "lib/v4-periphery/**", solc_version = "=0.8.26", evm_version = "cancun"},
-    {path = "lib/compose-extensions/**", solc_vesion = "=0.8.26", evm_version = "prague"}
+    {path = "lib/compose-extensions/**", solc_vesion = "=0.8.30", evm_version = "prague"}
 ]
 
 [rpc_endpoints]
