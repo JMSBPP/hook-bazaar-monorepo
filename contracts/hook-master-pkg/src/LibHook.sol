@@ -7,10 +7,7 @@ library LibHook{
     bytes32 constant STORAGE_POSITION = keccak256("hook-bazaar.hook");
     
     struct HookStorage {
-        bytes32 state;
-        // Example: If you add mappings, consider adding counters:
-        // mapping(address => uint256) balances;
-        // uint256 balanceCount; // Track number of entries
+        bytes32 state; // place holder
     }
 
     function getStorage() internal pure returns (HookStorage storage $) {

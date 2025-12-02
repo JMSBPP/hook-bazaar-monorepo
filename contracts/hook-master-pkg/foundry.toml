@@ -8,6 +8,7 @@ remappings = [
     "forge-std/=lib/forge-std/src/",
     "@uniswap/v4-periphery/=lib/v4-periphery/",
     "@uniswap/v4-core/=lib/v4-periphery/lib/v4-core/",
+    "@uniswap/universal-router/=lib/universal-router/",
     "Compose/=lib/compose-extensions/lib/Compose/src/",
     "compose-extensions/=lib/compose-extensions/src/",
     "@openzeppelin/=lib/v4-periphery/lib/permit2/lib/openzeppelin-contracts/"
