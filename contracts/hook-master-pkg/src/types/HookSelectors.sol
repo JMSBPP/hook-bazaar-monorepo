@@ -13,7 +13,7 @@ struct HookSelectors{
 
 library LibHookSelectors{
     
-    function hookSelectors( IHooks _hook) internal pure returns(bytes4[] memory){
+    function hookSelectors(IHooks _hook) internal pure returns(bytes4[] memory){
         bytes4[] memory __hookSelectors = new bytes4[](uint256(0x10));
         uint256 finalLen = 0;
         if (Hooks.hasPermission(_hook, Hooks.BEFORE_INITIALIZE_FLAG)){
@@ -92,6 +92,19 @@ library LibHookSelectors{
             }
         }
         return _resHookSelectors;
+    }
 
+    function appendSelectors(bytes4[] memory _self, bytes4[] memory _additionalSelectors) internal pure returns(bytes4[] memory){
+        bytes4[] memory result = new bytes4[](_self.length + _additionalSelectors.length);
+        
+        for (uint256 i = 0; i < _self.length; i++) {
+            result[i] = _self[i];
+        }
+        
+        for (uint256 i = 0; i < _additionalSelectors.length; i++) {
+            result[_self.length + i] = _additionalSelectors[i];
+        }
+        
+        return result;
     }
 }

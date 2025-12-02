@@ -32,3 +32,6 @@
 [submodule "contracts/hook-master-pkg/lib/openzeppelin-contracts"]
 	path = contracts/hook-master-pkg/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "contracts/hook-master-pkg/lib/universal-router"]
+	path = contracts/hook-master-pkg/lib/universal-router
+	url = https://github.com/Uniswap/universal-router

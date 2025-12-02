@@ -6,11 +6,15 @@ import "./AllHook.sol";
 import "compose-extensions/libraries/LibInitializable.sol";
 import "Compose/access/AccessControl/LibAccessControl.sol";
 import "./types/HookSelectors.sol";
+import "./HookFacetTemplate.sol";
 
 interface IMasterHook{
-    error MasterHookUninitiialized();
+    event MasterHook__HookAdded(address indexed mediator, address indexed _hook, bytes selectors);
+    error MasterHook__NotValidHook();     
+    error MasterHook__Uninitiialized();
     function initialize(address _poolManager, address _allHookImpl) external;
     function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external;
+    function addHook(address _hook,bytes4[] memory _additionalSelectors) external;
 }
 
 
@@ -91,7 +95,7 @@ contract MasterHook is BaseDiamond, IMasterHook{
     }
     
     modifier initialized(){
-        if (LibInitializable.getInitializedVersion() == uint256(0x00)) revert MasterHookUninitiialized();
+        if (LibInitializable.getInitializedVersion() == uint256(0x00)) revert MasterHook__Uninitiialized();
         _;
     }
 
@@ -102,11 +106,17 @@ contract MasterHook is BaseDiamond, IMasterHook{
 
 
     function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external initialized onlyProtocolAdmin {}
+    
 
+    
     // TODO: This needs to be protected to be only allowed once a amreket transaction has been ccompleted to acquire, plug the hook
-    function addHook(IHooks _hook) external initialized onlyProtocolAdmin{
-        bytes4[] memory _hookSelectors = LibHookSelectors.hookSelectors(_hook);
-        this._replaceFunctions(address(_hook), _hookSelectors);
+    function addHook(address _hook, bytes4[] memory _additionalSelectors) external initialized onlyProtocolAdmin{
+        // if (!IERC165(_hook).supportsInterface(type(IHooks).interfaceId)) revert MasterHook__NotValidHook();       
+        bytes4[] memory _hookSelectors = LibHookSelectors.hookSelectors(IHooks(_hook));
+        bytes4[] memory _allSelectors = LibHookSelectors.appendSelectors(_hookSelectors, _additionalSelectors);
+        this._replaceFunctions(_hook, _hookSelectors);
+        this._addFunctions(_hook, _additionalSelectors);
+        emit MasterHook__HookAdded(msg.sender, address(_hook), abi.encode(_allSelectors));
     }
 
 
