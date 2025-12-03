@@ -57,5 +57,7 @@
     server: {
       port: 3000,
       open: true,
+      // Required for React Router client-side routing
+      historyApiFallback: true,
     },
   });

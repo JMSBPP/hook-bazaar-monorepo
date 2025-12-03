@@ -1,4 +1,5 @@
 import { ArrowRight, Code2, Layers, Plug } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Section from '../common/Section';
 import Container from '../common/Container';
 import Heading from '../common/Heading';
@@ -7,7 +8,7 @@ import IconBox from '../common/IconBox';
 import type { Page } from '../../types';
 
 interface UserTypeSectionProps {
-  onNavigate: (page: Page) => void;
+  onNavigate?: (page: Page) => void;
 }
 
 interface UserType {
@@ -52,6 +53,24 @@ const userTypes: UserType[] = [
 ];
 
 export default function UserTypeSection({ onNavigate }: UserTypeSectionProps) {
+  const navigate = useNavigate();
+
+  const handleNavigate = (page: Page) => {
+    const routeMap: Record<Page, string> = {
+      'home': '/',
+      'about': '/about',
+      'contact': '/contact',
+      'hook-developer': '/hook-developer',
+      'protocol-designer': '/ProtocolDashboard',
+      'integrator': '/integrator',
+    };
+    const route = routeMap[page] || `/${page}`;
+    navigate(route);
+    if (onNavigate) {
+      onNavigate(page);
+    }
+  };
+
   return (
     <Section id="user-type-section" variant="speed-lines" spacing="xl">
       <Container>
@@ -90,7 +109,7 @@ export default function UserTypeSection({ onNavigate }: UserTypeSectionProps) {
             return (
               <button
                 key={index}
-                onClick={() => onNavigate(type.page)}
+                onClick={() => handleNavigate(type.page)}
                 className="angular-clip p-8 text-left transition-all duration-300 hover:-translate-y-2 hover:rotate-[-0.5deg] group relative border-2 border-[var(--color-secondary)] focus:outline-none focus:ring-3 focus:ring-[var(--color-primary)]"
                 style={{ background: bgColor }}
                 onMouseEnter={(e) => {

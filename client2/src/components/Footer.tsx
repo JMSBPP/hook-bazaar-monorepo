@@ -1,4 +1,5 @@
 import { Github, Twitter, Mail } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Logo from './common/Logo';
 import Link from './common/Link';
 import Container from './common/Container';
@@ -6,7 +7,7 @@ import GreekKeyPattern from './common/GreekKeyPattern';
 import type { Page } from '../types';
 
 interface FooterProps {
-  onNavigate: (page: Page) => void;
+  onNavigate?: (page: Page) => void;
 }
 
 interface NavigationLink {
@@ -63,6 +64,8 @@ const socialLinks: SocialLink[] = [
 ];
 
 export default function Footer({ onNavigate }: FooterProps) {
+  const navigate = useNavigate();
+
   const handleNavigate = (page: string) => {
     if (page === 'app') {
       const element = document.getElementById('user-type-section');
@@ -72,7 +75,20 @@ export default function Footer({ onNavigate }: FooterProps) {
     } else if (page === 'docs') {
       window.open('https://docs.hookbazaar.com', '_blank', 'noopener,noreferrer');
     } else {
+      // Map page names to routes
+      const routeMap: Record<string, string> = {
+        'home': '/',
+        'about': '/about',
+        'contact': '/contact',
+        'hook-developer': '/hook-developer',
+        'protocol-designer': '/ProtocolDashboard',
+        'integrator': '/integrator',
+      };
+      const route = routeMap[page] || `/${page}`;
+      navigate(route);
+      if (onNavigate) {
       onNavigate(page as Page);
+      }
     }
   };
 
