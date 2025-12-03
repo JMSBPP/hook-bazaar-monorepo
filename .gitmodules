@@ -10,3 +10,15 @@
 [submodule "contracts/lib/foundry-devops"]
 	path = contracts/lib/foundry-devops
 	url = https://github.com/Cyfrin/foundry-devops
+[submodule "contracts/hook-pkg/lib/compose-extensions"]
+	path = contracts/hook-pkg/lib/compose-extensions
+	url = https://github.com/JMSBPP/compose-extensions
+[submodule "contracts/hook-pkg/lib/Compose"]
+	path = contracts/hook-pkg/lib/Compose
+	url = https://github.com/Perfect-Abstractions/Compose
+[submodule "contracts/hook-pkg/lib/openzeppelin-contracts"]
+	path = contracts/hook-pkg/lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "contracts/hook-pkg/lib/forge-std"]
+	path = contracts/hook-pkg/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
