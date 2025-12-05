@@ -2,9 +2,9 @@
 pragma solidity 0.8.30;
 
 import {Test, console2} from "forge-std/Test.sol";
-import "../src/ProtocolFactoryFacet.sol";
+import {ProtocolFactoryFacet, IProtocolFactory} from "@hook-bazaar/protocol-pkg/ProtocolFactoryFacet.sol";
 import {ProxyHelper} from "./helpers/ProxyHelper.sol";
-import "../src/ProtocolAdminManager.sol";
+import {ProtocolAdminManager, IComponent} from "@hook-bazaar/protocol-pkg/ProtocolAdminManager.sol";
 import {IERC1155} from "Compose/interfaces/IERC1155.sol";
 
 contract ProtocolFactoryFacetTest is Test{

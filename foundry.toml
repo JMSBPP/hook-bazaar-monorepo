@@ -1,6 +1,7 @@
 [profile.default]
 
 src = "contracts/src/"
+test = "contracts/test/"
 out = "contracts/out/"
 libs = ["contracts/lib", "node_modules"]
 script = "contracts/script"
@@ -21,7 +22,7 @@ remappings = [
     "solmate/=contracts/lib/v4-periphery/lib/permit2/lib/solmate/",
     "foundry-devops/=contracts/lib/foundry-devops/src/",    
     "@hook-bazaar/protocol-pkg/=contracts/src/protocol-pkg/",
-    "@hook-bazaar/master-hook-pkg/=contracts/src/master-hook-pkg/",
+    "@hook-bazaar/master-hook-pkg/src/=contracts/src/master-hook-pkg/src/",
     "@hook-bazaar/protocol-pkg/script/=contracts/script/protocol-pkg/",
     "@hook-bazaar/master-hook-pkg/script/=contracts/script/hook-master/",
     "@hook-bazaar/protocol-pkg/test/=contracts/test/protocol-pkg/",

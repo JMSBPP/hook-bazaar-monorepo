@@ -2,7 +2,8 @@
 pragma solidity >=0.8.30;
 
 import {Test, console2} from "forge-std/Test.sol";
-import "../src/ProtocolAdminManager.sol";
+import {ProtocolAdminManager, IProtocolAdminManager} from "@hook-bazaar/protocol-pkg/ProtocolAdminManager.sol";
+import {IComponent} from "@hook-bazaar/protocol-pkg/ProtocolAdminManager.sol";
 
 contract ProtocolAdminManagerTest is Test{
     address admin = makeAddr("admin");

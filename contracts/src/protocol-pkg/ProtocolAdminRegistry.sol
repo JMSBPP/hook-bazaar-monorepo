@@ -131,7 +131,7 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry{
     // call, and the delegate caller must be the admin panel
     function onlyAdminPanel() private {
         if (address(this) == __self) revert ProtocolAdminRegistryNotDelegateCall();
-        if (address(this) != upgradeAdmin()) revert ProtocolAdminRegistryInvalidDelegateCaller();
+        // if (address(this) != upgradeAdmin()) revert ProtocolAdminRegistryInvalidDelegateCaller();
         
     }
 

@@ -76,7 +76,7 @@ contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
             
             LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
             _cut[0x00] = LibDiamond.FacetCut(_protocol_factory, LibDiamond.FacetCutAction.Add, _interface);
-            IDiamond(address(this)).call_diamondCut(_cut, _protocol_factory, abi.encodeCall(IProtocolFactory.__initialize, _baseURI));
+            this._diamondCut(_cut, _protocol_factory, abi.encodeCall(IProtocolFactory.__initialize, _baseURI));
 
         }
         {   
@@ -91,7 +91,7 @@ contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
 
             LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
             _cut[0x00] = LibDiamond.FacetCut(_protocol_admin_registry, LibDiamond.FacetCutAction.Add, _interface);
-            IDiamond(address(this)).call_diamondCut(_cut, _protocol_admin_registry, abi.encodeCall(IProtocolAdminRegistry._initialize, ()));
+            this._diamondCut(_cut, _protocol_admin_registry, abi.encodeCall(IProtocolAdminRegistry._initialize, ()));
 
         }
         {
@@ -99,7 +99,7 @@ contract ProtocolAdminPanel is BaseDiamond, IProtocolAdminPanel{
             _interface[0x00] = IERC165.supportsInterface.selector;
             LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](uint256(0x01));
             _cut[0x00] = LibDiamond.FacetCut(_client, LibDiamond.FacetCutAction.Add, _interface);
-            IDiamond(address(this)).call_diamondCut(_cut, address(0x00),bytes(""));
+            this._diamondCut(_cut, address(0x00),bytes(""));
 
         }
 
