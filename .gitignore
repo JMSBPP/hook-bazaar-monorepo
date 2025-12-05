@@ -1,0 +1,10 @@
+
+# Foundry build artifacts
+foundry-out/
+cache/
+
+# TODO files
+TODO.md
+
+# Environment variables
+.env

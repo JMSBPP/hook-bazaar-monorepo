@@ -27,6 +27,17 @@ export interface Protocol {
   pools: number;
   revenue: string;
   status: 'active' | 'pending' | 'inactive';
+  chainId?: number;
+  contractAddress?: string;
+  creator?: string;
+  website?: string;
+  roles?: string[];
+  socials?: {
+    twitter?: string;
+    discord?: string;
+    github?: string;
+  };
+  protocolId?: string; // From contract Subscribed event
 }
 
 export interface Pool {

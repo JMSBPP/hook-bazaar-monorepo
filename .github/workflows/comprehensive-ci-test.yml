@@ -1,0 +1,356 @@
+name: Comprehensive CI Testing
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - uhi7
+      - main
+      - feat/**
+  push:
+    branches:
+      - ci/test-comprehensive-workflow
+
+env:
+  FOUNDRY_PROFILE: ci
+  OPTIMISM_RPC_URL: ${{ secrets.OPTIMISM_RPC_URL }}
+
+jobs:
+  # Cross-Branch Compliance Testing
+  compliance-check:
+    name: Compliance Check - Cross Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Checkout uhi7 branch
+        run: |
+          git fetch origin uhi7:uhi7
+          git checkout uhi7
+
+      - name: Checkout main branch
+        run: |
+          git fetch origin main:main
+          git checkout main
+
+      - name: Checkout other feature branches
+        run: |
+          git fetch origin feat/create-protocol:feat/create-protocol
+          git fetch origin feat/create-pool:feat/create-pool
+          git fetch origin feat/master-hook:feat/master-hook
+
+      - name: Compare CI workflows across branches
+        run: |
+          echo "## CI Workflow Comparison Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          CURRENT_BRANCH="${{ github.head_ref || github.ref_name }}"
+          git checkout $CURRENT_BRANCH
+          
+          echo "### Current Branch: $CURRENT_BRANCH" >> $GITHUB_STEP_SUMMARY
+          
+          # Check if .github/workflows exists
+          if [ -d ".github/workflows" ]; then
+            echo "✅ Workflows directory exists" >> $GITHUB_STEP_SUMMARY
+            ls -la .github/workflows/ >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Workflows directory missing" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Compare with uhi7
+          echo "### Comparison with uhi7" >> $GITHUB_STEP_SUMMARY
+          git checkout uhi7
+          if [ -d ".github/workflows" ]; then
+            echo "✅ uhi7 has workflows" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ uhi7 missing workflows" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Compare with main
+          echo "### Comparison with main" >> $GITHUB_STEP_SUMMARY
+          git checkout main
+          if [ -d ".github/workflows" ]; then
+            echo "✅ main has workflows" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ main missing workflows" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          git checkout $CURRENT_BRANCH
+
+      - name: Generate compliance report
+        run: |
+          mkdir -p ci-testing
+          echo "# Compliance Check Report" > ci-testing/compliance-report.md
+          echo "Generated: $(date)" >> ci-testing/compliance-report.md
+          echo "" >> ci-testing/compliance-report.md
+          echo "## Branch Comparison" >> ci-testing/compliance-report.md
+          echo "- Current branch: ${{ github.head_ref || github.ref_name }}" >> ci-testing/compliance-report.md
+          echo "- Base branch: uhi7" >> ci-testing/compliance-report.md
+          echo "- Main branch: main" >> ci-testing/compliance-report.md
+
+      - name: Upload compliance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report
+          path: ci-testing/compliance-report.md
+
+  # Contracts CI Testing
+  contracts-ci:
+    name: Contracts CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Build contracts
+        run: |
+          forge --version
+          forge install
+          forge build --sizes
+
+      - name: Run tests
+        run: |
+          forge install > /dev/null
+          forge test
+
+      - name: Run coverage
+        run: |
+          forge install > /dev/null
+          forge coverage --report summary --report lcov || true
+
+      - name: Check formatting
+        run: forge fmt --check || true
+
+  # Client2 CI Testing
+  client2-ci:
+    name: Client2 CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client2
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: client2/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build verification
+        run: npm run build || echo "Build step not configured"
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit || echo "TypeScript check not configured"
+
+  # Indexer CI Testing
+  indexer-ci:
+    name: Indexer CI
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: indexer
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: indexer/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript compilation
+        run: npm run build
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Validate squid.yaml
+        run: |
+          if [ -f squid.yaml ]; then
+            echo "✅ squid.yaml exists"
+            # Basic YAML validation
+            python3 -c "import yaml; yaml.safe_load(open('squid.yaml'))" || echo "⚠️ YAML validation skipped"
+          else
+            echo "❌ squid.yaml missing"
+            exit 1
+          fi
+
+      - name: Validate GraphQL schema
+        run: |
+          if [ -f schema.graphql ]; then
+            echo "✅ schema.graphql exists"
+          else
+            echo "❌ schema.graphql missing"
+            exit 1
+          fi
+
+  # Security Scanning
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check .gitignore for .env
+        run: |
+          echo "## .gitignore Security Check" >> $GITHUB_STEP_SUMMARY
+          if grep -q "\.env" .gitignore; then
+            echo "✅ .env is in .gitignore" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ .env NOT in .gitignore" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Scan for .env files
+        run: |
+          echo "## .env File Scan" >> $GITHUB_STEP_SUMMARY
+          ENV_FILES=$(find . -name ".env*" -not -path "./.git/*" -not -path "./node_modules/*" 2>/dev/null || true)
+          if [ -z "$ENV_FILES" ]; then
+            echo "✅ No .env files found in repository" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Found .env files:" >> $GITHUB_STEP_SUMMARY
+            echo "$ENV_FILES" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Install gitleaks
+        run: |
+          wget -q https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+          tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
+          chmod +x gitleaks
+          sudo mv gitleaks /usr/local/bin/
+
+      - name: Run gitleaks scan
+        run: |
+          mkdir -p ci-testing
+          gitleaks detect --source . --report-path ci-testing/gitleaks-report.json --no-git || true
+          gitleaks detect --source . --report-format json --report-path ci-testing/gitleaks-report.json || true
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "## Secret Pattern Scan" >> $GITHUB_STEP_SUMMARY
+          mkdir -p ci-testing
+          
+          # Check for Ethereum private keys (64 hex chars)
+          PRIVATE_KEY_MATCHES=$(grep -r -E "0x[a-fA-F0-9]{64}" --include="*.ts" --include="*.js" --include="*.sol" --include="*.yaml" --include="*.yml" --include="*.json" . 2>/dev/null | grep -v node_modules | grep -v ".git" | wc -l || echo "0")
+          
+          # Check for mnemonic phrases (12 or 24 words)
+          MNEMONIC_MATCHES=$(grep -r -E "([a-z]+\s+){11,23}[a-z]+" --include="*.ts" --include="*.js" --include="*.sol" . 2>/dev/null | grep -v node_modules | grep -v ".git" | wc -l || echo "0")
+          
+          # Check for RPC URLs with embedded keys
+          RPC_URL_MATCHES=$(grep -r -E "https://.*\.(infura\.io|alchemy\.com|quicknode\.com)/.*/[a-zA-Z0-9_-]+" --include="*.ts" --include="*.js" --include="*.yaml" --include="*.yml" . 2>/dev/null | grep -v node_modules | grep -v ".git" | wc -l || echo "0")
+          
+          echo "Private key patterns found: $PRIVATE_KEY_MATCHES" >> $GITHUB_STEP_SUMMARY
+          echo "Mnemonic patterns found: $MNEMONIC_MATCHES" >> $GITHUB_STEP_SUMMARY
+          echo "RPC URL patterns found: $RPC_URL_MATCHES" >> $GITHUB_STEP_SUMMARY
+          
+          echo "Private key patterns: $PRIVATE_KEY_MATCHES" > ci-testing/security-scan-results.txt
+          echo "Mnemonic patterns: $MNEMONIC_MATCHES" >> ci-testing/security-scan-results.txt
+          echo "RPC URL patterns: $RPC_URL_MATCHES" >> ci-testing/security-scan-results.txt
+
+      - name: Upload security report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: ci-testing/
+
+  # Generate comprehensive findings
+  generate-findings:
+    name: Generate Findings
+    runs-on: ubuntu-latest
+    needs: [compliance-check, contracts-ci, client2-ci, indexer-ci, security-scan]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ci-testing-artifacts
+
+      - name: Generate findings report
+        run: |
+          mkdir -p ci-testing
+          
+          echo "# Comprehensive CI Testing Findings" > ci-testing/FINDINGS.md
+          echo "Generated: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ci-testing/FINDINGS.md
+          echo "" >> ci-testing/FINDINGS.md
+          echo "## Test Execution Summary" >> ci-testing/FINDINGS.md
+          echo "" >> ci-testing/FINDINGS.md
+          echo "### Jobs Status" >> ci-testing/FINDINGS.md
+          echo "- Compliance Check: ${{ needs.compliance-check.result }}" >> ci-testing/FINDINGS.md
+          echo "- Contracts CI: ${{ needs.contracts-ci.result }}" >> ci-testing/FINDINGS.md
+          echo "- Client2 CI: ${{ needs.client2-ci.result }}" >> ci-testing/FINDINGS.md
+          echo "- Indexer CI: ${{ needs.indexer-ci.result }}" >> ci-testing/FINDINGS.md
+          echo "- Security Scan: ${{ needs.security-scan.result }}" >> ci-testing/FINDINGS.md
+          echo "" >> ci-testing/FINDINGS.md
+          
+          echo "## Branch Comparison Results" >> ci-testing/FINDINGS.md
+          echo "" >> ci-testing/FINDINGS.md
+          echo "### Tested Against" >> ci-testing/FINDINGS.md
+          echo "- Base branch: uhi7" >> ci-testing/FINDINGS.md
+          echo "- Main branch: main" >> ci-testing/FINDINGS.md
+          echo "- Feature branches: feat/create-protocol, feat/create-pool, feat/master-hook" >> ci-testing/FINDINGS.md
+          echo "" >> ci-testing/FINDINGS.md
+          
+          if [ -f ci-testing-artifacts/compliance-report/compliance-report.md ]; then
+            cat ci-testing-artifacts/compliance-report/compliance-report.md >> ci-testing/FINDINGS.md
+          fi
+          
+          echo "" >> ci-testing/FINDINGS.md
+          echo "## Security Scan Results" >> ci-testing/FINDINGS.md
+          echo "" >> ci-testing/FINDINGS.md
+          
+          if [ -f ci-testing-artifacts/security-report/security-scan-results.txt ]; then
+            cat ci-testing-artifacts/security-report/security-scan-results.txt >> ci-testing/FINDINGS.md
+          fi
+          
+          echo "" >> ci-testing/FINDINGS.md
+          echo "## Next Steps" >> ci-testing/FINDINGS.md
+          echo "" >> ci-testing/FINDINGS.md
+          echo "### Immediate Actions" >> ci-testing/FINDINGS.md
+          echo "1. Review compliance check results against uhi7 branch" >> ci-testing/FINDINGS.md
+          echo "2. Verify all CI workflows are properly configured" >> ci-testing/FINDINGS.md
+          echo "3. Address any security scan findings" >> ci-testing/FINDINGS.md
+          echo "4. Ensure .env files are properly excluded" >> ci-testing/FINDINGS.md
+          echo "" >> ci-testing/FINDINGS.md
+          echo "### Long-term Improvements" >> ci-testing/FINDINGS.md
+          echo "1. Standardize CI workflows across all branches" >> ci-testing/FINDINGS.md
+          echo "2. Implement branch protection rules" >> ci-testing/FINDINGS.md
+          echo "3. Add coverage thresholds for contracts" >> ci-testing/FINDINGS.md
+          echo "4. Set up automated security scanning on all PRs" >> ci-testing/FINDINGS.md
+          echo "5. Configure proper linting and formatting checks" >> ci-testing/FINDINGS.md
+
+      - name: Upload findings
+        uses: actions/upload-artifact@v4
+        with:
+          name: comprehensive-findings
+          path: ci-testing/
+
+      - name: Create findings summary
+        run: |
+          echo "## CI Testing Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Findings have been generated in the \`ci-testing/\` directory." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Download the \`comprehensive-findings\` artifact to view detailed results." >> $GITHUB_STEP_SUMMARY

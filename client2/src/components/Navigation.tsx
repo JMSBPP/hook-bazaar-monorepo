@@ -1,11 +1,12 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import Button from './common/Button';
+import { useNavigate } from 'react-router-dom';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import Logo from './common/Logo';
 import type { Page } from '../types';
 
 interface NavigationProps {
-  onNavigate: (page: Page) => void;
+  onNavigate?: (page: Page) => void;
 }
 
 interface NavLink {
@@ -23,6 +24,7 @@ const navLinks: NavLink[] = [
 ];
 
 export default function Navigation({ onNavigate }: NavigationProps) {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleNavigate = (page: string) => {
@@ -36,7 +38,20 @@ export default function Navigation({ onNavigate }: NavigationProps) {
       // External link - could open in new tab
       window.open('https://docs.hookbazaar.com', '_blank', 'noopener,noreferrer');
     } else {
+      // Map page names to routes
+      const routeMap: Record<string, string> = {
+        'home': '/',
+        'about': '/about',
+        'contact': '/contact',
+        'hook-developer': '/hook-developer',
+        'protocol-designer': '/ProtocolDashboard',
+        'integrator': '/integrator',
+      };
+      const route = routeMap[page] || `/${page}`;
+      navigate(route);
+      if (onNavigate) {
       onNavigate(page as Page);
+      }
     }
     setIsMenuOpen(false);
   };
@@ -51,7 +66,7 @@ export default function Navigation({ onNavigate }: NavigationProps) {
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <button
-            onClick={() => onNavigate('home')}
+            onClick={() => handleNavigate('home')}
             className="transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] rounded px-2 py-1"
             aria-label="Hook Bazaar - Go to home page"
           >
@@ -74,9 +89,10 @@ export default function Navigation({ onNavigate }: NavigationProps) {
                 {link.name}
               </button>
             ))}
-            <Button size="small" aria-label="Connect your cryptocurrency wallet">
-              Connect Wallet
-            </Button>
+            <ConnectButton 
+              chainStatus="icon"
+              showBalance={false}
+            />
           </div>
 
           {/* Mobile Menu Button */}
@@ -113,9 +129,12 @@ export default function Navigation({ onNavigate }: NavigationProps) {
                   {link.name}
                 </button>
               ))}
-              <Button size="small" fullWidth aria-label="Connect your cryptocurrency wallet">
-                Connect Wallet
-              </Button>
+              <div className="w-full">
+                <ConnectButton 
+                  chainStatus="icon"
+                  showBalance={false}
+                />
+              </div>
             </div>
           </div>
         )}
