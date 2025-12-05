@@ -1,0 +1,197 @@
+{
+  "Name": "Hook Bazaar Confidential Marketplace System",
+  "Purpose": "The purpose of the Hook Bazaar Confidential Marketplace System is to contribute to creating a sustainable marketplace for Uniswap v4 hooks where bytecode protection, functionality verification, and economic mechanisms ensure that purchasing licenses remains economically superior to decompiling code, despite public bytecode visibility on-chain.",
+  "Responsibilities": [
+    {
+      "responsibility": "It is the responsibility of the Hook Bazaar Confidential Marketplace System to protect hook bytecode intellectual property through Fhenix-based obfuscation and encryption, ensuring that decompilation attempts yield encrypted ciphertext rather than usable source code.",
+      "description": "The system must obfuscate hook bytecode for all parties using Fhenix encryption, deploy encrypted bytecode on-chain, and grant decryption keys only to licensed users. This responsibility addresses the core challenge of protecting intellectual property when bytecode is publicly visible.",
+      "business_goals": [
+        "Protect developer intellectual property",
+        "Make decompilation economically unviable",
+        "Ensure market sustainability"
+      ],
+      "business_processes": [
+        "Hook development and deployment",
+        "License purchase and activation",
+        "Hook execution and runtime protection"
+      ],
+      "external_entities": [
+        "Hook developers",
+        "Protocol administrators",
+        "Fhenix confidential computing infrastructure"
+      ],
+      "added_value": "Enables developers to monetize hooks without code theft, creating economic incentives for continued development and innovation"
+    },
+    {
+      "responsibility": "It is the responsibility of the Hook Bazaar Confidential Marketplace System to enforce access control for auditors and researchers (who act as bonders), ensuring they can verify hook quality and functionality without leaking code information to unauthorized parties.",
+      "description": "The system must provide controlled access to clean hook code for auditors (security verification) and researchers (functionality verification) while implementing economic mechanisms (dual deposits, watermarking, reputation) that incentivize honest behavior and prevent information leakage.",
+      "business_goals": [
+        "Enable quality verification without code leakage",
+        "Build trust through verified audits and research",
+        "Prevent auditor and researcher information leakage"
+      ],
+      "business_processes": [
+        "Hook audit initiation and execution",
+        "Research and functionality verification",
+        "Audit report publication and verification",
+        "Leakage detection and penalty enforcement"
+      ],
+      "external_entities": [
+        "Security auditors",
+        "Research validators",
+        "Hook developers",
+        "Marketplace platform"
+      ],
+      "added_value": "Reduces information asymmetry by providing verified quality assessments while protecting intellectual property, enabling protocol administrators to make informed decisions without direct code access"
+    },
+    {
+      "responsibility": "It is the responsibility of the Hook Bazaar Confidential Marketplace System to address information asymmetry for protocol administrators by providing automated compatibility analysis, proof of functionality, and simulation services without exposing raw code, enabling trust-based decision making with appropriate premium pricing.",
+      "description": "The system must perform automated analysis of hook compatibility based on pool state variables, generate proofs of functionality, provide simulation services where raw code is never visible, and verify state changes. This allows protocol administrators to evaluate hooks and make purchasing decisions despite information asymmetry, with the system commanding a premium for the trust and verification services provided.",
+      "business_goals": [
+        "Reduce information asymmetry for buyers",
+        "Enable informed purchasing decisions",
+        "Justify premium pricing through trust services"
+      ],
+      "business_processes": [
+        "Hook compatibility analysis",
+        "Functionality proof generation",
+        "Simulation service execution",
+        "State change verification",
+        "Trust premium calculation"
+      ],
+      "external_entities": [
+        "Protocol administrators",
+        "Pool state management systems",
+        "Simulation infrastructure",
+        "Proof generation services"
+      ],
+      "added_value": "Enables protocol administrators to confidently purchase hooks based on verified functionality and compatibility without requiring direct code inspection, reducing transaction costs and enabling market efficiency"
+    },
+    {
+      "responsibility": "It is the responsibility of the Hook Bazaar Confidential Marketplace System to deploy purchased hook logic in isolated EVM environments that guarantee code obfuscation while fully granting functionality to the purchasing protocol.",
+      "description": "For each hook license purchase, the system must deploy the hook logic in an isolated EVM instance that ensures code obfuscation is maintained throughout execution, while providing full functional access to the licensed protocol. This isolated deployment prevents code leakage to other parties while ensuring the purchasing protocol receives complete functionality.",
+      "business_goals": [
+        "Provide full functionality to licensed users",
+        "Maintain code obfuscation during execution",
+        "Enable isolated deployment per license"
+      ],
+      "business_processes": [
+        "License purchase and validation",
+        "Isolated EVM environment provisioning",
+        "Hook deployment in isolated environment",
+        "Execution with obfuscation guarantees",
+        "Functionality access management"
+      ],
+      "external_entities": [
+        "Protocol administrators (licensees)",
+        "Isolated EVM infrastructure",
+        "Hook execution environment",
+        "License verification system"
+      ],
+      "added_value": "Ensures licensed protocols receive complete hook functionality while maintaining intellectual property protection, creating clear value differentiation between licensed and unlicensed use"
+    },
+    {
+      "responsibility": "It is the responsibility of the Hook Bazaar Confidential Marketplace System to transform information asymmetry into trust premium through reputation systems, verification mechanisms, and value-added services that make purchasing licenses economically superior to decompilation.",
+      "description": "The system must implement reputation systems (PeerTrust-based), provide value-added services (documentation, audits, support), enable functionality verification, and create network effects that collectively make purchasing licenses more valuable than decompiling code, even when bytecode is publicly visible.",
+      "business_goals": [
+        "Create sustainable market equilibrium",
+        "Make purchasing economically superior to decompilation",
+        "Build trust and reduce transaction costs"
+      ],
+      "business_processes": [
+        "Reputation calculation and tracking",
+        "Value-added service delivery",
+        "Network effect amplification",
+        "Economic mechanism enforcement",
+        "Market equilibrium maintenance"
+      ],
+      "external_entities": [
+        "Hook developers",
+        "Protocol administrators",
+        "Marketplace participants",
+        "Reputation system infrastructure"
+      ],
+      "added_value": "Creates conditions where honest market participation is the dominant strategy, ensuring long-term market sustainability and enabling continued innovation in the hook ecosystem"
+    }
+  ],
+  "Exclusions": [
+    {
+      "exclusion": "The Hook Bazaar Confidential Marketplace System is not responsible for developing the hook code itself, only for protecting, verifying, and licensing existing hook implementations.",
+      "description": "Hook development is the responsibility of hook developers. The system provides the marketplace infrastructure, protection mechanisms, and licensing framework, but does not create the hook logic or algorithms.",
+      "business_goals": [
+        "Hook development and innovation"
+      ],
+      "business_processes": [
+        "Hook algorithm design",
+        "Hook implementation coding",
+        "Hook logic creation"
+      ],
+      "external_entities": [
+        "Hook developers"
+      ],
+      "added_value": "Focuses system scope on marketplace and protection mechanisms, allowing developers to innovate independently while leveraging the marketplace infrastructure"
+    },
+    {
+      "exclusion": "The Hook Bazaar Confidential Marketplace System is not responsible for managing the underlying Uniswap v4 pool operations, liquidity provision, or swap execution beyond hook integration.",
+      "description": "The system integrates hooks into Uniswap v4 pools but does not manage pool creation, liquidity provision, or swap mechanics. These remain the responsibility of protocol administrators and the Uniswap v4 protocol itself.",
+      "business_goals": [
+        "Pool management",
+        "Liquidity provision",
+        "Swap execution"
+      ],
+      "business_processes": [
+        "Pool initialization",
+        "Liquidity addition and removal",
+        "Swap execution",
+        "Fee collection"
+      ],
+      "external_entities": [
+        "Uniswap v4 protocol",
+        "Protocol administrators",
+        "Liquidity providers"
+      ],
+      "added_value": "Maintains clear separation of concerns, allowing the marketplace to focus on hook licensing and protection while leveraging existing DeFi infrastructure"
+    },
+    {
+      "exclusion": "The Hook Bazaar Confidential Marketplace System is not responsible for legal enforcement of license violations beyond on-chain mechanisms and economic penalties.",
+      "description": "While the system implements on-chain detection and economic penalties (slashing, reputation loss) for license violations, it does not provide legal services, court representation, or off-chain legal enforcement. Legal action remains the responsibility of developers and their legal counsel.",
+      "business_goals": [
+        "Legal enforcement",
+        "Court proceedings",
+        "Legal representation"
+      ],
+      "business_processes": [
+        "Legal case filing",
+        "Court representation",
+        "Legal settlement negotiation"
+      ],
+      "external_entities": [
+        "Legal counsel",
+        "Court systems",
+        "Legal enforcement agencies"
+      ],
+      "added_value": "Focuses on technical and economic mechanisms while providing the necessary on-chain evidence and verification that can support legal action if needed"
+    },
+    {
+      "exclusion": "The Hook Bazaar Confidential Marketplace System is not responsible for providing direct customer support, bug fixes, or feature development for individual hooks beyond the marketplace infrastructure.",
+      "description": "While the system facilitates hook discovery, licensing, and execution, it does not provide direct support for hook-specific issues, bug fixes, or feature requests. These remain the responsibility of individual hook developers who may offer support as part of their value proposition.",
+      "business_goals": [
+        "Hook-specific support",
+        "Bug fixes for individual hooks",
+        "Feature development for hooks"
+      ],
+      "business_processes": [
+        "Customer support for hook issues",
+        "Bug identification and fixing",
+        "Feature development and implementation"
+      ],
+      "external_entities": [
+        "Hook developers",
+        "Support teams",
+        "Development teams"
+      ],
+      "added_value": "Maintains marketplace neutrality while enabling developers to differentiate through support offerings, creating competitive dynamics that benefit the ecosystem"
+    }
+  ]
+}
+

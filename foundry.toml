@@ -1,0 +1,43 @@
+[profile.default]
+
+src = "contracts/src/"
+out = "contracts/out/"
+libs = ["contracts/lib", "node_modules"]
+script = "contracts/script"
+ffi=true
+fs_permissions = [
+    { access = "read", path = "./contracts/broadcast" },
+    { access = "read", path = "./contracts/reports" },
+]
+
+remappings = [
+    "forge-std/=contracts/lib/forge-std/src/",
+    "@uniswap/v4-periphery/=contracts/lib/v4-periphery/",
+    "@uniswap/v4-core/=contracts/lib/v4-periphery/lib/v4-core/",
+    "@uniswap/universal-router/=contracts/lib/universal-router/",
+    "Compose/=contracts/lib/compose-extensions/lib/Compose/src/",
+    "compose-extensions/=contracts/lib/compose-extensions/src/",
+    "@openzeppelin/contracts/=contracts/lib/openzeppelin-contracts/contracts/",
+    "solmate/=contracts/lib/v4-periphery/lib/permit2/lib/solmate/",
+    "foundry-devops/=contracts/lib/foundry-devops/src/",    
+    "@hook-bazaar/protocol-pkg/=contracts/src/protocol-pkg/",
+    "@hook-bazaar/master-hook-pkg/=contracts/src/master-hook-pkg/",
+    "@hook-bazaar/protocol-pkg/script/=contracts/script/protocol-pkg/",
+    "@hook-bazaar/master-hook-pkg/script/=contracts/script/hook-master/",
+    "@hook-bazaar/protocol-pkg/test/=contracts/test/protocol-pkg/",
+    "@hook-bazaar/master-hook-pkg/test/=contracts/test/hook-master/",
+    
+]
+
+compiler_restrictions = [
+    {path = "contracts/src/**", solc_version = ">=0.8.30", evm_version = "prague"},
+    {path = "contracts/lib/v4-periphery/**", solc_version = "=0.8.26", evm_version = "cancun"},
+    {path = "contracts/lib/compose-extensions/**", solc_version = "=0.8.30", evm_version = "prague"},
+    {path = "contracts/test/**", solc_version = ">=0.8.0"}
+]
+
+[rpc_endpoints]
+
+mainnet = "https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+monad_testnet = "https://monad-testnet.g.alchemy.com/v2/${ALCHEMY_API_KEY}"
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

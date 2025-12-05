@@ -1,0 +1,149 @@
+{
+  "services": [
+    {
+      "name": "HookBytecodeEncryption",
+      "TriggeringEvent": "A hook developer submits hook bytecode for deployment to the marketplace",
+      "DeliveredService": "The hook bytecode is encrypted using Fhenix homomorphic encryption and deployed on-chain as ciphertext, ensuring that all parties (including unauthorized viewers) see only encrypted data. Licensed users receive decryption keys that enable full functionality, while decompilation attempts yield encrypted ciphertext rather than source code. This service protects intellectual property while maintaining on-chain deployment for verification.",
+      "Assumptions": [
+        "Fhenix confidential computing infrastructure is available and operational",
+        "The hook developer has valid credentials and sufficient stake for deployment",
+        "The encryption process does not introduce functional errors in the hook logic",
+        "Decryption keys can be securely distributed to licensed users only"
+      ]
+    },
+    {
+      "name": "AuditorAccessControl",
+      "TriggeringEvent": "A hook developer requests security audit for their hook, or the marketplace requires audit for hook listing",
+      "DeliveredService": "An auditor receives temporary, controlled access to clean hook code in an isolated Fhenix environment for security review. The auditor can perform comprehensive security analysis, identify vulnerabilities, and generate audit reports. The system applies cryptographic watermarking to track code access, implements dual-deposit escrow to incentivize honest behavior, and monitors for information leakage. Upon audit completion, access is revoked and the auditor cannot access the code afterward. This service enables quality verification while preventing code information leakage.",
+      "Assumptions": [
+        "Auditors are registered and have staked sufficient deposits",
+        "Auditors have the technical expertise to perform security reviews",
+        "The watermarking system can reliably detect code leakage to the specific auditor",
+        "The marketplace can verify audit report authenticity without code access",
+        "Auditors value their reputation and future audit opportunities more than potential leakage benefits"
+      ]
+    },
+    {
+      "name": "ResearcherAccessControl",
+      "TriggeringEvent": "A hook developer requests functionality verification, or the marketplace requires research validation for hook listing",
+      "DeliveredService": "A researcher receives temporary, controlled access to clean hook code in an isolated Fhenix environment to verify functionality against theoretical specifications. The researcher can analyze code correctness, validate algorithm implementation, and generate functionality proofs. The system applies cryptographic watermarking, implements dual-deposit escrow, and monitors for information leakage. Upon research completion, access is revoked. This service enables functionality verification while preventing code information leakage.",
+      "Assumptions": [
+        "Researchers are registered and have staked sufficient deposits",
+        "Researchers have the domain expertise to verify functionality",
+        "Theoretical specifications are available and verifiable",
+        "The watermarking system can reliably detect code leakage",
+        "Researchers value their reputation and future opportunities more than potential leakage benefits"
+      ]
+    },
+    {
+      "name": "AutomatedCompatibilityAnalysis",
+      "TriggeringEvent": "A protocol administrator requests compatibility analysis for a hook with their target pool, or the marketplace performs automated compatibility checks",
+      "DeliveredService": "The system analyzes hook compatibility with the target pool configuration based on pool state variables, hook selectors, and execution patterns. The analysis identifies potential conflicts, dependencies, and integration requirements. A compatibility report is generated and delivered to the protocol administrator without exposing raw hook code. This service reduces information asymmetry by providing actionable compatibility information, enabling informed purchasing decisions.",
+      "Assumptions": [
+        "Pool state variables and configuration are available for analysis",
+        "Hook metadata accurately describes selectors and capabilities",
+        "The compatibility analysis algorithm correctly identifies conflicts and dependencies",
+        "Protocol administrators trust the automated analysis results",
+        "The analysis can be performed without requiring code visibility"
+      ]
+    },
+    {
+      "name": "FunctionalityProofGeneration",
+      "TriggeringEvent": "A protocol administrator requests proof of hook functionality, or the marketplace generates proofs as part of hook listing",
+      "DeliveredService": "The system generates cryptographic or automated proofs that demonstrate the hook meets its specified functionality requirements. Proofs are generated through automated analysis, simulation, or formal verification methods without exposing raw code. The proofs are delivered to protocol administrators, providing verifiable evidence of functionality. This service enables trust-based decision making despite information asymmetry, justifying premium pricing for verified hooks.",
+      "Assumptions": [
+        "Hook functionality specifications are clearly defined and verifiable",
+        "The proof generation system can verify functionality without code access",
+        "Protocol administrators trust the proof generation methodology",
+        "Proofs are computationally feasible to generate",
+        "Proofs provide sufficient evidence for purchasing decisions"
+      ]
+    },
+    {
+      "name": "SimulationService",
+      "TriggeringEvent": "A protocol administrator requests simulation of hook behavior in their pool context, or the marketplace provides simulations for hook evaluation",
+      "DeliveredService": "The system executes hook simulations in isolated environments using the target pool configuration and state. Simulations demonstrate hook behavior, state changes, and integration effects without exposing raw code. State changes are verified and reported to protocol administrators. Simulation results enable protocol administrators to evaluate hook suitability and expected outcomes, reducing information asymmetry and supporting purchasing decisions.",
+      "Assumptions": [
+        "Pool configuration and state can be accurately simulated",
+        "The simulation environment correctly models hook execution",
+        "State changes can be verified without code visibility",
+        "Simulation results accurately predict real-world behavior",
+        "Protocol administrators trust simulation methodology"
+      ]
+    },
+    {
+      "name": "IsolatedEVMDeployment",
+      "TriggeringEvent": "A protocol administrator successfully purchases a hook license for deployment to a specific pool",
+      "DeliveredService": "The system provisions an isolated EVM instance specifically for the purchased hook license. The encrypted hook bytecode is deployed to this isolated environment, and decryption keys are granted to the licensed protocol administrator. The hook executes with full functionality within the isolated environment while maintaining code obfuscation guarantees. The isolated deployment ensures that code remains protected from other parties while the licensed protocol receives complete functionality. This service delivers the core value proposition: full functionality with intellectual property protection.",
+      "Assumptions": [
+        "Isolated EVM infrastructure is available and can be provisioned on-demand",
+        "The isolated environment maintains obfuscation guarantees throughout execution",
+        "Decryption keys can be securely provided to licensed users",
+        "The isolated environment correctly executes hook logic",
+        "Performance overhead of isolation is acceptable for protocol operations",
+        "The licensed protocol administrator has valid credentials and license proof"
+      ]
+    },
+    {
+      "name": "LicenseVerificationAndKeyDistribution",
+      "TriggeringEvent": "A protocol administrator attempts to access hook functionality or decryption keys",
+      "DeliveredService": "The system verifies that the protocol administrator holds a valid license for the requested hook and pool combination. Upon successful verification, decryption keys are granted (encrypted) to the licensed user. The system maintains access logs and enforces license terms. This service ensures that only licensed users can access hook functionality, creating clear value differentiation between licensed and unlicensed use.",
+      "Assumptions": [
+        "License records are accurately maintained on-chain",
+        "License verification can be performed efficiently",
+        "Decryption keys can be securely distributed",
+        "License terms are enforceable and verifiable",
+        "The system can detect and prevent unauthorized access attempts"
+      ]
+    },
+    {
+      "name": "ReputationSystemManagement",
+      "TriggeringEvent": "A hook transaction completes (purchase, audit, research, or usage), or reputation update is required",
+      "DeliveredService": "The system calculates and updates reputation scores for developers, auditors, and researchers using PeerTrust-based algorithms. Reputation incorporates time decay, reviewer credibility, transaction context, and review consistency. Updated reputation scores are published and influence future transactions, pricing, and access. This service builds trust over time, reduces information asymmetry, and creates network effects that make licensed hooks more valuable.",
+      "Assumptions": [
+        "Transaction data and reviews are accurately recorded",
+        "The PeerTrust algorithm correctly weights reputation factors",
+        "Reputation scores influence market behavior as expected",
+        "The system can detect and prevent reputation manipulation",
+        "Market participants value reputation and respond to reputation signals"
+      ]
+    },
+    {
+      "name": "ValueAddedServiceDelivery",
+      "TriggeringEvent": "A protocol administrator purchases a hook license, or value-added services are updated",
+      "DeliveredService": "The system delivers comprehensive value-added services to licensed users including: IPFS-hosted documentation and specifications, security audit reports with verification proofs, test suites for integration validation, ongoing support and updates, and legal protection through license terms. These services are accessible only to licensed users and create significant value beyond raw code. This service makes purchasing licenses economically superior to decompilation by providing services that decompiled code cannot access.",
+      "Assumptions": [
+        "Value-added content (documentation, audits, tests) is available and maintained",
+        "IPFS infrastructure is available for content delivery",
+        "Service updates can be delivered to existing license holders",
+        "Licensed users value these services sufficiently to justify purchase",
+        "The services provide measurable value beyond raw code"
+      ]
+    },
+    {
+      "name": "LeakageDetectionAndPenalty",
+      "TriggeringEvent": "Suspected code information leakage is reported, or automated monitoring detects potential leakage",
+      "DeliveredService": "The system investigates suspected code leakage using watermarking, access logs, and pattern analysis. If leakage is confirmed and traced to a specific auditor, researcher, or protocol, economic penalties are enforced including deposit slashing, reputation reduction, and potential legal evidence generation. This service creates strong disincentives for information leakage, ensuring that auditors and researchers prefer honest behavior over leakage.",
+      "Assumptions": [
+        "Watermarking can reliably identify the source of leaked code",
+        "Leakage detection methods are accurate and not prone to false positives",
+        "The penalty system can be enforced on-chain",
+        "Penalties are sufficiently large to deter leakage",
+        "The system can distinguish between legitimate sharing and unauthorized leakage"
+      ]
+    },
+    {
+      "name": "NetworkEffectAmplification",
+      "TriggeringEvent": "A hook license is purchased, or marketplace participation increases",
+      "DeliveredService": "The system facilitates network effects by connecting licensed hooks to marketplace ecosystem benefits including: compatibility guarantees with other hooks, integration with marketplace infrastructure, access to developer community and support, partnership opportunities, and early access to updates. As more hooks are licensed and more protocols participate, network value increases, making licensed hooks progressively more valuable than isolated decompiled code. This service creates positive feedback loops that strengthen market sustainability.",
+      "Assumptions": [
+        "Marketplace participation grows over time",
+        "Network effects create measurable value for participants",
+        "Ecosystem integration provides tangible benefits",
+        "Community and partnership opportunities are valued",
+        "Network value increases with participation as expected"
+      ]
+    }
+  ]
+}
+

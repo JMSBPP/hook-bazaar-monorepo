@@ -1,10 +1,22 @@
 
+
+.cursor/** 
+
 # Foundry build artifacts
-foundry-out/
-cache/
+contracts/foundry-out/
+contracts/cache/
 
 # TODO files
 TODO.md
 
 # Environment variables
 .env
+
+node_modules/
+
+
+## Testing
+
+ci-testing/**
+
+agents/**
