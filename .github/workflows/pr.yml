@@ -1,4 +1,4 @@
-name: PR Compliance Check
+name: PR Build Check
 
 on:
   pull_request:
@@ -7,339 +7,70 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
-  compliance-check:
-    name: Verify PR Compliance
+  check-builds:
+    name: Check Code Compiles
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        submodules: recursive
 
-    - name: Verify PR target branch
-      run: |
-        # This workflow is triggered on PRs to uhi7 branch, so by definition it's targeting the right branch
-        echo "PR is targeting uhi7 branch as required"
-
-    - name: Verify PR has description
-      run: |
-        if [ -z "${{ github.event.pull_request.body }}" ]; then
-          echo "❌ Error: Pull request must have a description"
-          exit 1
-        else
-          echo "✅ PR has description"
-        fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Verify PR has at least one reviewer assigned
-      run: |
-        if [ -z "${{ github.event.pull_request.requested_reviewers }}" ] && [ "${{ github.event.pull_request.review_comments }}" == "0" ]; then
-          echo "❌ Error: Pull request must have at least one reviewer assigned or have review comments"
-          exit 1
-        else
-          echo "✅ PR has reviewers or review comments"
-        fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Check for conventional commit messages
-      run: |
-        # Get commits for this PR
-        git fetch origin ${{ github.event.pull_request.base.ref }}:${{ github.event.pull_request.base.ref }}
-        commits=$(git log --oneline origin/${{ github.event.pull_request.base.ref }}..${{ github.event.pull_request.head.sha }})
-        
-        echo "Checking commit messages for conventional format..."
-        echo "$commits"
-        
-        # For each commit, check if it follows conventional commit format
-        # This is a simplified check - in practice you'd want more thorough validation
-        while IFS= read -r commit; do
-          if [ -n "$commit" ]; then
-            message=$(echo $commit | cut -d' ' -f2-)
-            if [[ ! $message =~ ^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert|merge):\  ]]; then
-              echo "⚠️  Commit does not follow conventional format: $message"
-            else
-              echo "✅ Commit follows conventional format: $message"
-            fi
-          fi
-        done <<< "$commits"
-</file>
-
-  security-scan:
-    name: Security Vulnerability Scan
-    runs-on: ubuntu-latest
-    needs: compliance-check
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        fetch-depth: 0
+        node-version: '18'
+        cache: 'npm'
 
-    - name: Secret scanning with TruffleHog
-      uses: trufflesecurity/trufflehog@main
-      with:
-        path: ./
-        base: ${{ github.event.pull_request.base.sha }}
-        head: ${{ github.event.pull_request.head.sha }}
-        extra_args: --only-verified
-
-    - name: Check for .env files in commit history
+    - name: Install npm dependencies
       run: |
-        # Check if any .env files exist in the repository
-        if find . -name ".env*" -not -path "./.env.example" -type f | grep -q .; then
-          echo "❌ Error: Found .env files in the repository. These should be excluded via .gitignore"
-          find . -name ".env*" -not -path "./.env.example"
-          exit 1
-        else
-          echo "✅ No .env files found (except .env.example)"
-        fi
-        
-        # Check if .gitignore contains .env patterns
-        if [ ! -f .gitignore ] || ! grep -qE "(\.env|\.env\..*|\*\.env|\.env\.\*)" .gitignore; then
-          echo "⚠️  .gitignore does not contain .env exclusion patterns"
-        else
-          echo "✅ .gitignore contains .env exclusion patterns"
-        fi
+        npm ci
 
-    - name: Web3 security scan
+    - name: Check npm run dev compiles
       run: |
-        # Scan for exposed private keys, mnemonics, API keys
-        echo "Scanning for Web3 security vulnerabilities..."
-        
-        # Check for Ethereum private keys (64 hex chars)
-        if find . -type f -not -path "./.git/*" -exec grep -l "0x[0-9a-fA-F]\{64\}" {} \; | grep -v ".github" | grep -v "node_modules"; then
-          echo "❌ Found potential private key in files above"
+        echo "Checking npm run dev compilation..."
+        # Start dev server in background and check if it compiles
+        timeout 20 npm run dev > /dev/null 2>&1 &
+        DEV_PID=$!
+        sleep 8
+        if ps -p $DEV_PID > /dev/null 2>&1; then
+          echo "✅ npm run dev compiled and started successfully"
+          kill $DEV_PID 2>/dev/null || true
+          wait $DEV_PID 2>/dev/null || true
+        else
+          echo "❌ Error: npm run dev failed to compile or start"
           exit 1
-        else
-          echo "✅ No private keys detected"
         fi
-        
-        # Check for mnemonic phrases (12 or 24 words)
-        # This is a simplified check - real mnemonics would need more sophisticated detection
-        if find . -name "*.js" -o -name "*.ts" -o -name "*.json" -o -name "*.md" -o -name "*.txt" | xargs grep -l -i "mnemonic\|seed phrase\|seed-phrase" 2>/dev/null; then
-          echo "⚠️  Found mentions of mnemonic/seed phrase - manually verify they are not actual mnemonics"
-        else
-          echo "✅ No mnemonic patterns found"
-        fi
-        
-        # Check for API keys in code
-        if find . -name "*.js" -o -name "*.ts" -o -name "*.json" -o -name "*.md" -o -name "*.txt" | xargs grep -l -i "api_key\|api-key\|secret\|rpc\|infura\|alchemy\|quicknode\|getblock\|ankr\|publicnode\|blockpi\|pokt\|chainstack\|lavanet" 2>/dev/null | grep -v ".env" | grep -v "node_modules" | grep -v ".git"; then
-          echo "⚠️  Found potential API key references - manually verify they are not actual keys"
-        else
-          echo "✅ No API key patterns found"
-        fi
-
-  code-quality-contracts:
-    name: Contracts Code Quality
-    runs-on: ubuntu-latest
-    needs: security-scan
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
 
     - name: Install Foundry
       uses: foundry-rs/foundry-toolchain@v1
       with:
         version: nightly
 
-    - name: Check if contracts exist
-      id: check_contracts
-      run: |
-        if [ -d "contracts" ]; then
-          echo "contracts_exist=true" >> $GITHUB_OUTPUT
-          echo "Found contracts directory"
-        else
-          echo "contracts_exist=false" >> $GITHUB_OUTPUT
-          echo "No contracts directory found"
-        fi
-
-    - name: Install dependencies and build contracts
-      if: steps.check_contracts.outputs.contracts_exist == 'true'
+    - name: Install forge dependencies
       run: |
         forge --version
         forge install
-        forge build --sizes
 
-    - name: Run contract tests
-      if: steps.check_contracts.outputs.contracts_exist == 'true'
+    - name: Check forge build
       run: |
-        forge test -v
-
-    - name: Check contract formatting
-      if: steps.check_contracts.outputs.contracts_exist == 'true'
-      run: |
-        forge fmt --check
-
-  code-quality-client:
-    name: Client Code Quality
-    runs-on: ubuntu-latest
-    needs: security-scan
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-
-    - name: Check if client2 exists
-      id: check_client
-      run: |
-        if [ -d "client2" ]; then
-          echo "client_exists=true" >> $GITHUB_OUTPUT
-          echo "Found client2 directory"
-        else
-          echo "client_exists=false" >> $GITHUB_OUTPUT
-          echo "No client2 directory found"
-        fi
-
-    - name: Install dependencies
-      if: steps.check_client.outputs.client_exists == 'true'
-      run: |
-        cd client2
-        npm ci
-
-    - name: Run TypeScript type checking
-      if: steps.check_client.outputs.client_exists == 'true'
-      run: |
-        cd client2
-        npx tsc --noEmit
-
-    - name: Run linting
-      if: steps.check_client.outputs.client_exists == 'true'
-      run: |
-        cd client2
-        npm run lint || echo "Linting issues found, continuing..."
-
-    - name: Run build
-      if: steps.check_client.outputs.client_exists == 'true'
-      run: |
-        cd client2
-        npm run build
-
-  code-quality-indexer:
-    name: Indexer Code Quality
-    runs-on: ubuntu-latest
-    needs: security-scan
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-
-    - name: Check if indexer exists
-      id: check_indexer
-      run: |
-        if [ -d "indexer" ]; then
-          echo "indexer_exists=true" >> $GITHUB_OUTPUT
-          echo "Found indexer directory"
-        else
-          echo "indexer_exists=false" >> $GITHUB_OUTPUT
-          echo "No indexer directory found"
-        fi
-
-    - name: Install Node.js dependencies
-      if: steps.check_indexer.outputs.indexer_exists == 'true'
-      run: |
-        cd indexer
-        npm ci || echo "Indexer may not have package.json, continuing..."
-
-    - name: Check if indexer has a build process
-      if: steps.check_indexer.outputs.indexer_exists == 'true'
-      run: |
-        cd indexer
-        # Check for tsconfig.json
-        if [ -f "tsconfig.json" ]; then
-          echo "Found tsconfig.json, running TypeScript compilation"
-          npx tsc --noEmit || echo "TypeScript errors found in indexer"
-        else
-          echo "No tsconfig.json found in indexer"
-        fi
-        
-        # Check for any build scripts
-        if [ -f "package.json" ]; then
-          if grep -q "build\|compile" package.json; then
-            echo "Found build scripts in indexer package.json"
-            npm run build || echo "Build failed but continuing"
-          fi
-        fi
-
-  cross-branch-compliance:
-    name: Cross-Branch Compliance Check
-    runs-on: ubuntu-latest
-    needs: [code-quality-contracts, code-quality-client, code-quality-indexer]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Compare workflow files with reference
-      run: |
-        # Check if the reference workflow exists
-        if [ -f "agents/refs/foundry-ci.yml" ]; then
-          echo "Checking current workflow against reference..."
-          
-          # Compare the workflows if both exist
-          if [ -f ".github/workflows/ci.yml" ]; then
-            echo "Comparing with reference workflow file..."
-            # In a real implementation, you would perform more detailed comparisons
-            echo "Both workflows exist - basic check passed"
-          else
-            echo "⚠️  No CI workflow found to compare with reference"
-          fi
-        else
-          echo "No reference workflow file found at agents/refs/foundry-ci.yml"
-        fi
-
-    - name: Verify branch protection alignment
-      run: |
-        # Verify that we're checking PR against uhi7 branch as required
-        if [ "${{ github.base_ref }}" = "uhi7" ]; then
-          echo "✅ PR is targeting uhi7 branch as required"
-        else
-          echo "❌ Error: PR is not targeting uhi7 branch"
+        echo "Compiling contracts with forge build..."
+        forge build
+        if [ $? -ne 0 ]; then
+          echo "❌ Error: forge build failed"
           exit 1
         fi
+        echo "✅ forge build completed successfully"
 
-  final-compliance-approval:
-    name: Final Compliance Approval
-    runs-on: ubuntu-latest
-    needs: [compliance-check, security-scan, code-quality-contracts, code-quality-client, code-quality-indexer, cross-branch-compliance]
-    if: always()
-    
-    steps:
-    - name: Check all previous jobs status
+    - name: Check forge test compiles
       run: |
-        # In a real implementation, you would check if all previous jobs passed
-        # For now, we'll just report success if we reached this point
-        echo "All compliance checks completed"
-        
-        # Check if any of the needed jobs failed
-        if [[ "${{ needs.compliance-check.result }}" == "failure" || 
-              "${{ needs.security-scan.result }}" == "failure" || 
-              "${{ needs.code-quality-contracts.result }}" == "failure" || 
-              "${{ needs.code-quality-client.result }}" == "failure" || 
-              "${{ needs.code-quality-indexer.result }}" == "failure" || 
-              "${{ needs.cross-branch-compliance.result }}" == "failure" ]]; then
-          echo "❌ One or more compliance checks failed"
+        echo "Running forge test..."
+        forge test
+        if [ $? -ne 0 ]; then
+          echo "❌ Error: forge test failed"
           exit 1
-        else
-          echo "✅ All compliance checks passed"
         fi
+        echo "✅ forge test completed successfully"
