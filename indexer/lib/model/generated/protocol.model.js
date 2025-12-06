@@ -23,29 +23,29 @@ __decorate([
 ], Protocol.prototype, "id", void 0);
 __decorate([
     (0, typeorm_store_1.Index)(),
-    (0, typeorm_store_1.BigIntColumn)({ nullable: false }),
+    (0, typeorm_store_1.Column)("bigint", { nullable: false }),
     __metadata("design:type", BigInt)
 ], Protocol.prototype, "tokenId", void 0);
 __decorate([
     (0, typeorm_store_1.Index)(),
-    (0, typeorm_store_1.StringColumn)({ nullable: false }),
+    (0, typeorm_store_1.Column)("text", { nullable: false }),
     __metadata("design:type", String)
 ], Protocol.prototype, "protocolCaller", void 0);
 __decorate([
     (0, typeorm_store_1.Index)(),
-    (0, typeorm_store_1.StringColumn)({ nullable: false }),
+    (0, typeorm_store_1.Column)("text", { nullable: false }),
     __metadata("design:type", String)
 ], Protocol.prototype, "protocolAdminManager", void 0);
 __decorate([
-    (0, typeorm_store_1.IntColumn)({ nullable: false }),
+    (0, typeorm_store_1.Column)("int", { nullable: false }),
     __metadata("design:type", Number)
 ], Protocol.prototype, "block", void 0);
 __decorate([
-    (0, typeorm_store_1.StringColumn)({ nullable: false }),
+    (0, typeorm_store_1.Column)("text", { nullable: false }),
     __metadata("design:type", String)
 ], Protocol.prototype, "txHash", void 0);
 __decorate([
-    (0, typeorm_store_1.BigIntColumn)({ nullable: false }),
+    (0, typeorm_store_1.Column)("bigint", { nullable: false }),
     __metadata("design:type", BigInt)
 ], Protocol.prototype, "timestamp", void 0);
 exports.Protocol = Protocol = __decorate([

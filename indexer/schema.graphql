@@ -1,0 +1,10 @@
+type Protocol @entity {
+  id: ID!
+  tokenId: BigInt!
+  protocolCaller: String! @index
+  protocolAdminManager: String! @index
+  block: Int!
+  txHash: String!
+  timestamp: BigInt!
+}
+

@@ -1,14 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_store_1 = require("@subsquid/typeorm-store");
-const generated_1 = require("./model/generated");
 const processor_1 = require("./processor");
+const generated_1 = require("./model/generated");
 const ProtocolAdminClient_1 = require("./abi/ProtocolAdminClient");
+const PROTOCOL_ADMIN_CLIENT_ADDRESS = '0xf362a0919545d503c4db3c9a2e74082f545f9f29';
 processor_1.processor.run(new typeorm_store_1.TypeormDatabase({ supportHotBlocks: true }), async (ctx) => {
     const protocols = [];
     for (let block of ctx.blocks) {
         for (let log of block.logs) {
-            if (log.address === '0xf362a0919545d503c4db3c9a2e74082f545f9f29') {
+            if (log.address === PROTOCOL_ADMIN_CLIENT_ADDRESS) {
                 try {
                     const { protocolCaller, tokenId, protocolAdminManager } = ProtocolAdminClient_1.events.ProtocolCreated.decode(log);
                     const tx = log.transaction || log.getTransaction();

@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+=======
 # =============================================================================
 # Environment Variables - CRITICAL: Never commit .env files
 # =============================================================================
@@ -19,10 +26,18 @@ contracts/foundry-out/
 contracts/out/
 
 # Development broadcast logs (keep broadcast structure, ignore specific chains)
+>>>>>>> 8b13a35cb03fb14cdb9f34a7b7b429971bb197b8
 !/broadcast
 /broadcast/*/31337/
 /broadcast/**/dry-run/
 
+<<<<<<< HEAD
+# Docs
+docs/
+
+# Dotenv file
+.env
+=======
 # =============================================================================
 # Hardhat Build Artifacts (if used)
 # =============================================================================
@@ -126,3 +141,4 @@ agents/
 *.temp
 .cache/
 .temp/
+>>>>>>> 8b13a35cb03fb14cdb9f34a7b7b429971bb197b8

@@ -1,9 +1,9 @@
-
   import { defineConfig } from 'vite';
   import react from '@vitejs/plugin-react-swc';
   import path from 'path';
 
   export default defineConfig({
+  root: 'client2',
     plugins: [react()],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
@@ -17,7 +17,7 @@
         'next-themes@0.4.6': 'next-themes',
         'lucide-react@0.487.0': 'lucide-react',
         'input-otp@1.4.2': 'input-otp',
-        'figma:asset/d9960bdb814135603341883999ea9dc547d831b8.png': path.resolve(__dirname, './src/assets/d9960bdb814135603341883999ea9dc547d831b8.png'),
+      'figma:asset/d9960bdb814135603341883999ea9dc547d831b8.png': path.resolve(__dirname, './client2/src/assets/d9960bdb814135603341883999ea9dc547d831b8.png'),
         'embla-carousel-react@8.6.0': 'embla-carousel-react',
         'cmdk@1.1.1': 'cmdk',
         'class-variance-authority@0.7.1': 'class-variance-authority',
@@ -47,7 +47,7 @@
         '@radix-ui/react-aspect-ratio@1.1.2': '@radix-ui/react-aspect-ratio',
         '@radix-ui/react-alert-dialog@1.1.6': '@radix-ui/react-alert-dialog',
         '@radix-ui/react-accordion@1.2.3': '@radix-ui/react-accordion',
-        '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './client2/src'),
       },
     },
     build: {
