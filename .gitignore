@@ -1,10 +1,144 @@
-
-# Foundry build artifacts
-foundry-out/
+<<<<<<< HEAD
+# Compiler files
 cache/
+out/
 
-# TODO files
+# Ignores development broadcast logs
+=======
+# =============================================================================
+# Environment Variables - CRITICAL: Never commit .env files
+# =============================================================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# =============================================================================
+# Foundry Build Artifacts
+# =============================================================================
+# Foundry cache and build outputs
+cache/
+out/
+contracts/cache/
+contracts/foundry-out/
+contracts/out/
+
+# Development broadcast logs (keep broadcast structure, ignore specific chains)
+>>>>>>> 8b13a35cb03fb14cdb9f34a7b7b429971bb197b8
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+<<<<<<< HEAD
+# Docs
+docs/
+
+# Dotenv file
+.env
+=======
+# =============================================================================
+# Hardhat Build Artifacts (if used)
+# =============================================================================
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# =============================================================================
+# Node.js Dependencies
+# =============================================================================
+node_modules/
+.pnp
+.pnp.js
+.pnp.cjs
+
+# =============================================================================
+# TypeScript Build Outputs
+# =============================================================================
+# Root TypeScript builds
+dist/
+build/
+*.tsbuildinfo
+
+# Indexer compiled outputs
+indexer/lib/
+indexer/dist/
+
+# Client2 build outputs
+client2/dist/
+client2/build/
+client2/.vite/
+
+# =============================================================================
+# Testing & Coverage
+# =============================================================================
+coverage/
+.nyc_output/
+*.lcov
+test-results/
+playwright-report/
+
+# =============================================================================
+# CI/CD Testing Directories
+# =============================================================================
+ci-testing/
+
+# =============================================================================
+# Logs
+# =============================================================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# =============================================================================
+# Editor Directories and Files
+# =============================================================================
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Cursor IDE
+.cursor/
+
+# =============================================================================
+# OS Files
+# =============================================================================
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# =============================================================================
+# Project-Specific Documentation (Internal Use)
+# =============================================================================
+AGENTS.md
+CREATE_PROTOCOL_PR.md
+QWEN.md
 TODO.md
 
-# Environment variables
-.env
+# =============================================================================
+# Agents and Architecture Documentation
+# =============================================================================
+agents/
+
+# =============================================================================
+# Temporary and Cache Files
+# =============================================================================
+*.tmp
+*.temp
+.cache/
+.temp/
+>>>>>>> 8b13a35cb03fb14cdb9f34a7b7b429971bb197b8

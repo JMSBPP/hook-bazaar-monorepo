@@ -1,4 +1,4 @@
-import logo from 'figma:asset/d9960bdb814135603341883999ea9dc547d831b8.png';
+import logo from '../../assets/d9960bdb814135603341883999ea9dc547d831b8.png';
 
 export type LogoSize = 'sm' | 'md' | 'lg' | 'xl';
 

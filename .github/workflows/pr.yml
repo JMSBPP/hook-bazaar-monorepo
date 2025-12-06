@@ -1,0 +1,76 @@
+name: PR Build Check
+
+on:
+  pull_request:
+    branches: [ uhi7 ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-builds:
+    name: Check Code Compiles
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install npm dependencies
+      run: |
+        npm ci
+
+    - name: Check npm run dev compiles
+      run: |
+        echo "Checking npm run dev compilation..."
+        # Start dev server in background and check if it compiles
+        timeout 20 npm run dev > /dev/null 2>&1 &
+        DEV_PID=$!
+        sleep 8
+        if ps -p $DEV_PID > /dev/null 2>&1; then
+          echo "✅ npm run dev compiled and started successfully"
+          kill $DEV_PID 2>/dev/null || true
+          wait $DEV_PID 2>/dev/null || true
+        else
+          echo "❌ Error: npm run dev failed to compile or start"
+          exit 1
+        fi
+
+    - name: Install Foundry
+      uses: foundry-rs/foundry-toolchain@v1
+      with:
+        version: nightly
+
+    - name: Install forge dependencies
+      run: |
+        forge --version
+        forge install
+
+    - name: Check forge build
+      run: |
+        echo "Compiling contracts with forge build..."
+        forge build
+        if [ $? -ne 0 ]; then
+          echo "❌ Error: forge build failed"
+          exit 1
+        fi
+        echo "✅ forge build completed successfully"
+
+    - name: Check forge test compiles
+      run: |
+        echo "Running forge test..."
+        forge test
+        if [ $? -ne 0 ]; then
+          echo "❌ Error: forge test failed"
+          exit 1
+        fi
+        echo "✅ forge test completed successfully"

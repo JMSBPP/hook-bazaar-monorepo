@@ -1,0 +1,15 @@
+forge-std/=contracts/lib/forge-std/src/
+@uniswap/v4-periphery/=contracts/lib/v4-periphery/
+@uniswap/v4-core/=contracts/lib/v4-periphery/lib/v4-core/
+@uniswap/universal-router/=contracts/lib/universal-router/
+Compose/=contracts/lib/compose-extensions/lib/Compose/src/
+compose-extensions/=contracts/lib/compose-extensions/src/
+@openzeppelin/contracts/=contracts/lib/openzeppelin-contracts/contracts/
+solmate/=contracts/lib/v4-periphery/lib/permit2/lib/solmate/
+foundry-devops/=contracts/lib/foundry-devops/src/
+@hook-bazaar/protocol-pkg/=contracts/src/protocol-pkg/
+@hook-bazaar/master-hook-pkg/=contracts/src/protocol-pkg/
+@hook-bazaar/protocol-pkg/script/=contracts/script/protocol-pkg/script/
+@hook-bazaar/master-hook-pkg/script/=contracts/script/master-hook-pkg/script/
+@hook-bazaar/protocol-pkg/test/=contracts/script/protocol-pkg/test/
+@hook-bazaar/master-hook-pkg/test/=contracts/script/master-hook-pkg/test/
