@@ -25,7 +25,7 @@ contract ProtocolAdminManagerTest is Test{
         vm.stopPrank();
         
         //============POST-CONDITIONS==============
-        assertEq(any_caller, IProtocolAdminManager(protocol_admin_manager_impl).creator());
+        assertTrue(IProtocolAdminManager(protocol_admin_manager_impl).isCreator(any_caller));
     }
 
 

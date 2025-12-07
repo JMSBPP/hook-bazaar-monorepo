@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-import {LibGenericFactory} from "compose-extensions/GenericFactory/LibGenericFactory.sol";
-import {LibInitializable} from "compose-extensions/libraries/LibInitializable.sol";
-import {LibAccessControl} from "Compose/access/AccessControl/LibAccessControl.sol";
+import {LibGenericFactory} from "compose-extensions/LibGenericFactory.sol";
+import "compose-extensions/GenericFactoryMod.sol" as GenericFactoryMod;
+import {InitializableBase} from "compose-extensions/LibInitializable.sol";
+import "compose-extensions/InitializableMod.sol" as InitializableMod;
+import "Compose/access/AccessControl/AccessControlMod.sol" as AccessControlMod; 
 
-import "./ProtocolAdminManager.sol";
+import {ProtocolAdminManager} from "./ProtocolAdminManager.sol";
 import "./ProtocolAdminClient.sol";
 import {IERC165} from "forge-std/interfaces/IERC165.sol";
 
@@ -28,12 +30,12 @@ interface IProtocolAdminRegistry{
     function __self() external view returns(address);
     function _initialize() external;
     function protocol_manager(uint256 _tokenId) external returns(address);
-    function protocol_admin_template() external view returns(address);
+    function adminManagerTemplate() external view returns(address);
     function upgradeAdmin() external view returns(address);
     function isUpgradeAdmin(address _account) external view returns(bool);
 }
 
-contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry{
+contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, InitializableBase{
     
     // NOTE: delegate call only guard
     address immutable public __self;
@@ -77,43 +79,29 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry{
         return $.version;
     }
 
-    modifier reinitializer(uint64 version) {
-        // solhint-disable-next-line var-name-mixedcase
-        LibInitializable.InitializableStorage storage $ = LibInitializable.getStorage();
-
-        if ($._initializing || $._initialized >= version) {
-            revert LibInitializable.InvalidInitialization();
-        }
-
-        $._initialized = version;
-        $._initializing = true;
-        _;
-        $._initializing = false;
-        emit LibInitializable.Initialized(version);
-    }
-
 
  
 
     function _initialize() external reinitializer(updateVersion()){
         // TODO: Further introspection checks are suggested here
-        if (msg.sender.code.length == uint256(0x00)) revert ProtocolAdminRegistryInvalidInitializer();
+        // if (msg.sender.code.length == uint256(0x00)) revert ProtocolAdminRegistryInvalidInitializer();
         // NOTE: The msg.sender in our implementation
         // is the ProtocolAdminPanel
-        LibGenericFactory.initialize(msg.sender);
         LibGenericFactory.setImplementation(address(new ProtocolAdminManager()));
+        LibGenericFactory.setUpgradeAdmin(msg.sender);
         
 
     }
 
     function isUpgradeAdmin(address _account) public view returns(bool){
-        LibGenericFactory.GenericFactoryStorage storage g$ = LibGenericFactory.getStorage();
+        GenericFactoryMod.GenericFactoryStorage storage g$ = GenericFactoryMod.getStorage();
        
-        return g$.upgradeAdmin == _account && LibAccessControl.hasRole(LibGenericFactory.UPGRADE_ADMIN_ROLE, _account);
+        return g$.upgradeAdmin == _account;
     }
 
-    function protocol_admin_template() public view returns(address){
-        return LibGenericFactory.implementation();
+    function adminManagerTemplate() public view returns(address){
+        GenericFactoryMod.GenericFactoryStorage storage $ = GenericFactoryMod.getStorage();
+        return $.implementation;
     }
 
     // NOTE: This function can not be called if the contract is not initialized
@@ -121,7 +109,8 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry{
     
 
     modifier initialized(){
-        if (LibInitializable.getInitializedVersion() < STARTER_VERSION) revert ProtocolAdminRegistryUninitialized();
+        InitializableMod.InitializableStorage storage $ = InitializableMod.getStorage();
+        if ($._initialized < STARTER_VERSION) revert ProtocolAdminRegistryUninitialized();
         _;
     }
 
@@ -136,15 +125,12 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry{
     }
 
     function upgradeAdmin() public view initialized returns(address){
-        LibGenericFactory.GenericFactoryStorage storage g$ = LibGenericFactory.getStorage();
+        GenericFactoryMod.GenericFactoryStorage storage g$ = GenericFactoryMod.getStorage();
         return g$.upgradeAdmin;
     }
 
-
-     
-
     function protocol_manager(uint256 _tokenId) external initialized returns(address){
-        if (_tokenId == uint256(0x00)) revert ProtocolAdminRegistryInvalidTokenId();
+        if (_tokenId == uint256(0x00)) return address(0x00);
         ProtocolAdminRegistryStorage storage $ = getStorage();
 
         if ($.protocol_managers[_tokenId] == address(0x00)){
@@ -153,17 +139,17 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry{
             onlyAdminPanel();
             // TODO: Now we need protection for the Context to be msg.sender == protocolAdminClient AND 
             // msg.sig == IProtocolAdminClient.create_protocol.selector
-            // msg.sender == protocolAdminClient needs to be checked with introspection on CLient since
             // Regiostry does not reference client
 
             // TODO: This
+            // msg.sender == protocolAdminClient needs to be checked with introspection on CLient since
             // if (
             //     !IERC165(address(this)).supportsInterface(type(IProtocolAdminClient).interfaceId)
             //     ||
             //     _parentSig != CREATE_PROTOCOL_CLIENT_SIG
             // ) revert ProtocolAdminRegistryInvalidContextCall();
 
-            $.protocol_managers[_tokenId] = LibGenericFactory.createProxy(protocol_admin_template(), false, abi.encode(msg.sender));
+            $.protocol_managers[_tokenId] = LibGenericFactory.createProxy(adminManagerTemplate(), false, abi.encode(msg.sender));
         }
 
         return $.protocol_managers[_tokenId];

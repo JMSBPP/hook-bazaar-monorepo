@@ -3,6 +3,8 @@ pragma solidity 0.8.30;
 
 import {Script, console2} from "forge-std/Script.sol";
 import {IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/ProtocolAdminClient.sol";
+import {IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/ProtocolAdminRegistry.sol";
+import {IProtocolFactory} from "@hook-bazaar/protocol-pkg/ProtocolFactoryFacet.sol";
 import {DevOpsTools} from "foundry-devops/DevOpsTools.sol";
 
 
@@ -25,9 +27,11 @@ contract Initialize is Script{
         );
 
         vm.startBroadcast(privateKey);
-        IProtocolAdminClient(protocol_admin_client).initialize();
-        IProtocolAdminClient(protocol_admin_client).initialize_admin_panel(
-            protocol_admin_registry, protocol_factory_facet, _baseURI);
+        IProtocolAdminClient(protocol_admin_client).initialize(
+            IProtocolAdminRegistry(protocol_admin_registry),
+            IProtocolFactory(protocol_factory_facet),
+            _baseURI
+        );
         vm.stopBroadcast();
     }
 }

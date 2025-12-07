@@ -5,6 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {ProtocolAdminPanel, IProtocolAdminPanel} from "@hook-bazaar/protocol-pkg/ProtocolAdminPanel.sol";
 import {ProtocolFactoryFacet, IProtocolFactory} from "@hook-bazaar/protocol-pkg/ProtocolFactoryFacet.sol";
 import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/ProtocolAdminRegistry.sol";
+import {IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/ProtocolAdminClient.sol";
 import {ERC165Facet} from "Compose/interfaceDetection/ERC165/ERC165Facet.sol";
 import {IERC1155} from "Compose/interfaces/IERC1155.sol";
 
@@ -43,7 +44,12 @@ contract ProtocolAdminPanelTest is Test{
 
         //====================TEST============================
         vm.startPrank(protocol_deployer);
-        IProtocolAdminPanel(protocol_admin_panel).initialize(address(new ERC165Facet()),protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
+        IProtocolAdminPanel(protocol_admin_panel).initialize(
+            IProtocolAdminClient(address(new ERC165Facet())),
+            IProtocolAdminRegistry(protocol_admin_registry),
+            IProtocolFactory(protocol_factory_facet),
+            "http://localhost:3000/metadata/"
+        );            
         vm.stopPrank();
         //================POST-CONDITIONS=====================
         //============================FACTORY=====================================================
@@ -53,7 +59,7 @@ contract ProtocolAdminPanelTest is Test{
         //=========================ADMIN-REGISTRY================================================================
         // assertTrue(IProtocolAdminRegistry(protocol_admin_panel).isUpgradeAdmin(protocol_admin_panel));
         // assertEq(IProtocolAdminRegistry(protocol_admin_panel).upgradeAdmin(),protocol_admin_panel);
-        assertNotEq(address(0x00), IProtocolAdminRegistry(protocol_admin_panel).protocol_admin_template());
+        assertNotEq(address(0x00), IProtocolAdminRegistry(protocol_admin_panel).adminManagerTemplate());
 
     }
 
@@ -66,7 +72,12 @@ contract ProtocolAdminPanelTest is Test{
         vm.stopPrank();
         vm.startPrank(protocol_deployer);
 
-        IProtocolAdminPanel(protocol_admin_panel).initialize(erc165,protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
+        IProtocolAdminPanel(protocol_admin_panel).initialize(
+            IProtocolAdminClient(erc165),
+            IProtocolAdminRegistry(protocol_admin_registry),
+            IProtocolFactory(protocol_factory_facet),
+            "http://localhost:3000/metadata/"
+        );            
 
         vm.stopPrank();
         //====================TEST============================
@@ -88,7 +99,12 @@ contract ProtocolAdminPanelTest is Test{
         vm.stopPrank();
         vm.startPrank(protocol_deployer);
 
-        IProtocolAdminPanel(protocol_admin_panel).initialize(erc165,protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");            
+        IProtocolAdminPanel(protocol_admin_panel).initialize(
+            IProtocolAdminClient(erc165),
+            IProtocolAdminRegistry(protocol_admin_registry),
+            IProtocolFactory(protocol_factory_facet),
+            "http://localhost:3000/metadata/"
+        );            
 
         vm.stopPrank();
 

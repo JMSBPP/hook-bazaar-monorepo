@@ -1,29 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-import {LibInitializable} from "compose-extensions/libraries/LibInitializable.sol";
-
-import {IComponent} from "compose-extensions/GenericFactory/LibGenericFactory.sol";
+import {InitializableBase} from "compose-extensions/LibInitializable.sol";
+import "Compose/access/AccessControl/AccessControlMod.sol" as AccessControlMod;
+import {Authority} from "solmate/src/auth/Auth.sol";
+import {IComponent} from "compose-extensions/LibGenericFactory.sol";
 
 import {IERC1155Receiver} from "Compose/interfaces/IERC1155Receiver.sol";
 
-interface IPoolCreator{
-    function create_pool(bytes calldata _encoded_pool_key) external;
-}
+
 
 interface IProtocolAdminManager{
     error ProtocolAdminManagerCallerIsNotCreator();
     error ProtocolAdminManagerUninitialized();
     event ProtocolAdminManagerInitialized(address indexed creator);
-    function creator() external view returns(address);
+    function isCreator(address _account) external view returns(bool);  
 }
 
-contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminManager, IPoolCreator{
+
+// NOTE: ProtocolAdminManager is an operator
+contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminManager, Authority, InitializableBase{
     
+    bytes32 constant CREATOR = keccak256("hook-bazaar.creator");
+    bytes32 constant POOL_CREATOR = keccak256("hook-bazaar.pool-creator"); 
+
     bytes32 constant STORAGE_POSITION = keccak256("wvs-finance.protocolAdminManager");
 
     struct ProtocolAdminManagerStorage{
-        address creator;
         uint256 tokenId;
     }
 
@@ -36,74 +39,36 @@ contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminMan
 
 
 
-    modifier initializer() {
-        // solhint-disable-next-line var-name-mixedcase
-        LibInitializable.InitializableStorage storage $ = LibInitializable.getStorage();
-
-        // Cache values to avoid duplicated sloads
-        bool isTopLevelCall = !$._initializing;
-        uint64 initialized = $._initialized;
-
-        // Allowed calls:
-        // - initialSetup: the contract is not in the initializing state and no previous version was
-        //                 initialized
-        // - construction: the contract is initialized at version 1 (no reinitialization) and the
-        //                 current contract is just being deployed
-        bool initialSetup = initialized == 0 && isTopLevelCall;
-        bool construction = initialized == 1 && address(this).code.length == 0;
-
-        if (!initialSetup && !construction) {
-            revert LibInitializable.InvalidInitialization();
-        }
-
-        $._initialized = 1;
-        if (isTopLevelCall) {
-            $._initializing = true;
-        }
-        _;
-        if (isTopLevelCall) {
-            $._initializing = false;
-            emit LibInitializable.Initialized(1);
-        }
-    }
 
 
     // NOTE: Creator MUST be the address that called create_protocol
 
 
-    // NOTE: This needs to implement the initializer
-    //of initializable
+    // NOTE: The creator needs to be the caller of the create_protocol on ProtocolAdminClient
     function initialize(address creator) external initializer{
+
         ProtocolAdminManagerStorage storage $ = getStorage();
-        $.creator = creator;
+        AccessControlMod.grantRole(CREATOR, creator);
+        AccessControlMod.grantRole(POOL_CREATOR, creator);
         // NOTE : creator is supposed to be the owner of the protocol
         // which is potentially a smart accounMT , regular EOA or governance contract
         emit ProtocolAdminManagerInitialized(creator);
     }
 
-    // NOTE: The creator is the ProtocolAdminClient, we need enforcements
-    // that the creator implements the IUnlockCallback interface and the
-    // IProtocolAdminClient interface
 
-    function creator() public view returns(address){
-        ProtocolAdminManagerStorage storage $ = getStorage();
-        return $.creator;
-    }
 
-    // Only callable once initialized. MUST be guarded
-    modifier initialized(){
-        if (LibInitializable.getInitializedVersion() == uint256(0x00)) revert ProtocolAdminManagerUninitialized();
-        _;
+    function isCreator(address _account) public view returns(bool){
+        AccessControlMod.hasRole(CREATOR, _account);
     }
 
     modifier onlyCreator(){
-        if (msg.sender != creator()) revert ProtocolAdminManagerCallerIsNotCreator();
+        if (!isCreator(msg.sender)) revert ProtocolAdminManagerCallerIsNotCreator();
         _;
     }
     // TODO: Function is only callable during mints triggered by the create_protocol flow ...
     function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
         external
-        initialized
+        onlyInitialized
         returns (bytes4){
             ProtocolAdminManagerStorage storage $ = getStorage();
             $.tokenId = _id;
@@ -121,7 +86,26 @@ contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminMan
         bytes calldata _data
     ) external returns (bytes4){}
 
-    function create_pool(bytes calldata _encoded_pool_key) external onlyCreator{}
+    function grantPoolCreator(address _account) external onlyCreator{
+        AccessControlMod.grantRole(POOL_CREATOR, _account);
+    }
+
+    function canCall(
+        address user,
+        address target,
+        bytes4 functionSig
+    ) external view returns (bool){
+        bool _canCall;
+        if (functionSig == bytes4(keccak256("create_pool(bytes memory)"))){
+            _canCall = AccessControlMod.hasRole(POOL_CREATOR, user);
+        }
+
+        return _canCall;
+    }
+
+
+
+
 
 
 }
