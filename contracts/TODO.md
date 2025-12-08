@@ -6,6 +6,14 @@ Create a temp branch on upstream to test this CI workflow works agains current u
 
 
 
+
+- ProtocolAdminRegistry:
+  - INITIALIZATION
+    - MUST be initialized once
+    - MUST set the caller as upgradeAdmin
+    - MUST set the implementation as ProtocolAdminManager
+
+
 - create protocol
   - The creator is set by a protocolAdminManager which MUST be the caller of createProtocol initially
 

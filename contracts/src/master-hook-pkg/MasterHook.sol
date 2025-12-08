@@ -108,6 +108,11 @@ contract MasterHook is IMasterHook, InitializableBase{
         DiamondCutMod.addFunctions(_hook, _selectors);
     }
 
+    fallback() external payable {
+       DiamondMod.diamondFallback();    
+    }
+
+
 
 
 }

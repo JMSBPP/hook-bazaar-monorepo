@@ -1,16 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-import {LibGenericFactory} from "compose-extensions/LibGenericFactory.sol";
-import "compose-extensions/GenericFactoryMod.sol" as GenericFactoryMod;
+// import {LibGenericFactory} from "compose-extensions/LibGenericFactory.sol";
+// import "compose-extensions/GenericFactoryMod.sol" as GenericFactoryMod;
+import {GenericFactory} from "@euler/GenericFactory/GenericFactory.sol";
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 import "compose-extensions/InitializableMod.sol" as InitializableMod;
 import "Compose/access/AccessControl/AccessControlMod.sol" as AccessControlMod; 
 
 import {ProtocolAdminManager} from "./ProtocolAdminManager.sol";
-import "./ProtocolAdminClient.sol";
+// import "./ProtocolAdminClient.sol";
 import {IERC165} from "forge-std/interfaces/IERC165.sol";
 
+interface IGenericFactory{
+    function implementation() external view returns(address);
+    function upgradeAdmin() external view returns(address);
+    function proxyList() external view returns(address[] memory);
+    function createProxy(address desiredImplementation, bool upgradeable, bytes memory trailingData) external returns (address);
+    function setImplementation(address newImplementation) external;
+    function setUpgradeAdmin(address newUpgradeAdmin) external;
+    function getProxyConfig(address proxy) external view returns (GenericFactory.ProxyConfig memory config);
+    function isProxy(address proxy) external view returns (bool);
+    function getProxyListLength() external view returns (uint256);
+    function getProxyListSlice(uint256 start, uint256 end) external view returns (address[] memory list);
+}
 interface IVersionControl{
     // TODO: This needs protection for attackers altering versions on re-entrancy or multicalls
 
@@ -32,7 +45,6 @@ interface IProtocolAdminRegistry{
     function protocol_manager(uint256 _tokenId) external returns(address);
     function adminManagerTemplate() external view returns(address);
     function upgradeAdmin() external view returns(address);
-    function isUpgradeAdmin(address _account) external view returns(bool);
 }
 
 contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, InitializableBase{
@@ -52,6 +64,7 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
 
     struct ProtocolAdminRegistryStorage{
         // NOTE: One protocol has one admin
+        IGenericFactory protocolAdminFactory;
         uint64 version;
         mapping(uint256 tokenId => address protocol_manager) protocol_managers;
         mapping(uint256 tokenId => address protocol_admin_operator) protocol_admin_operators;
@@ -83,29 +96,27 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
  
 
     function _initialize() external reinitializer(updateVersion()){
+        ProtocolAdminRegistryStorage storage $ = getStorage();
+        $.protocolAdminFactory = IGenericFactory(address(new GenericFactory(address(this))));
+
         // TODO: Further introspection checks are suggested here
         // if (msg.sender.code.length == uint256(0x00)) revert ProtocolAdminRegistryInvalidInitializer();
         // NOTE: The msg.sender in our implementation
         // is the ProtocolAdminPanel
-        LibGenericFactory.setImplementation(address(new ProtocolAdminManager()));
-        LibGenericFactory.setUpgradeAdmin(msg.sender);
+        $.protocolAdminFactory.setImplementation(address(new ProtocolAdminManager()));
+        $.protocolAdminFactory.setUpgradeAdmin(msg.sender);
         
 
     }
 
-    function isUpgradeAdmin(address _account) public view returns(bool){
-        GenericFactoryMod.GenericFactoryStorage storage g$ = GenericFactoryMod.getStorage();
-       
-        return g$.upgradeAdmin == _account;
-    }
-
+  
     function adminManagerTemplate() public view returns(address){
-        GenericFactoryMod.GenericFactoryStorage storage $ = GenericFactoryMod.getStorage();
-        return $.implementation;
+        ProtocolAdminRegistryStorage storage $ = getStorage();
+        return $.protocolAdminFactory.implementation();
     }
 
-    // NOTE: This function can not be called if the contract is not initialized
-    // The createProxy factory will revert but we want to enforce our own error
+    // // NOTE: This function can not be called if the contract is not initialized
+    // // The createProxy factory will revert but we want to enforce our own error
     
 
     modifier initialized(){
@@ -114,10 +125,10 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
         _;
     }
 
-    // NOTE:The data passed to the clone is the tokenId
+    // // NOTE:The data passed to the clone is the tokenId
 
-    // NOTE The function can only be called through delegate
-    // call, and the delegate caller must be the admin panel
+    // // NOTE The function can only be called through delegate
+    // // call, and the delegate caller must be the admin panel
     function onlyAdminPanel() private {
         if (address(this) == __self) revert ProtocolAdminRegistryNotDelegateCall();
         // if (address(this) != upgradeAdmin()) revert ProtocolAdminRegistryInvalidDelegateCaller();
@@ -125,8 +136,8 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
     }
 
     function upgradeAdmin() public view initialized returns(address){
-        GenericFactoryMod.GenericFactoryStorage storage g$ = GenericFactoryMod.getStorage();
-        return g$.upgradeAdmin;
+        ProtocolAdminRegistryStorage storage $ = getStorage();
+        return $.protocolAdminFactory.upgradeAdmin();
     }
 
     function protocol_manager(uint256 _tokenId) external initialized returns(address){
@@ -149,7 +160,7 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
             //     _parentSig != CREATE_PROTOCOL_CLIENT_SIG
             // ) revert ProtocolAdminRegistryInvalidContextCall();
 
-            $.protocol_managers[_tokenId] = LibGenericFactory.createProxy(adminManagerTemplate(), false, abi.encode(msg.sender));
+            $.protocol_managers[_tokenId] = $.protocolAdminFactory.createProxy(adminManagerTemplate(), false, abi.encode(msg.sender));
         }
 
         return $.protocol_managers[_tokenId];

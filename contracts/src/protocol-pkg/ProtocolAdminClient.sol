@@ -3,7 +3,9 @@ pragma solidity >=0.8.30;
 
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 import "Compose/access/Owner/OwnerMod.sol" as OwnerMod;
-import  "./ProtocolAdminPanel.sol";
+import {ProtocolAdminPanel, IProtocolAdminPanel} from "./ProtocolAdminPanel.sol";
+import {IProtocolAdminRegistry} from "./ProtocolAdminRegistry.sol";
+import {IProtocolFactory} from "./ProtocolFactoryFacet.sol";
 import "solmate/src/auth/Auth.sol";
 
 
@@ -17,9 +19,8 @@ interface IProtocolAdminClient{
         IProtocolFactory _protocol_factory,
         string calldata _baseURI
     ) external;
-    
 
-
+ 
     //==================================================================================================================
 
     function adminPanel() external view returns(address);
@@ -33,7 +34,7 @@ interface IProtocolAdminClient{
 }
 
 
-contract ProtocolAdminClient is IProtocolAdminClient, IERC165, InitializableBase{
+contract ProtocolAdminClient is IProtocolAdminClient, InitializableBase{
     
     bytes32 constant PROTOCOL_ADMIN_CLIENT_POSITION = keccak256("hook-bazaar.protocol.admin-client");    
 
@@ -87,6 +88,8 @@ contract ProtocolAdminClient is IProtocolAdminClient, IERC165, InitializableBase
 
 
 
+
+
     // NOTE: The caller can delegate ownership of the protocol to an __auth address, defaults to msg.sender
 
     // if __auth is 0, the name is only for visibilty
@@ -109,9 +112,9 @@ contract ProtocolAdminClient is IProtocolAdminClient, IERC165, InitializableBase
         if (!Authority($.admin_panel).canCall(msg.sender, address(this), msg.sig)) revert();
  
         int24 _initialTick = abi.decode(
-            IProtocolAdminPanel($.admin_panel).protocolHookMediator().notify(msg.sig, msg.data),
-                (int24)
-            );
+           IProtocolAdminPanel($.admin_panel).protocolHookMediator().notify(msg.sig, msg.data),
+               (int24)
+           );
                
     }
     

@@ -6,12 +6,15 @@ import {IHooks} from "@uniswap/v4-core/src/interfaces/IHooks.sol";
 import {IMasterHook} from "@hook-bazaar/master-hook-pkg/MasterHook.sol";
 import {IProtocolAdminPanel} from "@hook-bazaar/protocol-pkg/ProtocolAdminPanel.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
+import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 
 interface IProtocolHookMediator{
+    function initialize(IMasterHook _masterHook,IProtocolAdminPanel protocolAdminPanel,IPositionManager positionManager) external;
+
     function notify(bytes4 _funcSig, bytes memory _data) external returns(bytes memory);
 }
 
-contract ProtocolHookMediator is IProtocolHookMediator, Context{
+contract ProtocolHookMediator is IProtocolHookMediator, Context, InitializableBase{
 
     bytes32 constant STORAGE_POSITION = keccak256("hook-bazaar.protocol-hook-mediator");
 
@@ -21,22 +24,29 @@ contract ProtocolHookMediator is IProtocolHookMediator, Context{
         IPositionManager positionManager;
     }
 
-    function getStorage() internal pure returns (ProtocolHookMediatorStorage storage s) {
+    function getStorage() internal pure returns (ProtocolHookMediatorStorage storage s){
         bytes32 position = STORAGE_POSITION;
         assembly {
             s.slot := position
         }
     }
 
+    function initialize(IMasterHook _masterHook,IProtocolAdminPanel protocolAdminPanel,IPositionManager positionManager) external initializer {
+        ProtocolHookMediatorStorage storage $ = getStorage();
+        $.masterHook = _masterHook;
+        $.positionManager = positionManager;
+        $.protocolAdminPanel = protocolAdminPanel;
+    }
 
-    function notify(bytes4 _funcSig, bytes memory _data) external returns(bytes memory){
+
+
+    function notify(bytes4 _funcSig, bytes memory _data) external onlyInitialized returns(bytes memory){
         ProtocolHookMediatorStorage storage $ = getStorage();
         
         bytes memory res;
         if (_msgSender() == address($.protocolAdminPanel)){
             res = reactOnProtocolAdmin(_funcSig, _data);
-
-        }
+       }
 
         return res;
 

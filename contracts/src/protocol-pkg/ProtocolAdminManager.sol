@@ -14,7 +14,9 @@ interface IProtocolAdminManager{
     error ProtocolAdminManagerCallerIsNotCreator();
     error ProtocolAdminManagerUninitialized();
     event ProtocolAdminManagerInitialized(address indexed creator);
-    function isCreator(address _account) external view returns(bool);  
+    function isCreator(address _account) external view returns(bool);
+    function delegatePoolCreatorRole(address _account) external;
+
 }
 
 
@@ -38,9 +40,6 @@ contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminMan
     }
 
 
-
-
-
     // NOTE: Creator MUST be the address that called create_protocol
 
 
@@ -58,13 +57,18 @@ contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminMan
 
 
     function isCreator(address _account) public view returns(bool){
-        AccessControlMod.hasRole(CREATOR, _account);
+        return AccessControlMod.hasRole(CREATOR, _account);
     }
 
     modifier onlyCreator(){
         if (!isCreator(msg.sender)) revert ProtocolAdminManagerCallerIsNotCreator();
         _;
     }
+
+    function delegatePoolCreatorRole(address _account) external onlyCreator onlyInitialized{
+        AccessControlMod.grantRole(POOL_CREATOR, _account);
+    }
+    
     // TODO: Function is only callable during mints triggered by the create_protocol flow ...
     function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
         external

@@ -165,8 +165,9 @@ contract MasterHookForkTest is Test, SwapHelper, LiquidityHelper{
     }
 
     function test__fork__initializeMasterHookMustSucceed() public{
-        vm.startPrank(protocol_admin);
         //================PRE-CONDITIONS====================
+ 
+        vm.startPrank(protocol_admin);
         vm.expectRevert();
         poolManager.initialize(poolKey, Constants.SQRT_PRICE_1_1);
         vm.stopPrank();
@@ -188,8 +189,6 @@ contract MasterHookForkTest is Test, SwapHelper, LiquidityHelper{
         //======================TEST===================================
         poolManager.initialize(poolKey, Constants.SQRT_PRICE_1_1);
         vm.stopPrank();
-
-
 
         //====================POST-CONDITIONS=========================
     }

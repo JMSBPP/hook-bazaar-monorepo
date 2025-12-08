@@ -6,6 +6,7 @@ out = "contracts/out/"
 libs = ["contracts/lib", "node_modules"]
 script = "contracts/script"
 ffi=true
+
 fs_permissions = [
     { access = "read", path = "./contracts/broadcast" },
     { access = "read", path = "./contracts/reports" },
@@ -29,14 +30,15 @@ remappings = [
     "@hook-bazaar/master-hook-pkg/test/=contracts/test/hook-master/",
     "@hook-bazaar/protocol-hook-pkg/src/=contracts/src/protocol-hook-pkg/",
     "@hook-bazaar/protocol-hook-pkg/test/=contracts/test/protocol-hook-pkg/",
-    "@hook-bazaar/protocol-hook-pkg/script/=contracts/script/protocol-hook-pkg/"
+    "@hook-bazaar/protocol-hook-pkg/script/=contracts/script/protocol-hook-pkg/",
+    "@euler/=contracts/lib/compose-extensions/lib/euler-vault-kit/src/"
 ]
 
 compiler_restrictions = [
     {path = "contracts/src/**", solc_version = ">=0.8.30", evm_version = "prague"},
     {path = "contracts/lib/v4-periphery/**", solc_version = "=0.8.26", evm_version = "cancun"},
-    {path = "contracts/lib/compose-extensions/**", solc_version = "=0.8.30", evm_version = "prague"},
-    {path = "contracts/test/**", solc_version = ">=0.8.0"}
+    {path = "contracts/lib/compose-extensions/**", solc_version = "=0.8.30"}
+
 ]
 
 [rpc_endpoints]

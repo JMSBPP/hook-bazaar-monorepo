@@ -6,14 +6,10 @@ import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 
 import {IERC165} from "forge-std/interfaces/IERC165.sol";
 
-
 import {IERC1155} from "Compose/interfaces/IERC1155.sol";
 import "Compose/token/ERC1155/ERC1155Mod.sol" as ERC1155Mod;
 import {ERC1155Facet} from "Compose/token/ERC1155/ERC1155Facet.sol";
-
-
-
-
+import "Compose/access/Owner/OwnerMod.sol" as OwnerMod;
 
 interface IProtocolFactory{
     function __self() external view returns(address);
@@ -66,14 +62,14 @@ contract ProtocolFactoryFacet is IProtocolFactory, InitializableBase{
     // This is called on regular call by the protocolAdminPanel
 
     function __initialize(string calldata _baseURI) external initializer{
+        OwnerMod.OwnerStorage storage o$ = OwnerMod.getStorage();
         ProtocolFactoryStorage storage $ = getStorage();
-        // TODO: Stronger check to ensure the caller is the ProtocolAdminPanel,
-        // HINT: Introspection on diamond interface id
-        if (msg.sender.code.length == uint256(0x00)) revert ProtocolFactoryFacetInvalidInitializer();
-        $.adminPanel = msg.sender;
+        o$.owner = msg.sender;
         ERC1155Mod.setBaseURI(_baseURI);
-
+        $.adminPanel = address(this);
+    
     }
+
 
     function baseURI() public view returns(string memory){
         ERC1155Mod.ERC1155Storage storage e1155$ = ERC1155Mod.getStorage();
@@ -119,7 +115,5 @@ contract ProtocolFactoryFacet is IProtocolFactory, InitializableBase{
    }
 
    fallback() external payable{}
-
-
 
 }

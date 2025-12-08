@@ -15,8 +15,8 @@ contract ProtocolFactoryFacetTest is Test{
 
     address protocol_factory_facet;
     address protocol_admin_manager_impl;
-    
     function setUp() public{
+    
         protocol_factory_facet = address(new ProtocolFactoryFacet());
         proxy_helper = address(new ProxyHelper(protocol_factory_facet));
         protocol_admin_manager_impl = address(new ProtocolAdminManager());
@@ -26,7 +26,7 @@ contract ProtocolFactoryFacetTest is Test{
         //==========PRE-CONDITIONS==================
         assertEq(protocol_factory_facet, IProtocolFactory(protocol_factory_facet).__self());
         //=============TEST=======================
-        vm.startPrank(proxy_helper);
+        vm.startPrank(admin);
         IProtocolFactory(proxy_helper).__initialize("http://localhost:3000/metadata/");
         vm.stopPrank();
 
@@ -38,15 +38,11 @@ contract ProtocolFactoryFacetTest is Test{
 
     function test__unit__createProtocolMustSucceed() public {
         //============PRE-CONDITIONS=============
-        vm.startPrank(proxy_helper);
-        IProtocolFactory(proxy_helper).__initialize("http://localhost:3000/metadata/");
-        vm.stopPrank();
-
+        test__unit__initializeMustSucceed();
+        // 
         vm.startPrank(proxy_helper);
         IComponent(protocol_admin_manager_impl).initialize(any_caller);
         vm.stopPrank();
-
-
 
         //===============TEST====================
 

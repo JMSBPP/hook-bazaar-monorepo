@@ -29,17 +29,25 @@ contract ProtocolAdminRegistryTest is Test{
         
         vm.stopPrank();
         //===============POST-CONDITIONS==================
-        // assertTrue(IProtocolAdminRegistry(proxy_helper).isUpgradeAdmin(proxy_helper));
-        // assertEq(IProtocolAdminRegistry(proxy_helper).upgradeAdmin(),proxy_helper);
+        assertEq(IProtocolAdminRegistry(proxy_helper).upgradeAdmin(),admin);
         assertNotEq(address(0x00), IProtocolAdminRegistry(proxy_helper).adminManagerTemplate());
 
     }
 
-    function test__unit__deployAdminManagerMustSucceed() public{
-        //=================PRE-CONDITIONS=========================
-        vm.startPrank(proxy_helper);
+    function test__unit__initializeMustRevertDoubleInitialization() public {
+        //================PRE-CONDITIONS==============================
+        test__unit__initializeMustSucceed();
+        //===================TEST=======================================
+        vm.startPrank(any_caller);
+        vm.expectRevert();
         IProtocolAdminRegistry(proxy_helper)._initialize();
         vm.stopPrank();
+        //===================POST-CONDITIONS===========================
+    }
+
+    function test__unit__deployAdminManagerMustSucceed() public{
+        //=================PRE-CONDITIONS=========================
+        test__unit__initializeMustSucceed();
 
 
         //====================TEST==============================
