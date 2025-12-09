@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "compose-extensions/BaseDiamond.sol";
 import "./AllHook.sol";
-import "compose-extensions/libraries/LibInitializable.sol";
-import "Compose/access/AccessControl/LibAccessControl.sol";
+import {InitializableBase} from "compose-extensions/LibInitializable.sol";
+
+import "Compose/access/AccessControl/AccessControlMod.sol" as AccessControlMod;
+import "Compose/diamond/DiamondCutMod.sol" as DiamondCutMod;
 import "./types/HookSelectors.sol";
 import "./HookFacetTemplate.sol";
 
@@ -13,12 +14,12 @@ interface IMasterHook{
     error MasterHook__NotValidHook();     
     error MasterHook__Uninitiialized();
     function initialize(address _poolManager, address _allHookImpl) external;
-    function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external;
+    // function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external;
     function addHook(address _hook,bytes4[] memory _additionalSelectors) external;
 }
 
 
-contract MasterHook is BaseDiamond, IMasterHook{
+contract MasterHook is IMasterHook, InitializableBase{
     bytes32 constant PROTOCOL_ADMIN = keccak256("protocol-admin");
     bytes32 constant STORAGE_POSITION = keccak256("hook-bazar.hooks");
     
@@ -34,43 +35,12 @@ contract MasterHook is BaseDiamond, IMasterHook{
     }
 
 
-    modifier initializer() {
-        // solhint-disable-next-line var-name-mixedcase
-        LibInitializable.InitializableStorage storage $ = LibInitializable.getStorage();
-
-        // Cache values to avoid duplicated sloads
-        bool isTopLevelCall = !$._initializing;
-        uint64 initialized = $._initialized;
-
-        // Allowed calls:
-        // - initialSetup: the contract is not in the initializing state and no previous version was
-        //                 initialized
-        // - construction: the contract is initialized at version 1 (no reinitialization) and the
-        //                 current contract is just being deployed
-        bool initialSetup = initialized == 0 && isTopLevelCall;
-        bool construction = initialized == 1 && address(this).code.length == 0;
-
-        if (!initialSetup && !construction) {
-            revert LibInitializable.InvalidInitialization();
-        }
-
-        $._initialized = 1;
-        if (isTopLevelCall) {
-            $._initializing = true;
-        }
-        _;
-        if (isTopLevelCall) {
-            $._initializing = false;
-            emit LibInitializable.Initialized(1);
-        }
-    }
-
     
 
     function initialize(address _poolManager, address _allHookImpl) external initializer{
         MasterHookStorage storage $ = getStorage();
-        LibAccessControl.setRoleAdmin(LibAccessControl.DEFAULT_ADMIN_ROLE, PROTOCOL_ADMIN);
-        LibAccessControl.grantRole(PROTOCOL_ADMIN, msg.sender);
+        AccessControlMod.setRoleAdmin(AccessControlMod.DEFAULT_ADMIN_ROLE, PROTOCOL_ADMIN);
+        AccessControlMod.grantRole(PROTOCOL_ADMIN, msg.sender);
 
         $.poolManager = IPoolManager(_poolManager);
         {
@@ -87,37 +57,61 @@ contract MasterHook is BaseDiamond, IMasterHook{
             _interface[8] = IHooks.beforeDonate.selector;
             _interface[9] = IHooks.afterDonate.selector;
     
-            LibDiamond.FacetCut[] memory _cut = new LibDiamond.FacetCut[](1);
-            _cut[0] = LibDiamond.FacetCut(_allHookImpl, LibDiamond.FacetCutAction.Add, _interface);
-            this._diamondCut(_cut, address(0x00), abi.encode("0x00"));
+            DiamondMod.FacetCut[] memory _cut = new DiamondMod.FacetCut[](1);
+            _cut[0] = DiamondMod.FacetCut(_allHookImpl, DiamondMod.FacetCutAction.Add, _interface);
+            DiamondMod.addFacets(_cut);
         }
 
     }
     
-    modifier initialized(){
-        if (LibInitializable.getInitializedVersion() == uint256(0x00)) revert MasterHook__Uninitiialized();
-        _;
-    }
+    
 
     modifier onlyProtocolAdmin(){
-        LibAccessControl.requireRole(PROTOCOL_ADMIN, msg.sender);
+        AccessControlMod.requireRole(PROTOCOL_ADMIN, msg.sender);
         _;
     }
 
 
-    function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external initialized onlyProtocolAdmin {}
+    // function setProtocolFeeConfig(bytes calldata _encoded_pool_key,bytes calldata _protocol_fee_config) external initialized onlyProtocolAdmin {}
     
 
     
     // TODO: This needs to be protected to be only allowed once a amreket transaction has been ccompleted to acquire, plug the hook
-    function addHook(address _hook, bytes4[] memory _additionalSelectors) external initialized onlyProtocolAdmin{
+    function addHook(address _hook, bytes4[] calldata _additionalSelectors) external onlyInitialized onlyProtocolAdmin{
         // if (!IERC165(_hook).supportsInterface(type(IHooks).interfaceId)) revert MasterHook__NotValidHook();       
         bytes4[] memory _hookSelectors = LibHookSelectors.hookSelectors(IHooks(_hook));
         bytes4[] memory _allSelectors = LibHookSelectors.appendSelectors(_hookSelectors, _additionalSelectors);
-        this._replaceFunctions(_hook, _hookSelectors);
-        this._addFunctions(_hook, _additionalSelectors);
+        
+        // Call replace and add functions directly - need to convert memory to calldata
+        // Since we can't convert memory to calldata, we'll use a helper approach
+        _replaceHookFunctions(_hook, _hookSelectors);
+        _addHookFunctions(_hook, _additionalSelectors);
+        
         emit MasterHook__HookAdded(msg.sender, address(_hook), abi.encode(_allSelectors));
     }
+    
+    function _replaceHookFunctions(address _hook, bytes4[] memory _selectors) private {
+        // Create a temporary array to work around calldata requirement
+        // We'll call the functions in a way that works with memory arrays
+        DiamondCutMod.DiamondStorage storage s = DiamondCutMod.getStorage();
+        for (uint256 i; i < _selectors.length; i++) {
+            bytes4 selector = _selectors[i];
+            address oldFacet = s.facetAndPosition[selector].facet;
+            if (oldFacet == address(0)) {
+                revert DiamondCutMod.CannotReplaceFunctionThatDoesNotExists(selector);
+            }
+            s.facetAndPosition[selector].facet = _hook;
+        }
+    }
+    
+    function _addHookFunctions(address _hook, bytes4[] calldata _selectors) private {
+        DiamondCutMod.addFunctions(_hook, _selectors);
+    }
+
+    fallback() external payable {
+       DiamondMod.diamondFallback();    
+    }
+
 
 
 

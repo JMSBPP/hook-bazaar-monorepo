@@ -28,37 +28,40 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedProtocol, setSelectedProtocol] = useState<Protocol | null>(null);
 
-  const [protocols, setProtocols] = useState<Protocol[]>([
-    {
-      id: '1',
-      name: 'DeFi Protocol Alpha',
-      feeRecipient: '0x0000000000000000000000000000000000000000',
-      pools: 5,
-      revenue: '$28,450',
-      status: 'active',
-    },
-    {
-      id: '2',
-      name: 'Liquidity Hub Beta',
-      feeRecipient: '0x0000000000000000000000000000000000000000',
-      pools: 3,
-      revenue: '$16,780',
-      status: 'active',
-    },
-  ]);
+  // Store all protocols (including user-created ones)
+  const [protocols, setProtocols] = useState<Protocol[]>([]);
+
+  // Filter protocols by connected wallet address
+  const userProtocols = protocols.filter(
+    (protocol) => protocol.creator?.toLowerCase() === address?.toLowerCase()
+  );
+
+  // Calculate stats from user's protocols
+  const totalPools = userProtocols.reduce((sum, p) => sum + (p.pools || 0), 0);
+  const totalRevenue = userProtocols.reduce((sum, p) => {
+    const revenue = parseFloat(p.revenue?.replace(/[$,]/g, '') || '0');
+    return sum + revenue;
+  }, 0);
 
   const stats = [
-    { icon: Layers, label: 'Total Protocols', value: String(protocols.length), color: 'primary' },
-    { icon: TrendingUp, label: 'Total Pools', value: '8', color: 'secondary' },
-    { icon: DollarSign, label: 'Total Revenue', value: '$45,230', color: 'accent' },
+    { icon: Layers, label: 'Total Protocols', value: String(userProtocols.length), color: 'primary' },
+    { icon: TrendingUp, label: 'Total Pools', value: String(totalPools), color: 'secondary' },
+    { icon: DollarSign, label: 'Total Revenue', value: `$${totalRevenue.toLocaleString()}`, color: 'accent' },
   ];
 
   const handleCreateProtocolSuccess = (
-    protocolId: bigint, 
-    chainId: number, 
-    protocolName: string, 
+    protocolId: bigint,
+    chainId: number,
+    protocolName: string,
     feeRecipient?: string
   ) => {
+    // Check if protocol already exists to prevent duplicates
+    const exists = protocols.some((p) => p.protocolId === protocolId.toString());
+    if (exists) {
+      console.log('Protocol already exists, skipping duplicate creation');
+      return;
+    }
+
     // Create a new protocol entry with the name and fee recipient from the transaction
     const newProtocol: Protocol = {
       id: `protocol-${protocolId.toString()}`,
@@ -73,7 +76,7 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
     };
     setProtocols([...protocols, newProtocol]);
     setCreateDialogOpen(false);
-    
+
     // Automatically open ProtocolDetailsDialog after success
     // Small delay to allow confetti to show first
     setTimeout(() => {
@@ -297,7 +300,31 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
           </h2>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {protocols.map((protocol, index) => (
+            {userProtocols.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <p
+                  className="mb-4 font-heading"
+                  style={{
+                    color: 'var(--color-secondary)',
+                    fontSize: 'var(--font-size-h4)',
+                  }}
+                >
+                  No protocols created yet
+                </p>
+                <p
+                  className="mb-6 font-body"
+                  style={{
+                    color: 'var(--color-black)',
+                    fontSize: 'var(--font-size-body)',
+                  }}
+                >
+                  {!address
+                    ? 'Connect your wallet to view your protocols'
+                    : 'Click "Create Protocol" to get started'}
+                </p>
+              </div>
+            )}
+            {userProtocols.map((protocol, index) => (
               <div
                 key={protocol.id}
                 className="angular-clip p-6 transition-all duration-300 hover:-translate-y-1 hover:rotate-[-0.5deg]"

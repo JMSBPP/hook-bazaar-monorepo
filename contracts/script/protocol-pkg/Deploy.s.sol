@@ -2,9 +2,9 @@
 pragma solidity 0.8.30;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {ProtocolAdminClient} from "@hook-bazaar/protocol-pkg/ProtocolAdminClient.sol";
-import {ProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/ProtocolAdminRegistry.sol";
-import {ProtocolFactoryFacet} from "@hook-bazaar/protocol-pkg/ProtocolFactoryFacet.sol";
+import {ProtocolAdminClient} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
+import {ProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
+import {ProtocolFactoryFacet} from "@hook-bazaar/protocol-pkg/src/ProtocolFactoryFacet.sol";
 
 contract DeployAll is Script{
     

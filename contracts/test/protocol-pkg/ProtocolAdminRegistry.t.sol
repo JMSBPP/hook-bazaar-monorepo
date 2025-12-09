@@ -3,7 +3,7 @@ pragma solidity >=0.8.30;
 
 
 import {Test, console2} from "forge-std/Test.sol";
-import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/ProtocolAdminRegistry.sol";
+import {ProtocolAdminRegistry, IProtocolAdminRegistry, IGenericFactory} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
 import {ProxyHelper} from "./helpers/ProxyHelper.sol";
 
 contract ProtocolAdminRegistryTest is Test{
@@ -24,23 +24,30 @@ contract ProtocolAdminRegistryTest is Test{
         assertEq(protocol_admin_registry, IProtocolAdminRegistry(protocol_admin_registry).__self());
 
         //====================TEST============================
-        vm.startPrank(proxy_helper);
+        vm.startPrank(admin);
         IProtocolAdminRegistry(proxy_helper)._initialize();
-
         
         vm.stopPrank();
         //===============POST-CONDITIONS==================
-        // assertTrue(IProtocolAdminRegistry(proxy_helper).isUpgradeAdmin(proxy_helper));
-        // assertEq(IProtocolAdminRegistry(proxy_helper).upgradeAdmin(),proxy_helper);
-        assertNotEq(address(0x00), IProtocolAdminRegistry(proxy_helper).protocol_admin_template());
+        assertEq(IProtocolAdminRegistry(proxy_helper).upgradeAdmin(),admin);
+        assertNotEq(address(0x00), IProtocolAdminRegistry(proxy_helper).adminManagerTemplate());
 
+    }
+
+    function test__unit__initializeMustRevertDoubleInitialization() public {
+        //================PRE-CONDITIONS==============================
+        test__unit__initializeMustSucceed();
+        //===================TEST=======================================
+        vm.startPrank(any_caller);
+        vm.expectRevert();
+        IProtocolAdminRegistry(proxy_helper)._initialize();
+        vm.stopPrank();
+        //===================POST-CONDITIONS===========================
     }
 
     function test__unit__deployAdminManagerMustSucceed() public{
         //=================PRE-CONDITIONS=========================
-        vm.startPrank(proxy_helper);
-        IProtocolAdminRegistry(proxy_helper)._initialize();
-        vm.stopPrank();
+        test__unit__initializeMustSucceed();
 
 
         //====================TEST==============================

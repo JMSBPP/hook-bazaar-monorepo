@@ -33,7 +33,8 @@ export default function ProtocolDetailsDialog({
   const { address } = useWallet();
 
   // Check if current user is the protocol creator
-  const isCreator = protocol.creator?.toLowerCase() === address?.toLowerCase();
+  // Allow editing if creator matches OR if creator is not set (for newly created protocols)
+  const isCreator = !protocol.creator || protocol.creator?.toLowerCase() === address?.toLowerCase();
 
   if (!isCreator) {
     return (

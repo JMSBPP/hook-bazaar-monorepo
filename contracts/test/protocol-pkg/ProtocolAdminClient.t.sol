@@ -2,9 +2,9 @@
 pragma solidity 0.8.30;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {ProtocolAdminClient, IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/ProtocolAdminClient.sol";
-import {ProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/ProtocolAdminRegistry.sol";
-import {ProtocolFactoryFacet} from "@hook-bazaar/protocol-pkg/ProtocolFactoryFacet.sol";
+import {ProtocolAdminClient, IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
+import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
+import {ProtocolFactoryFacet, IProtocolFactory} from "@hook-bazaar/protocol-pkg/src/ProtocolFactoryFacet.sol";
 
 
 contract ProtocolAdminClientTest is Test{
@@ -40,7 +40,11 @@ contract ProtocolAdminClientTest is Test{
         //===============PRE-CONDITIONS=====================
         //====================TEST============================
         vm.startPrank(protocol_deployer);
-        IProtocolAdminClient(protocol_admin_client).initialize();
+        IProtocolAdminClient(protocol_admin_client).initialize(
+            IProtocolAdminRegistry(protocol_admin_registry),
+            IProtocolFactory(protocol_factory_facet),
+            "http://localhost:3000/metadata/"
+        );
         vm.stopPrank();
         //================POST-CONDITIONS====================
         assertNotEq(IProtocolAdminClient(protocol_admin_client).adminPanel(), address(0x00));
@@ -49,14 +53,13 @@ contract ProtocolAdminClientTest is Test{
 
     function test__unit__initializeAdminProtocolMustSucceed() public {
         //======================PRE-CONDITIONS=============================
-        vm.startPrank(protocol_deployer);
-        IProtocolAdminClient(protocol_admin_client).initialize();
-        vm.stopPrank();
-
-        
         //=========================TEST===================================
         vm.startPrank(protocol_deployer);
-        IProtocolAdminClient(protocol_admin_client).initialize_admin_panel(protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");
+        IProtocolAdminClient(protocol_admin_client).initialize(
+            IProtocolAdminRegistry(protocol_admin_registry),
+            IProtocolFactory(protocol_factory_facet),
+            "http://localhost:3000/metadata/"
+        );
         vm.stopPrank();
         //=======================POST-CONDITIONS==========================
     }
@@ -64,11 +67,11 @@ contract ProtocolAdminClientTest is Test{
     function test__unit__createProtocolMustSucceed() public {
         //=================PRE-CONDITIONS=======================    
         vm.startPrank(protocol_deployer);
-        IProtocolAdminClient(protocol_admin_client).initialize();
-        vm.stopPrank();
-        
-        vm.startPrank(protocol_deployer);
-        IProtocolAdminClient(protocol_admin_client).initialize_admin_panel(protocol_admin_registry, protocol_factory_facet, "http://localhost:3000/metadata/");
+        IProtocolAdminClient(protocol_admin_client).initialize(
+            IProtocolAdminRegistry(protocol_admin_registry),
+            IProtocolFactory(protocol_factory_facet),
+            "http://localhost:3000/metadata/"
+        );
         vm.stopPrank();
         
         //=======================TEST================================

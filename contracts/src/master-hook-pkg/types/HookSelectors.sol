@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-import "Compose/diamond/LibDiamond.sol";
+import "Compose/diamond/DiamondMod.sol" as DiamondMod;
 import "@uniswap/v4-core/src/libraries/Hooks.sol";
 import "@uniswap/v4-core/src/interfaces/IHooks.sol";
 

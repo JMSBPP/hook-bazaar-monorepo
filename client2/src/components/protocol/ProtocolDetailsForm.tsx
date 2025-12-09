@@ -48,15 +48,16 @@ export default function ProtocolDetailsForm({
           className="block mb-2 font-heading font-medium"
           style={{ color: 'var(--color-secondary)', fontSize: 'var(--font-size-body-sm)' }}
         >
-          Website URL
+          Website URL *
         </label>
         <input
           id="website"
           type="url"
           {...register('website', {
+            required: 'Website URL is required',
             pattern: {
               value: /^https?:\/\/.+/,
-              message: 'Please enter a valid URL',
+              message: 'Please enter a valid URL (must start with http:// or https://)',
             },
           })}
           className="w-full px-3 py-2 border-2 angular-clip"
@@ -79,12 +80,14 @@ export default function ProtocolDetailsForm({
           className="block mb-2 font-heading font-medium"
           style={{ color: 'var(--color-secondary)', fontSize: 'var(--font-size-body-sm)' }}
         >
-          Roles (comma-separated)
+          Roles (comma-separated) *
         </label>
         <input
           id="roles"
           type="text"
-          {...register('roles')}
+          {...register('roles', {
+            required: 'At least one role is required',
+          })}
           className="w-full px-3 py-2 border-2 angular-clip"
           style={{
             borderColor: 'var(--color-secondary)',
@@ -92,9 +95,15 @@ export default function ProtocolDetailsForm({
           }}
           placeholder="Admin, Manager, Developer"
         />
-        <p className="mt-1 text-xs" style={{ color: 'var(--color-accent)' }}>
-          Separate multiple roles with commas
-        </p>
+        {errors.roles ? (
+          <p className="mt-1 text-xs" style={{ color: 'var(--color-accent)' }}>
+            {errors.roles.message}
+          </p>
+        ) : (
+          <p className="mt-1 text-xs" style={{ color: 'var(--color-black)', opacity: 0.6 }}>
+            Separate multiple roles with commas
+          </p>
+        )}
       </div>
 
       <div>
