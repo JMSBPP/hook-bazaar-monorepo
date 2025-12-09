@@ -1,19 +1,31 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
+import {console2} from "forge-std/console2.sol";
+
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 import "Compose/access/AccessControl/AccessControlMod.sol" as AccessControlMod;
 import {Authority} from "solmate/src/auth/Auth.sol";
 import {IComponent} from "compose-extensions/LibGenericFactory.sol";
 
 import {IERC1155Receiver} from "Compose/interfaces/IERC1155Receiver.sol";
+import "Compose/libraries/NonReentrancyMod.sol" as NonReentrancy;
 
-
+library ProxyUtils{
+    function metadata() internal pure returns(address){
+        address _protocolCreator;
+        assembly{
+            _protocolCreator := shr(96, calldataload(sub(calldatasize(),20)))
+        }
+        return _protocolCreator;
+    }
+}
 
 interface IProtocolAdminManager{
     error ProtocolAdminManagerCallerIsNotCreator();
     error ProtocolAdminManagerUninitialized();
-    event ProtocolAdminManagerInitialized(address indexed creator);
+    event ProtocolAdminManagerInitialized(address indexed adminPanel, address indexed _protocolCreator);
+    function __self() external view returns(address);
     function isCreator(address _account) external view returns(bool);
     function delegatePoolCreatorRole(address _account) external;
 
@@ -22,6 +34,10 @@ interface IProtocolAdminManager{
 
 // NOTE: ProtocolAdminManager is an operator
 contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminManager, Authority, InitializableBase{
+    address public immutable __self;
+    // function __self() public view returns(address){
+    //     return __self;
+    // }
     
     bytes32 constant CREATOR = keccak256("hook-bazaar.creator");
     bytes32 constant POOL_CREATOR = keccak256("hook-bazaar.pool-creator"); 
@@ -39,19 +55,22 @@ contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminMan
         }
     }
 
+    constructor(){
+        __self = address(this);
+    }
+
 
     // NOTE: Creator MUST be the address that called create_protocol
 
 
     // NOTE: The creator needs to be the caller of the create_protocol on ProtocolAdminClient
     function initialize(address creator) external initializer{
-
         ProtocolAdminManagerStorage storage $ = getStorage();
         AccessControlMod.grantRole(CREATOR, creator);
         AccessControlMod.grantRole(POOL_CREATOR, creator);
         // NOTE : creator is supposed to be the owner of the protocol
         // which is potentially a smart accounMT , regular EOA or governance contract
-        emit ProtocolAdminManagerInitialized(creator);
+        emit ProtocolAdminManagerInitialized(creator, creator);
     }
 
 
@@ -70,15 +89,23 @@ contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminMan
     }
     
     // TODO: Function is only callable during mints triggered by the create_protocol flow ...
+    modifier nonReentrant(){
+        NonReentrancy.enter();
+        _;
+        NonReentrancy.exit();
+    }
+
     function onERC1155Received(address _operator, address _from, uint256 _id, uint256 _value, bytes calldata _data)
         external
         onlyInitialized
+        nonReentrant
         returns (bytes4){
             ProtocolAdminManagerStorage storage $ = getStorage();
             $.tokenId = _id;
             return IERC1155Receiver.onERC1155Received.selector;
+            
             // TODO: It sets the protocoll as created and this uncloks the create_pool to be called
-            // by the caller address, additioanlly the caller can now use this contract
+            // // by the caller address, additioanlly the caller can now use this contract
             // to custom his protocol
         }
 
@@ -90,9 +117,6 @@ contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminMan
         bytes calldata _data
     ) external returns (bytes4){}
 
-    function grantPoolCreator(address _account) external onlyCreator{
-        AccessControlMod.grantRole(POOL_CREATOR, _account);
-    }
 
     function canCall(
         address user,
@@ -100,14 +124,11 @@ contract ProtocolAdminManager is IComponent, IERC1155Receiver, IProtocolAdminMan
         bytes4 functionSig
     ) external view returns (bool){
         bool _canCall;
-        if (functionSig == bytes4(keccak256("create_pool(bytes memory)"))){
-            _canCall = AccessControlMod.hasRole(POOL_CREATOR, user);
+        if (functionSig == bytes4(keccak256("create_pool(uint256,bytes,uint160)"))){
+            _canCall = (AccessControlMod.hasRole(POOL_CREATOR, user) && target == __self);
         }
-
         return _canCall;
     }
-
-
 
 
 

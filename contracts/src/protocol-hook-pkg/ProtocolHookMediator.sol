@@ -1,17 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
+import {console2} from "forge-std/console2.sol";
+ 
 import "@uniswap/v4-periphery/src/interfaces/IPositionManager.sol";
 import {IHooks} from "@uniswap/v4-core/src/interfaces/IHooks.sol";
-import {IMasterHook} from "@hook-bazaar/master-hook-pkg/MasterHook.sol";
-import {IProtocolAdminPanel} from "@hook-bazaar/protocol-pkg/ProtocolAdminPanel.sol";
+import {PoolKey} from "@uniswap/v4-core/src/types/PoolKey.sol";
+import {IMasterHook} from "@hook-bazaar/master-hook-pkg/src/MasterHook.sol";
+import {IProtocolAdminPanel} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminPanel.sol";
+import {IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 
 interface IProtocolHookMediator{
-    function initialize(IMasterHook _masterHook,IProtocolAdminPanel protocolAdminPanel,IPositionManager positionManager) external;
+    function initialize(IMasterHook _masterHook,IProtocolAdminClient protocolAdminClient,IPositionManager positionManager) external;
 
-    function notify(bytes4 _funcSig, bytes memory _data) external returns(bytes memory);
+    function notify(address notifier, bytes4 _funcSig, bytes memory _data) external returns(bytes memory);
 }
 
 contract ProtocolHookMediator is IProtocolHookMediator, Context, InitializableBase{
@@ -20,7 +24,7 @@ contract ProtocolHookMediator is IProtocolHookMediator, Context, InitializableBa
 
     struct ProtocolHookMediatorStorage{
         IMasterHook masterHook;
-        IProtocolAdminPanel protocolAdminPanel;
+        IProtocolAdminClient protocolAdminClient;
         IPositionManager positionManager;
     }
 
@@ -31,39 +35,41 @@ contract ProtocolHookMediator is IProtocolHookMediator, Context, InitializableBa
         }
     }
 
-    function initialize(IMasterHook _masterHook,IProtocolAdminPanel protocolAdminPanel,IPositionManager positionManager) external initializer {
+  
+    function initialize(IMasterHook _masterHook,IProtocolAdminClient protocolAdminClient,IPositionManager positionManager) external initializer {
         ProtocolHookMediatorStorage storage $ = getStorage();
         $.masterHook = _masterHook;
         $.positionManager = positionManager;
-        $.protocolAdminPanel = protocolAdminPanel;
+        $.protocolAdminClient = protocolAdminClient;
     }
 
 
 
-    function notify(bytes4 _funcSig, bytes memory _data) external onlyInitialized returns(bytes memory){
+    function notify(address notifier, bytes4 _funcSig, bytes memory _data) external onlyInitialized returns(bytes memory){
         ProtocolHookMediatorStorage storage $ = getStorage();
         
         bytes memory res;
-        if (_msgSender() == address($.protocolAdminPanel)){
-            res = reactOnProtocolAdmin(_funcSig, _data);
+        if (notifier == address($.protocolAdminClient)){
+            res = reactOnProtocolClient(_funcSig, _data);
        }
 
         return res;
 
     }
 
-    function reactOnProtocolAdmin(bytes4 _funcSig, bytes memory _data) internal returns(bytes memory){
+    function reactOnProtocolClient(bytes4 _funcSig, bytes memory _data) internal returns(bytes memory){
+        console2.logBytes4(_funcSig);
         ProtocolHookMediatorStorage storage $ = getStorage();
-        
-        if (_funcSig == bytes4(keccak256("create_pool(bytes calldata,uint160)"))){
-            (PoolKey memory poolKey, uint160 _initialSqrtPrice)  = abi.decode(_data, (PoolKey, uint160));
+
+        if (_funcSig == bytes4(keccak256("create_pool(uint256,bytes,uint160)"))){
+            (uint256 _protocolId, PoolKey memory poolKey, uint160 _initialSqrtPrice) = abi.decode(_data, (uint256, PoolKey, uint160));
             poolKey.hooks = IHooks(address($.masterHook));
-            int24 tick = IPoolInitializer_v4($.positionManager).initializePool(
+            int24 tick = $.positionManager.initializePool(
                 poolKey,
-                _initialSqrtPrice                
+                _initialSqrtPrice
             );
 
-            return abi.encode(tick);     
+            return abi.encode(tick);
         }
     }
 }

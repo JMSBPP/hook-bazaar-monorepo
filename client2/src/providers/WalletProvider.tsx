@@ -5,7 +5,6 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { supportedChains } from '../config/chains';
 import type { ReactNode } from 'react';
 
-// Create a query client for React Query
 const queryClient = new QueryClient();
 
 // Get WalletConnect Project ID from environment or use a development placeholder

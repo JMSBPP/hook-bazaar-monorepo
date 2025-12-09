@@ -3,7 +3,7 @@ pragma solidity >=0.8.30;
 
 
 import {Test, console2} from "forge-std/Test.sol";
-import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/ProtocolAdminRegistry.sol";
+import {ProtocolAdminRegistry, IProtocolAdminRegistry, IGenericFactory} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
 import {ProxyHelper} from "./helpers/ProxyHelper.sol";
 
 contract ProtocolAdminRegistryTest is Test{

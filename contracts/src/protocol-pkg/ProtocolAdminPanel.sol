@@ -6,11 +6,11 @@ import {IERC1155} from "Compose/interfaces/IERC1155.sol";
 import {ERC1155Facet} from "Compose/token/ERC1155/ERC1155Facet.sol";
 import {IProtocolFactory} from "./ProtocolFactoryFacet.sol";
 import "Compose/access/Owner/OwnerMod.sol" as OwnerMod;
-import {IProtocolAdminRegistry} from "./ProtocolAdminRegistry.sol";
+import {IProtocolAdminRegistry, IGenericFactory} from "./ProtocolAdminRegistry.sol";
 import {IProtocolAdminClient} from "./ProtocolAdminClient.sol";
 import {IProtocolHookMediator} from "@hook-bazaar/protocol-hook-pkg/src/ProtocolHookMediator.sol";
 import "Compose/diamond/DiamondMod.sol" as DiamondMod;
-
+import {IProtocolAdminManager, Authority} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminManager.sol";
 // // NOTE: This contract is the interaction point for protocol
 // // developers, AI agents 
 
@@ -20,10 +20,15 @@ interface IProtocolAdminPanel{
     error InvalidDeployer(address);
     error ProtocolAdminPanelInvalidProtocolFactoryInstance(address);
     error ProtocolAdminPanelInvalidProtocolAdminRegistry(address);
+    //=============================================ADMIN-FUNCTIONS=====================================================================
     function initialize(IProtocolAdminClient _client,IProtocolAdminRegistry _protocol_admin_registry, IProtocolFactory _protocol_factory, string calldata _baseURI) external;
-    function setProtocolHookMediator(IProtocolHookMediator _hookMediator) external;
-    function protocolHookMediator() external view returns(IProtocolHookMediator);
 
+
+    //==============================CREATE-PROTOCOL-FLOW===================================================
+    function unlockAdminManager(IProtocolAdminManager _adminManager) external; 
+    
+    
+    
 
 }
 
@@ -69,22 +74,21 @@ contract ProtocolAdminPanel is IProtocolAdminPanel{
         //TODO: Introspection checks ...
        DiamondMod.FacetCut[] memory _cut = new DiamondMod.FacetCut[](uint256(0x02));
        {
-         bytes4[] memory  _interface = new bytes4[](uint256(0x06));
+          bytes4[] memory  _interface = new bytes4[](uint256(0x06));
             
-           _interface[0x00] = _protocol_factory.__initialize.selector;
+          _interface[0x00] = _protocol_factory.__initialize.selector;
           _interface[0x01] = _protocol_factory.adminPanel.selector;
-           _interface[0x02] = _protocol_factory.baseURI.selector;
-           _interface[0x03] = _protocol_factory.create_protocol.selector;
-           _interface[0x04] = IERC1155.balanceOf.selector;
-           _interface[0x05] = IERC1155.uri.selector;
-            
+          _interface[0x02] = _protocol_factory.baseURI.selector;
+          _interface[0x03] = _protocol_factory.create_protocol.selector;
+          _interface[0x04] = IERC1155.balanceOf.selector;
+          _interface[0x05] = IERC1155.uri.selector;
             
            _cut[0x00] = DiamondMod.FacetCut(address(_protocol_factory), DiamondMod.FacetCutAction.Add, _interface);
       }
        {   
            bytes4[] memory  _interface = new bytes4[](uint256(0x04));
 
-           _interface[0x00] = _protocol_admin_registry._initialize.selector;
+            _interface[0x00] = _protocol_admin_registry._initialize.selector;
            _interface[0x01] = _protocol_admin_registry.protocol_manager.selector;
            _interface[0x02] = _protocol_admin_registry.adminManagerTemplate.selector;
            _interface[0x03] = _protocol_admin_registry.upgradeAdmin.selector;
@@ -101,16 +105,31 @@ contract ProtocolAdminPanel is IProtocolAdminPanel{
 
    }
 
-   function setProtocolHookMediator(IProtocolHookMediator _hookMediator) external{
-       OwnerMod.requireOwner();
-       ProtocolAdminPanelStorage storage $ = getStorage();
-       $.protocolHookMediator = _hookMediator;
-   }
 
-   function protocolHookMediator() public view returns(IProtocolHookMediator){
-       ProtocolAdminPanelStorage storage $ = getStorage();
-       return $.protocolHookMediator;
-   }
+ 
+//    function setProtocolHookMediator(IProtocolHookMediator _hookMediator) external{
+//     //    OwnerMod.requireOwner();
+//        ProtocolAdminPanelStorage storage $ = getStorage();
+//        $.protocolHookMediator = _hookMediator;
+//    }
+
+//    function protocolHookMediator() public view returns(IProtocolHookMediator){
+//        ProtocolAdminPanelStorage storage $ = getStorage();
+//        return $.protocolHookMediator;
+//    }
+
+   function unlockAdminManager(IProtocolAdminManager _adminManager) external{
+        DiamondMod.FacetCut[] memory _cut = new DiamondMod.FacetCut[](uint256(0x01));
+        bytes4[] memory  _interface = new bytes4[](uint256(0x02));
+        _interface[0] = IProtocolAdminManager.delegatePoolCreatorRole.selector;
+        _interface[1] = Authority.canCall.selector;
+        _cut[0x00] = DiamondMod.FacetCut(address(_adminManager), DiamondMod.FacetCutAction.Add, _interface);
+
+        DiamondMod.addFacets(_cut);
+
+       }
+        
+               
 
     // TODO: It must verify the _account is compliant
     // with the adminManager, msg.sender MUST be

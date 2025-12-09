@@ -2,10 +2,10 @@
 pragma solidity 0.8.30;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {ProtocolAdminPanel, IProtocolAdminPanel} from "@hook-bazaar/protocol-pkg/ProtocolAdminPanel.sol";
-import {ProtocolFactoryFacet, IProtocolFactory} from "@hook-bazaar/protocol-pkg/ProtocolFactoryFacet.sol";
-import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/ProtocolAdminRegistry.sol";
-import {IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/ProtocolAdminClient.sol";
+import {ProtocolAdminPanel, IProtocolAdminPanel} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminPanel.sol";
+import {ProtocolFactoryFacet, IProtocolFactory} from "@hook-bazaar/protocol-pkg/src/ProtocolFactoryFacet.sol";
+import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
+import {IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
 import {ERC165Facet} from "Compose/interfaceDetection/ERC165/ERC165Facet.sol";
 import {IERC1155} from "Compose/interfaces/IERC1155.sol";
 
@@ -90,7 +90,7 @@ contract ProtocolAdminPanelTest is Test{
         IProtocolAdminRegistry(protocol_admin_panel)._initialize();
 
         vm.stopPrank();
-
+    
         vm.startPrank(any_caller);
         address _admin_manager = IProtocolAdminRegistry(protocol_admin_panel).protocol_manager(uint256(0x01));
         vm.stopPrank();

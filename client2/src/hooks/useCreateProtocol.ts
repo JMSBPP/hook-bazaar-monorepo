@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt, useWatchContractEvent } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useWatchContractEvent, usePublicClient } from 'wagmi';
 import { protocolAdminClientABI } from '../lib/contracts/abi';
 import { getContractAddress } from '../lib/contracts/protocolAdminClient';
 import { useAccount } from 'wagmi';
 import type { Address } from 'viem';
+import { decodeEventLog } from 'viem';
 
 interface UseCreateProtocolOptions {
   chainId: number;
@@ -19,6 +20,7 @@ export function useCreateProtocol({
   onError,
 }: UseCreateProtocolOptions) {
   const { address } = useAccount();
+  const publicClient = usePublicClient({ chainId });
   const [protocolId, setProtocolId] = useState<bigint | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -53,6 +55,7 @@ export function useCreateProtocol({
   const {
     isLoading: isConfirming,
     isSuccess: isConfirmed,
+    data: receipt,
     error: receiptError,
   } = useWaitForTransactionReceipt({
     hash,
@@ -63,7 +66,7 @@ export function useCreateProtocol({
     address: contractAddress,
     abi: protocolAdminClientABI,
     eventName: 'ProtocolCreated',
-    enabled: !!hash && isConfirmed, // Only watch after transaction is confirmed
+    enabled: !!hash, // Start watching as soon as transaction is submitted
     onLogs(logs) {
       console.log('ProtocolCreated event logs received:', logs);
       // Find the log for this transaction
@@ -90,29 +93,58 @@ export function useCreateProtocol({
     },
   });
 
-  // Fallback: If transaction is confirmed but no event detected after 5 seconds, 
-  // try to get protocol ID from transaction receipt or use a placeholder
+  // Parse ProtocolCreated event from transaction receipt
   useEffect(() => {
-    if (isConfirmed && hash && !protocolId && !isSubscribed) {
-      console.log('Transaction confirmed but no event detected yet. Setting fallback timer...');
-      const fallbackTimer = setTimeout(() => {
-        if (!protocolId && !isSubscribed) {
-          console.warn('No ProtocolCreated event detected after 5 seconds. Using fallback.');
-          // Use a placeholder protocol ID based on transaction hash
-          // In production, you might want to query the contract for the actual protocol ID
-          const fallbackId = BigInt(parseInt(hash.slice(0, 10), 16));
-          setProtocolId(fallbackId);
-          setIsSubscribed(true);
-          if (onSuccess) {
-            console.log('Calling onSuccess with fallback ID:', fallbackId.toString());
-            onSuccess(fallbackId);
+    if (isConfirmed && receipt && !protocolId && !isSubscribed) {
+      console.log('Transaction confirmed. Parsing receipt logs for ProtocolCreated event...');
+      console.log('Receipt:', receipt);
+
+      try {
+        // Find the ProtocolCreated event in the logs
+        const protocolCreatedLog = receipt.logs.find((log) => {
+          try {
+            const decoded = decodeEventLog({
+              abi: protocolAdminClientABI,
+              data: log.data,
+              topics: log.topics,
+            });
+            return decoded.eventName === 'ProtocolCreated';
+          } catch {
+            return false;
           }
+        });
+
+        if (protocolCreatedLog) {
+          const decoded = decodeEventLog({
+            abi: protocolAdminClientABI,
+            data: protocolCreatedLog.data,
+            topics: protocolCreatedLog.topics,
+          });
+
+          console.log('Decoded ProtocolCreated event:', decoded);
+
+          if (decoded.eventName === 'ProtocolCreated' && decoded.args) {
+            const args = decoded.args as { tokenId?: bigint; protocolCaller?: Address };
+            const tokenId = args.tokenId;
+
+            if (tokenId) {
+              console.log('ProtocolCreated event found! TokenId:', tokenId.toString());
+              setProtocolId(tokenId);
+              setIsSubscribed(true);
+              if (onSuccess) {
+                onSuccess(tokenId);
+              }
+            }
+          }
+        } else {
+          console.warn('No ProtocolCreated event found in transaction receipt');
+          console.log('All logs:', receipt.logs);
         }
-      }, 5000);
-      
-      return () => clearTimeout(fallbackTimer);
+      } catch (error) {
+        console.error('Error parsing transaction receipt:', error);
+      }
     }
-  }, [isConfirmed, hash, protocolId, isSubscribed, onSuccess]);
+  }, [isConfirmed, receipt, protocolId, isSubscribed, onSuccess]);
 
   const createProtocol = async (name?: string) => {
     const nameToUse = name || protocolName;
@@ -185,8 +217,17 @@ export function useCreateProtocol({
     setIsSubscribed(false);
   }, [chainId, reset]);
 
+  // Expose a reset function for manual reset
+  const resetProtocolCreation = () => {
+    console.log('Resetting protocol creation state');
+    reset();
+    setProtocolId(null);
+    setIsSubscribed(false);
+  };
+
   return {
     createProtocol,
+    resetProtocolCreation,
     hash,
     isPending,
     isConfirming,

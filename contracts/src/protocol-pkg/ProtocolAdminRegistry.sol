@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
-// import {LibGenericFactory} from "compose-extensions/LibGenericFactory.sol";
-// import "compose-extensions/GenericFactoryMod.sol" as GenericFactoryMod;
+import {LibGenericFactory} from "compose-extensions/LibGenericFactory.sol";
+import "compose-extensions/GenericFactoryMod.sol" as GenericFactoryMod;
 import {GenericFactory} from "@euler/GenericFactory/GenericFactory.sol";
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 import "compose-extensions/InitializableMod.sol" as InitializableMod;
@@ -42,9 +42,10 @@ interface IProtocolAdminRegistry{
 
     function __self() external view returns(address);
     function _initialize() external;
-    function protocol_manager(uint256 _tokenId) external returns(address);
-    function adminManagerTemplate() external view returns(address);
-    function upgradeAdmin() external view returns(address);
+    function protocol_manager(uint256 _protocolId) external returns(address);
+
+    function adminManagerTemplate() external returns(address);
+    function upgradeAdmin() external returns(address);
 }
 
 contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, InitializableBase{
@@ -64,7 +65,6 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
 
     struct ProtocolAdminRegistryStorage{
         // NOTE: One protocol has one admin
-        IGenericFactory protocolAdminFactory;
         uint64 version;
         mapping(uint256 tokenId => address protocol_manager) protocol_managers;
         mapping(uint256 tokenId => address protocol_admin_operator) protocol_admin_operators;
@@ -97,22 +97,23 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
 
     function _initialize() external reinitializer(updateVersion()){
         ProtocolAdminRegistryStorage storage $ = getStorage();
-        $.protocolAdminFactory = IGenericFactory(address(new GenericFactory(address(this))));
-
+        
+        LibGenericFactory.GenericFactoryStorage storage g$ = LibGenericFactory.getStorage();
+        g$.upgradeAdmin = msg.sender;
         // TODO: Further introspection checks are suggested here
         // if (msg.sender.code.length == uint256(0x00)) revert ProtocolAdminRegistryInvalidInitializer();
         // NOTE: The msg.sender in our implementation
         // is the ProtocolAdminPanel
-        $.protocolAdminFactory.setImplementation(address(new ProtocolAdminManager()));
-        $.protocolAdminFactory.setUpgradeAdmin(msg.sender);
         
+        LibGenericFactory.setImplementation(address(new ProtocolAdminManager()));
+         
 
     }
 
   
-    function adminManagerTemplate() public view returns(address){
+    function adminManagerTemplate() public returns(address){
         ProtocolAdminRegistryStorage storage $ = getStorage();
-        return $.protocolAdminFactory.implementation();
+        return LibGenericFactory.implementation();
     }
 
     // // NOTE: This function can not be called if the contract is not initialized
@@ -135,16 +136,15 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
         
     }
 
-    function upgradeAdmin() public view initialized returns(address){
-        ProtocolAdminRegistryStorage storage $ = getStorage();
-        return $.protocolAdminFactory.upgradeAdmin();
+    function upgradeAdmin() public initialized returns(address){
+        return LibGenericFactory.upgradeAdmin();
     }
 
-    function protocol_manager(uint256 _tokenId) external initialized returns(address){
-        if (_tokenId == uint256(0x00)) return address(0x00);
+    function protocol_manager(uint256 _protocolId) external initialized returns(address){
+        if (_protocolId == uint256(0x00)) return address(0x00);
         ProtocolAdminRegistryStorage storage $ = getStorage();
 
-        if ($.protocol_managers[_tokenId] == address(0x00)){
+        if ($.protocol_managers[_protocolId] == address(0x00)){
             // NOTE: This protects for the delegate call
             
             onlyAdminPanel();
@@ -160,17 +160,17 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
             //     _parentSig != CREATE_PROTOCOL_CLIENT_SIG
             // ) revert ProtocolAdminRegistryInvalidContextCall();
 
-            $.protocol_managers[_tokenId] = $.protocolAdminFactory.createProxy(adminManagerTemplate(), false, abi.encode(msg.sender));
+            $.protocol_managers[_protocolId] = LibGenericFactory.createProxy(adminManagerTemplate(), false, abi.encode("0x00"));
         }
 
+        return $.protocol_managers[_protocolId];
+    }
+
+    function protocolManagers(uint256 _tokenId) external returns(address){
+        ProtocolAdminRegistryStorage storage $ = getStorage();
         return $.protocol_managers[_tokenId];
+        
     }
 
  
-
-
-
-
-
-
 }

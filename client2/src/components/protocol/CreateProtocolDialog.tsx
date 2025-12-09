@@ -81,6 +81,7 @@ export default function CreateProtocolDialog({
   
   const {
     createProtocol,
+    resetProtocolCreation,
     hash,
     isPending,
     isConfirming,
@@ -122,8 +123,9 @@ export default function CreateProtocolDialog({
       setProtocolName('');
       hasCalledCreateProtocol.current = false;
       isSwitchingChain.current = false;
+      resetProtocolCreation(); // Reset hook state to allow subsequent protocol creations
     }
-  }, [open]);
+  }, [open, resetProtocolCreation]);
 
   // Handle chain selection
   const handleSelectChain = (chainId: number) => {
@@ -185,16 +187,21 @@ export default function CreateProtocolDialog({
     }
   }, [step, protocolId, isConfirmed, hash, triggerConfetti]);
 
-  // Auto-close dialog on transaction error
+  // Reset to select-chain on transaction error to allow retry
   useEffect(() => {
     if (error && (step === 'creating' || isPending || isConfirming)) {
-      console.log('Transaction error detected, closing dialog in 3 seconds');
+      console.log('Transaction error detected, resetting to allow retry');
+      // Don't auto-close, just reset to allow user to retry
       const timer = setTimeout(() => {
-        onOpenChange(false);
+        setStep('select-chain');
+        setSelectedChainId(undefined);
+        setProtocolName('');
+        hasCalledCreateProtocol.current = false;
+        isSwitchingChain.current = false;
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [error, step, isPending, isConfirming, onOpenChange]);
+  }, [error, step, isPending, isConfirming]);
 
   // Monitor chain changes and auto-proceed to creating when correct chain is active
   useEffect(() => {
@@ -235,27 +242,21 @@ export default function CreateProtocolDialog({
     }
   }, [step, isConnected, selectedChainId, chainId, isPending, hash, protocolName, createProtocol]);
 
-  // Fallback: If transaction is confirmed but success step not reached, trigger success
+  // Wait for the actual ProtocolCreated event - DO NOT use fallback fake IDs
+  // The onSuccess callback from useCreateProtocol will trigger when the real event is detected
   useEffect(() => {
-    if (step === 'creating' && isConfirmed && hash && !error) {
-      console.log('Transaction confirmed! Moving to success step (fallback if event not detected)');
-      // Wait a bit for event, then trigger success if not already triggered
-      const successTimer = setTimeout(() => {
-        if (step === 'creating' && isConfirmed) {
-          console.log('Triggering success step from transaction confirmation (event may not have fired)');
-          setStep('success');
-          // Use transaction hash as fallback protocol ID if event didn't fire
-          if (!protocolId && onSuccess) {
-            const fallbackId = BigInt(parseInt(hash.slice(0, 10), 16));
-            const feeRecipient = isConnected && address ? address : '';
-            onSuccess(fallbackId, selectedChainId || chainId, protocolName, feeRecipient);
-          }
+    if (step === 'creating' && isConfirmed && hash && !error && !protocolId) {
+      console.log('Transaction confirmed! Waiting for ProtocolCreated event to get real tokenId...');
+      // Log warning if event takes too long
+      const warningTimer = setTimeout(() => {
+        if (step === 'creating' && !protocolId) {
+          console.warn('Still waiting for ProtocolCreated event after 10 seconds. This may indicate an issue with event emission.');
         }
-      }, 2000); // Wait 2 seconds for event, then fallback
-      
-      return () => clearTimeout(successTimer);
+      }, 10000);
+
+      return () => clearTimeout(warningTimer);
     }
-  }, [step, isConfirmed, hash, error, protocolId, onSuccess, selectedChainId, chainId, protocolName, isConnected, address]);
+  }, [step, isConfirmed, hash, error, protocolId]);
 
   const handleClose = () => {
     if (step !== 'creating' && !isPending && !isConfirming) {
@@ -602,11 +603,11 @@ export default function CreateProtocolDialog({
           )}
           
           {error && (
-            <div style={{ 
-              marginTop: '16px', 
-              padding: '16px', 
-              background: '#fee', 
-              border: '2px solid #c00', 
+            <div style={{
+              marginTop: '16px',
+              padding: '16px',
+              background: '#fee',
+              border: '2px solid #c00',
               borderRadius: '4px',
             }}>
               <p style={{ color: '#c00', fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
@@ -616,7 +617,7 @@ export default function CreateProtocolDialog({
                 {error instanceof Error ? error.message : String(error)}
               </p>
               <p style={{ color: '#666', fontSize: '11px', fontStyle: 'italic' }}>
-                Dialog will close automatically in 3 seconds...
+                Resetting in 3 seconds. You can try again with a different chain.
               </p>
             </div>
           )}

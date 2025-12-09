@@ -2,7 +2,7 @@
 pragma solidity 0.8.30;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/ProtocolAdminClient.sol";
+import {IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
 import {DevOpsTools} from "foundry-devops/DevOpsTools.sol";
 
 contract CreateProtocol is Script{

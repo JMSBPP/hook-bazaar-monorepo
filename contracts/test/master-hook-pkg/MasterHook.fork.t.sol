@@ -6,11 +6,11 @@ import {Script} from "forge-std/Script.sol";
 import {EthereumMainnet} from "./utils/ForkUtils.sol";
 import {Constants} from "@uniswap/v4-core/test/utils/Constants.sol";
 
-import "@hook-bazaar/master-hook-pkg/MasterHook.sol";
+import "@hook-bazaar/master-hook-pkg/src/MasterHook.sol";
 
 import "@uniswap/v4-periphery/src/utils/BaseHook.sol";
 
-import "@hook-bazaar/master-hook-pkg/AllHook.sol";
+import "@hook-bazaar/master-hook-pkg/src/AllHook.sol";
 
 
 import "@uniswap/v4-core/src/types/Currency.sol";
@@ -34,7 +34,7 @@ import {IHooks} from "@uniswap/v4-core/src/interfaces/IHooks.sol";
 import "@uniswap/v4-periphery/src/utils/HookMiner.sol";
 
 import {MockCounterHook} from "@uniswap/v4-periphery/test/mocks/MockCounterHook.sol";
-import {MockCounterHook2} from "@hook-bazaar/master-hook-pkg/mocks/MockCounterHook2.sol";
+import {MockCounterHook2} from "@hook-bazaar/master-hook-pkg/src/mocks/MockCounterHook2.sol";
 
 
 import {BalanceDeltaLibrary} from "@uniswap/v4-core/src/types/BalanceDelta.sol";

@@ -1,18 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
+import {console2} from "forge-std/console2.sol";
 
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 import "Compose/access/Owner/OwnerMod.sol" as OwnerMod;
 import {ProtocolAdminPanel, IProtocolAdminPanel} from "./ProtocolAdminPanel.sol";
 import {IProtocolAdminRegistry} from "./ProtocolAdminRegistry.sol";
 import {IProtocolFactory} from "./ProtocolFactoryFacet.sol";
-import "solmate/src/auth/Auth.sol";
+import {IProtocolAdminManager, Authority} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminManager.sol";
+import {IProtocolHookMediator} from "@hook-bazaar/protocol-hook-pkg/src/ProtocolHookMediator.sol";
+import {PoolKey} from "@uniswap/v4-core/src/types/PoolKey.sol";
+
 
 
 interface IProtocolAdminClient{
     error ProtocolAdminClientUninitialized();
     error ProtocolAdminClientUnSetAdminClient();
-
+    error ProtocolAdminClientUnauthorizedCaller();
     //======================PROTOCOL-DEPLOYER ACTIONS =================================================
     function initialize( 
         IProtocolAdminRegistry _protocol_admin_registry,
@@ -30,7 +34,15 @@ interface IProtocolAdminClient{
     function create_protocol(string calldata _name) external returns(uint256);
     event ProtocolCreated(address indexed protocolCaller, uint256 indexed tokenId, address indexed __adminManager);
 
-    function create_pool(bytes calldata _encoded_pool_key, uint160 initialSqrtPrice) external returns(bytes32);
+    function create_pool(uint256 protocolId, bytes calldata _encoded_pool_key, uint160 initialSqrtPrice) external returns(bytes32);
+
+        
+    function setProtocolHookMediator(IProtocolHookMediator _hookMediator) external;
+
+    
+    function protocolHookMediator() external view returns(IProtocolHookMediator);
+
+
 }
 
 
@@ -40,6 +52,7 @@ contract ProtocolAdminClient is IProtocolAdminClient, InitializableBase{
 
     struct ProtocolAdminClientStorage{
         address admin_panel;
+        address protocolHookMediator;
         uint256 nextTokenId;
     }
 
@@ -99,26 +112,49 @@ contract ProtocolAdminClient is IProtocolAdminClient, InitializableBase{
         uint256 _token_id = $.nextTokenId;
         address _protocol_admin_manager = IProtocolAdminRegistry($.admin_panel).protocol_manager(_token_id);
         IProtocolFactory($.admin_panel).create_protocol(_name,  _protocol_admin_manager, _token_id);
+        IProtocolAdminPanel($.admin_panel).unlockAdminManager(IProtocolAdminManager(_protocol_admin_manager));
 
         emit ProtocolCreated(msg.sender, _token_id,_protocol_admin_manager);
         $.nextTokenId++;        
         return _token_id;
     }
 
-    function create_pool(bytes calldata _encoded_pool_key, uint160 initialSqrtPrice) external onlyInitialized returns(bytes32){
- 
+    function create_pool(uint256 protocolId, bytes calldata _encoded_pool_key, uint160 initialSqrtPrice) external onlyInitialized returns(bytes32){
+
         ProtocolAdminClientStorage storage $ = getStorage();
- 
-        if (!Authority($.admin_panel).canCall(msg.sender, address(this), msg.sig)) revert();
- 
+        console2.log("Protocol Creator:", msg.sender);
+        bytes4 createPoolSig = msg.sig;
+        console2.logBytes4(createPoolSig);
+        // NOTE: With protocolId one can fetch the associated adminManager
+        address adminManager = IProtocolAdminRegistry($.admin_panel).protocol_manager(protocolId);
+        // if (!Authority($.admin_panel).canCall(msg.sender, adminManager, createPoolSig)) revert ProtocolAdminClientUnauthorizedCaller();
+
+        PoolKey memory poolKey = abi.decode(_encoded_pool_key, (PoolKey));
         int24 _initialTick = abi.decode(
-           IProtocolAdminPanel($.admin_panel).protocolHookMediator().notify(msg.sig, msg.data),
+           IProtocolHookMediator($.protocolHookMediator).notify(
+                address(this) ,
+                createPoolSig,
+                abi.encode(protocolId, poolKey, initialSqrtPrice)),
                (int24)
            );
-               
+
     }
     
     function supportsInterface(bytes4 interfaceID) external view returns (bool){
         return interfaceID == type(IProtocolAdminClient).interfaceId;
     }
+
+    function setProtocolHookMediator(IProtocolHookMediator _hookMediator) external{
+        OwnerMod.requireOwner();
+        ProtocolAdminClientStorage storage $ = getStorage();
+        $.protocolHookMediator = address(_hookMediator);
+    }
+
+    
+    function protocolHookMediator() external view returns(IProtocolHookMediator){
+        ProtocolAdminClientStorage storage $ = getStorage();
+        return IProtocolHookMediator($.protocolHookMediator);
+    }   
+    
+
 }

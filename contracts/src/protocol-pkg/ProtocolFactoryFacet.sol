@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
+import {console2} from "forge-std/console2.sol";
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 
 
@@ -98,15 +99,16 @@ contract ProtocolFactoryFacet is IProtocolFactory, InitializableBase{
         // TODO: This library must also expose a payload to the protocol admin
         // and perform checks against the protocol_admin
         // TODO: This is missing the data param on the mint function
-        ERC1155Mod.mint(_protocol_admin,_token_id,uint256(0x01),abi.encode(_token_id));
+        console2.log("Caller", msg.sender);
+        ERC1155Mod.mint(_protocol_admin,_token_id,1,abi.encode("0x00"));
         // NOTE: Needs to concat /ProtocolDashboard/protocolName ?= _name        
         ERC1155Mod.setTokenURI(_token_id, _name);
     }
 
 
-   function balanceOf(address _account, uint256 _id) external view returns (uint256){
+   function balanceOf(address _from, uint256 _id) external view returns (uint256){
         ERC1155Mod.ERC1155Storage storage e1155$ = ERC1155Mod.getStorage();
-        return e1155$.balanceOf[_id][_account];
+        return e1155$.balanceOf[_id][_from];
    }
    
    function uri(uint256 _id) external view returns (string memory){

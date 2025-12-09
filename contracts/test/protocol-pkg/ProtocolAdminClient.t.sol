@@ -2,9 +2,9 @@
 pragma solidity 0.8.30;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {ProtocolAdminClient, IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/ProtocolAdminClient.sol";
-import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/ProtocolAdminRegistry.sol";
-import {ProtocolFactoryFacet, IProtocolFactory} from "@hook-bazaar/protocol-pkg/ProtocolFactoryFacet.sol";
+import {ProtocolAdminClient, IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
+import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
+import {ProtocolFactoryFacet, IProtocolFactory} from "@hook-bazaar/protocol-pkg/src/ProtocolFactoryFacet.sol";
 
 
 contract ProtocolAdminClientTest is Test{

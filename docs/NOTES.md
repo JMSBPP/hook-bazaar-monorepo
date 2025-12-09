@@ -76,3 +76,15 @@ Tooling:
 
 
 - A developer
+
+
+
+1. Agent documentation for gitBook document generator
+- Use the reactice system approach (func, beh, communication)
+
+2. Frontend Agent documentation 
+    - agent to have access to the JS browser console
+    - especial instructions for web3 integration
+3. Indexer Agent documentation
+    - leverage sqd, etc
+4. github devOPs agent documentation
