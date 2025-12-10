@@ -1,4 +1,5 @@
 import { ArrowLeft, Code, DollarSign, Package, Plus, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Navigation from './Navigation';
 import Footer from './Footer';
 
@@ -7,6 +8,12 @@ interface HookDeveloperDashboardProps {
 }
 
 export default function HookDeveloperDashboard({ onNavigate }: HookDeveloperDashboardProps) {
+  const navigate = useNavigate();
+
+  const handleCreateHook = () => {
+    navigate('/hook-developer/create');
+  };
+
   const stats = [
     { icon: Package, label: 'Total Hooks', value: '3', color: 'primary' },
     { icon: DollarSign, label: 'Total Revenue', value: '$12,450', color: 'secondary' },
@@ -95,6 +102,7 @@ export default function HookDeveloperDashboard({ onNavigate }: HookDeveloperDash
             </div>
 
             <button
+              onClick={handleCreateHook}
               className="angular-clip-button px-6 py-3 font-heading uppercase tracking-wider transition-all duration-200 hover:-translate-y-1 hover:rotate-[-1deg] flex items-center gap-2"
               style={{
                 background: 'var(--color-primary)',
@@ -112,7 +120,7 @@ export default function HookDeveloperDashboard({ onNavigate }: HookDeveloperDash
               }}
             >
               <Plus size={20} />
-              Deploy New Hook
+              Create New Hook
             </button>
           </div>
         </div>
