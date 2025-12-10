@@ -3,7 +3,14 @@ pragma solidity >=0.8.30;
 
 
 import {Test, console2} from "forge-std/Test.sol";
-import {ProtocolAdminRegistry, IProtocolAdminRegistry, IGenericFactory} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
+
+import {
+    ProtocolAdminRegistry,
+    IProtocolAdminRegistry,
+    IGenericFactory,
+    IProtocolAdminPanelConsumer
+} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
+
 import {ProxyHelper} from "./helpers/ProxyHelper.sol";
 
 contract ProtocolAdminRegistryTest is Test{
@@ -30,6 +37,7 @@ contract ProtocolAdminRegistryTest is Test{
         vm.stopPrank();
         //===============POST-CONDITIONS==================
         assertEq(IProtocolAdminRegistry(proxy_helper).upgradeAdmin(),admin);
+        assertEq(proxy_helper, IProtocolAdminPanelConsumer(proxy_helper).adminPanel());
         assertNotEq(address(0x00), IProtocolAdminRegistry(proxy_helper).adminManagerTemplate());
 
     }
@@ -45,19 +53,31 @@ contract ProtocolAdminRegistryTest is Test{
         //===================POST-CONDITIONS===========================
     }
 
-    function test__unit__deployAdminManagerMustSucceed() public{
+    function test__unit__deployAdminManagerMustRevertOnInvalidContext() public{
         //=================PRE-CONDITIONS=========================
         test__unit__initializeMustSucceed();
 
-
+        address prevProtocolManager = IProtocolAdminRegistry(proxy_helper).getProtocolManager(uint256(0x01));
         //====================TEST==============================
         vm.startPrank(any_caller);
-        address _admin_manager = IProtocolAdminRegistry(proxy_helper).protocol_manager(uint256(0x01));
+        vm.expectRevert();
+        address _admin_manager = IProtocolAdminRegistry(proxy_helper).setProtocolManager(uint256(0x01), any_caller);
         vm.stopPrank();
-    
-        //====================POST-CONDITIONS====================
-        assertEq(_admin_manager, IProtocolAdminRegistry(proxy_helper).protocol_manager(uint256(0x01)));
 
+        //====================POST-CONDITIONS====================
+        address postProtocolManager = IProtocolAdminRegistry(proxy_helper).getProtocolManager(uint256(0x01));
+        assertEq(prevProtocolManager, postProtocolManager);
+
+    }
+
+    function test__unit__addPoolMustRevertOnInvalidContext() public {
+        //===================PRE-CONDITIONS=============================
+        test__unit__initializeMustSucceed();
+        //======================TEST====================================
+        vm.prank(any_caller);
+        vm.expectRevert();
+        IProtocolAdminRegistry(proxy_helper).setProtocolManager(uint256(0x01),any_caller);
+        //===================POST-CONDITIONS==========================
     }
 
 

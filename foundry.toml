@@ -6,6 +6,9 @@ out = "contracts/out/"
 libs = ["contracts/lib", "node_modules"]
 script = "contracts/script"
 ffi=true
+via_ir = true
+optimizer = true
+optimizer_runs = 200
 
 fs_permissions = [
     { access = "read", path = "./contracts/broadcast" },
@@ -34,12 +37,13 @@ remappings = [
     "@euler/=contracts/lib/compose-extensions/lib/euler-vault-kit/src/"
 ]
 
-compiler_restrictions = [
-    {path = "contracts/src/**", solc_version = ">=0.8.30", evm_version = "prague"},
-    {path = "contracts/lib/v4-periphery/**", solc_version = "=0.8.26", evm_version = "cancun"},
-    {path = "contracts/lib/compose-extensions/**", solc_version = "=0.8.30"}
-
-]
+# Note: compiler_restrictions is not a standard Foundry config - using via_ir = true globally instead
+# compiler_restrictions = [
+#     {path = "contracts/src/**", solc_version = ">=0.8.30", evm_version = "prague"},
+#     {path = "contracts/src/protocol-pkg/ProtocolAdminClient.sol", solc_version = ">=0.8.30", evm_version = "prague", viaIR = true },
+#     {path = "contracts/lib/v4-periphery/**", solc_version = "=0.8.26", evm_version = "cancun"},
+#     {path = "contracts/lib/compose-extensions/**", solc_version = "=0.8.30"}
+# ]
 
 [rpc_endpoints]
 

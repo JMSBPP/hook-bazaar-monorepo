@@ -6,6 +6,7 @@ import "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
 import "@hook-bazaar/protocol-hook-pkg/src/ProtocolHookMediator.sol";
 import {ProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
 import {ProtocolFactoryFacet} from "@hook-bazaar/protocol-pkg/src/ProtocolFactoryFacet.sol";
+import {IStateView} from "@uniswap/v4-periphery/src/interfaces/IStateView.sol";
 
 contract ProtocolAdminClientForkTest is Test, SwapHelper, LiquidityHelper{
     bool forked;
@@ -16,13 +17,15 @@ contract ProtocolAdminClientForkTest is Test, SwapHelper, LiquidityHelper{
 
 
     PoolKey poolKey;
-    IMasterHook masterHook;
-    IHooks allHook;
+    address masterHook;
+    address allHook;
 
-    IProtocolAdminClient protocolAdminClient;
-    IProtocolHookMediator protocolHookMediator;
-    IProtocolAdminRegistry protocolAdminRegistry;
-    IProtocolFactory protocolFactory;
+    address protocolAdminClient;
+    address protocolHookMediator;
+    
+    address protocolAdminRegistry;
+    address protocolFactory;
+    address adminPanel;
 
 
     IPoolManager poolManager;
@@ -46,20 +49,20 @@ contract ProtocolAdminClientForkTest is Test, SwapHelper, LiquidityHelper{
             lpm = IPositionManager(EthereumMainnet.POSITION_MANAGER);
             swapRouter = IUniversalRouter(EthereumMainnet.UNIVERSAL_ROUTER);
 
-            protocolAdminClient = IProtocolAdminClient(address(new ProtocolAdminClient()));
-            protocolAdminRegistry = IProtocolAdminRegistry(address(new ProtocolAdminRegistry()));
-            protocolFactory = IProtocolFactory(address(new ProtocolFactoryFacet()));
+            protocolAdminClient = address(new ProtocolAdminClient());
+            protocolAdminRegistry = address(new ProtocolAdminRegistry());
+            protocolFactory = address(new ProtocolFactoryFacet());
 
 
-            masterHook = IMasterHook(MasterHook(payable(address(uint160((type(uint160).max & clearAllHookPermissionsMask) | Hooks.ALL_HOOK_MASK)))));
-            allHook = IHooks(address(AllHook(payable(address(uint160(((type(uint160).max & clearAllHookPermissionsMask) | Hooks.ALL_HOOK_MASK) & (type(uint160).max - 2 ** 156)))))));
+            masterHook = address(IMasterHook(MasterHook(payable(address(uint160((type(uint160).max & clearAllHookPermissionsMask) | Hooks.ALL_HOOK_MASK))))));
+            allHook = address(AllHook(payable(address(uint160(((type(uint160).max & clearAllHookPermissionsMask) | Hooks.ALL_HOOK_MASK) & (type(uint160).max - 2 ** 156))))));
 
-            deployCodeTo("MasterHook.sol:MasterHook", abi.encode("0x00"), address(masterHook));
-            deployCodeTo("AllHook.sol:AllHook", abi.encode(address(poolManager)), address(allHook));
+            deployCodeTo("MasterHook.sol:MasterHook", abi.encode("0x00"), masterHook);
+            deployCodeTo("AllHook.sol:AllHook", abi.encode(address(poolManager)), allHook);
 
-            protocolHookMediator = IProtocolHookMediator(address(new ProtocolHookMediator()));
+            protocolHookMediator = address(new ProtocolHookMediator());
 
-            poolKey = PoolKey(Currency.wrap(EthereumMainnet.ETH),Currency.wrap(EthereumMainnet.USDC), uint24(0x00), int24(0x3c), IHooks(address(masterHook)));
+            poolKey = PoolKey(Currency.wrap(EthereumMainnet.ETH),Currency.wrap(EthereumMainnet.USDC), uint24(0x00), int24(0x3c), IHooks(masterHook));
 
 
             forked = true;
@@ -80,23 +83,56 @@ contract ProtocolAdminClientForkTest is Test, SwapHelper, LiquidityHelper{
         //========================TEST============================================
         vm.startPrank(any_caller);
         vm.expectRevert();
-        protocolAdminClient.create_pool(1,abi.encode(poolKey), Constants.SQRT_PRICE_1_1);
+        IProtocolAdminClient(protocolAdminClient).create_pool(1,abi.encode(poolKey), Constants.SQRT_PRICE_1_1);
 
         vm.stopPrank();
 
         //=====================POST-CONDITIONS====================================
     }
 
+    function test__fork__setProtocolHookMediatorMustSucceed() public {
+        //======================PRE-CONDITIONS===========================
+        vm.startPrank(protocol_admin);
+        IProtocolAdminClient(protocolAdminClient).initialize(IProtocolAdminRegistry(protocolAdminRegistry),IProtocolFactory(protocolFactory), "localhost");
+        vm.stopPrank();
+
+        //========================TEST==================================
+        vm.prank(protocol_admin);
+        IProtocolAdminClient(protocolAdminClient).setProtocolHookMediator(IProtocolHookMediator(protocolHookMediator));
+
+
+        //======================POST-CONDITIONS=======================
+        assertEq(protocolHookMediator, address(IProtocolAdminClient(protocolAdminClient).protocolHookMediator()));
+
+    }
+
+    function test__fork__NotOwnerSetProtocolHookMediatorMustRevert() public {
+        //======================PRE-CONDITIONS===========================
+        vm.startPrank(protocol_admin);
+        IProtocolAdminClient(protocolAdminClient).initialize(IProtocolAdminRegistry(protocolAdminRegistry),IProtocolFactory(protocolFactory), "localhost");
+        vm.stopPrank();
+        //========================TEST==================================
+        vm.prank(any_caller);
+        vm.expectRevert();
+        IProtocolAdminClient(protocolAdminClient).setProtocolHookMediator(IProtocolHookMediator(protocolHookMediator));
+
+
+        //======================POST-CONDITIONS=======================
+    }
+
     function test__fork__createPoolWitNoProtocolAttachedMustRevert() public{
         //=======================PRE-CONDITIONS============================
         vm.startPrank(protocol_admin);
-        protocolAdminClient.initialize(protocolAdminRegistry,protocolFactory, "localhost");
+        IProtocolAdminClient(protocolAdminClient).initialize(IProtocolAdminRegistry(protocolAdminRegistry),IProtocolFactory(protocolFactory), "localhost");
+        adminPanel = IProtocolAdminPanelConsumer(protocolAdminClient).adminPanel();
+      
         vm.stopPrank();
+
 
         //==========================TEST===================================
         vm.startPrank(any_caller);
         vm.expectRevert();
-        protocolAdminClient.create_pool(1,abi.encode(poolKey), Constants.SQRT_PRICE_1_1);
+        IProtocolAdminClient(protocolAdminClient).create_pool(1,abi.encode(poolKey), Constants.SQRT_PRICE_1_1);
         vm.stopPrank();
         //========================POST-CONDITIONS===========================
     }
@@ -104,40 +140,51 @@ contract ProtocolAdminClientForkTest is Test, SwapHelper, LiquidityHelper{
     function test__fork__createPoolWithUnauthorizedPermsMustRevert() public {
         //====================PRE-CONDITIONS====================================
         vm.prank(protocol_admin);
-        protocolAdminClient.initialize(protocolAdminRegistry, protocolFactory, "localhost");
-        
+        IProtocolAdminClient(protocolAdminClient).initialize(IProtocolAdminRegistry(protocolAdminRegistry), IProtocolFactory(protocolFactory), "localhost");
+        adminPanel = IProtocolAdminPanelConsumer(protocolAdminClient).adminPanel();
         vm.prank(any_caller);
-        protocolAdminClient.create_protocol("MyProtocol1");
+
+        IProtocolAdminClient(protocolAdminClient).create_protocol("MyProtocol1");
 
         //=======================TEST===========================================
         vm.prank(any_caller2);
         vm.expectRevert();
-        protocolAdminClient.create_pool(1,abi.encode(poolKey), Constants.SQRT_PRICE_1_1);
+        IProtocolAdminClient(protocolAdminClient).create_pool(1,abi.encode(poolKey), Constants.SQRT_PRICE_1_1);
         //======================POST-CONDITIONS==================================
     }
 
     function test__fork__createPoolMustSucceed() public {
         //===================PRE-CONDITIONS===================
         vm.startPrank(protocol_admin);
-        masterHook.initialize(address(poolManager), address(allHook));
-        protocolAdminClient.initialize(protocolAdminRegistry, protocolFactory, "localhost");
-        protocolHookMediator.initialize(masterHook,protocolAdminClient,lpm);
-        protocolAdminClient.setProtocolHookMediator(protocolHookMediator);
+        IMasterHook(masterHook).initialize(address(poolManager), address(allHook));
+        IProtocolAdminClient(protocolAdminClient).initialize(IProtocolAdminRegistry(protocolAdminRegistry), IProtocolFactory(protocolFactory), "localhost");
+        IProtocolHookMediator(protocolHookMediator).initialize(IMasterHook(masterHook),IProtocolAdminClient(protocolAdminClient),lpm);
+        IProtocolAdminClient(protocolAdminClient).setProtocolHookMediator(IProtocolHookMediator(protocolHookMediator));
         
 
         vm.stopPrank();
 
+
         vm.prank(any_caller);
-        protocolAdminClient.create_protocol("MyProtocol1");
+        (uint256 protocolId, address adminManager) = IProtocolAdminClient(protocolAdminClient).create_protocol("MyProtocol1");
+        PoolId[] memory prevProtocolPools = IProtocolAdminClient(protocolAdminClient).getProtocolActivePools(protocolId);
 
-
+        
         //=====================TEST=============================
         vm.prank(any_caller);
 
-        protocolAdminClient.create_pool(1,abi.encode(poolKey), Constants.SQRT_PRICE_1_1);
+        (PoolId poolId, int24 _initialTick) = IProtocolAdminClient(protocolAdminClient).create_pool(1,abi.encode(poolKey), Constants.SQRT_PRICE_1_1);
         
 
         //======================POST-CONDITIONS========================
+        PoolId[] memory postProtocolPools = IProtocolAdminClient(protocolAdminClient).getProtocolActivePools(protocolId);
+
+        assertEq(PoolId.unwrap(PoolIdLibrary.toId(poolKey)),PoolId.unwrap(poolId));
+        (, int24 tick,, uint24 lpFee) = IStateView(EthereumMainnet.STATE_VIEW).getSlot0(poolId);       
+        assertEq(tick, _initialTick);
+        assertEq(lpFee, poolKey.fee);
+        // assertEq(prevProtocolPools.length + uint256(0x01),postProtocolPools.length);
+        assertEq(PoolId.unwrap(poolId),PoolId.unwrap(postProtocolPools[prevProtocolPools.length]));
     }
 
 
