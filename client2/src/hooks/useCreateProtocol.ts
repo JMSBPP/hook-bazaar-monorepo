@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useWriteContract, useWaitForTransactionReceipt, useWatchContractEvent, usePublicClient } from 'wagmi';
 import { protocolAdminClientABI } from '../lib/contracts/abi';
 import { getContractAddress } from '../lib/contracts/protocolAdminClient';
@@ -217,13 +217,13 @@ export function useCreateProtocol({
     setIsSubscribed(false);
   }, [chainId, reset]);
 
-  // Expose a reset function for manual reset
-  const resetProtocolCreation = () => {
+  // Expose a reset function for manual reset - memoized to prevent infinite loops
+  const resetProtocolCreation = useCallback(() => {
     console.log('Resetting protocol creation state');
     reset();
     setProtocolId(null);
     setIsSubscribed(false);
-  };
+  }, [reset]);
 
   return {
     createProtocol,

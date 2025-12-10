@@ -125,7 +125,8 @@ export default function CreateProtocolDialog({
       isSwitchingChain.current = false;
       resetProtocolCreation(); // Reset hook state to allow subsequent protocol creations
     }
-  }, [open, resetProtocolCreation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]); // Only depend on open, resetProtocolCreation is stable
 
   // Handle chain selection
   const handleSelectChain = (chainId: number) => {
