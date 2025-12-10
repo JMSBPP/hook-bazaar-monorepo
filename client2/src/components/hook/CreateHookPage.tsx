@@ -39,7 +39,7 @@ const STEPS: { id: FlowStep; title: string; description: string }[] = [
   },
   {
     id: 'submit',
-    title: 'Submit',
+    title: 'Mint License',
     description: 'Mint HookLicense NFT'
   }
 ];
@@ -172,6 +172,7 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
   const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
   const [isValidating, setIsValidating] = useState(false);
   const [validationPassed, setValidationPassed] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState<SubmissionResult | null>(null);
 
   // Mock wallet state - replace with actual wallet integration
   const [walletConnected, setWalletConnected] = useState(false);
@@ -266,7 +267,7 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
     // Simulate submission
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    return {
+    const result: SubmissionResult = {
       success: true,
       ipfsCid: 'QmNewHookSpec' + Math.random().toString(36).slice(2, 10),
       tokenId: Math.floor(Math.random() * 1000) + 1,
@@ -275,6 +276,9 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
       ipfsGatewayUrl: 'https://ipfs.io/ipfs/QmNewHookSpec...',
       openSeaUrl: 'https://opensea.io/assets/ethereum/...'
     };
+
+    setSubmissionResult(result);
+    return result;
   }, [walletAddress]);
 
   const handleConnectWallet = useCallback(() => {
@@ -284,12 +288,14 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
   }, []);
 
   const goToStep = (step: FlowStep) => {
-    // Only allow going back or to already completed steps
     const stepOrder: FlowStep[] = ['view-model', 'edit-spec', 'validate', 'submit'];
     const currentIndex = stepOrder.indexOf(currentStep);
     const targetIndex = stepOrder.indexOf(step);
 
-    if (targetIndex <= currentIndex || (step === 'submit' && validationPassed)) {
+    // Allow going back, or forward if prerequisites are met
+    if (targetIndex <= currentIndex) {
+      setCurrentStep(step);
+    } else if (step === 'submit' && validationPassed) {
       setCurrentStep(step);
     }
   };
@@ -299,6 +305,23 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
     const currentIndex = stepOrder.indexOf(currentStep);
     if (currentIndex < stepOrder.length - 1) {
       setCurrentStep(stepOrder[currentIndex + 1]);
+    }
+  };
+
+  const handleContinueToVerification = () => {
+    // Navigate to CodeVerificationPage with license info
+    if (submissionResult && hookSpec) {
+      navigate('/hook-developer/verify', {
+        state: {
+          licenseInfo: {
+            tokenId: submissionResult.tokenId,
+            hookName: hookSpec.metadata.name,
+            hookVersion: hookSpec.metadata.version,
+            specIpfsCid: submissionResult.ipfsCid
+          },
+          submissionResult: submissionResult
+        }
+      });
     }
   };
 
@@ -346,7 +369,7 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
               fontSize: 'var(--font-size-body)'
             }}
           >
-            Define your hook specification and mint a HookLicense NFT
+            Define your hook specification, mint license, and deploy verified code
           </p>
         </div>
       </section>
@@ -354,28 +377,29 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
       {/* Step Indicator */}
       <section style={{ paddingTop: 'var(--space-lg)', paddingBottom: 'var(--space-lg)' }}>
         <div className="container-custom">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between overflow-x-auto pb-2">
             {STEPS.map((step, index) => {
               const stepOrder: FlowStep[] = ['view-model', 'edit-spec', 'validate', 'submit'];
               const currentIndex = stepOrder.indexOf(currentStep);
               const stepIndex = stepOrder.indexOf(step.id);
               const isActive = step.id === currentStep;
               const isCompleted = stepIndex < currentIndex;
-              const isAccessible = stepIndex <= currentIndex || (step.id === 'submit' && validationPassed);
+              const isAccessible = stepIndex <= currentIndex ||
+                (step.id === 'submit' && validationPassed);
 
               return (
-                <div key={step.id} className="flex items-center">
+                <div key={step.id} className="flex items-center flex-shrink-0">
                   <button
                     onClick={() => goToStep(step.id)}
                     disabled={!isAccessible}
-                    className="flex items-center gap-3 transition-all duration-200"
+                    className="flex items-center gap-2 transition-all duration-200"
                     style={{
                       cursor: isAccessible ? 'pointer' : 'not-allowed',
                       opacity: isAccessible ? 1 : 0.5
                     }}
                   >
                     <div
-                      className="angular-clip w-10 h-10 flex items-center justify-center font-heading"
+                      className="angular-clip w-8 h-8 md:w-10 md:h-10 flex items-center justify-center font-heading"
                       style={{
                         background: isActive
                           ? 'var(--color-primary)'
@@ -386,28 +410,28 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
                           ? isActive ? 'var(--color-secondary)' : 'var(--color-primary)'
                           : 'var(--color-accent)',
                         border: `2px solid ${isActive ? 'var(--color-secondary)' : 'var(--color-accent)'}`,
-                        fontSize: 'var(--font-size-body)',
+                        fontSize: 'var(--font-size-body-sm)',
                         fontWeight: 'var(--font-weight-bold)'
                       }}
                     >
                       {index + 1}
                     </div>
-                    <div className="hidden md:block text-left">
+                    <div className="hidden lg:block text-left">
                       <p
                         className="font-heading"
                         style={{
                           color: isActive ? 'var(--color-secondary)' : 'var(--color-accent)',
-                          fontSize: 'var(--font-size-body-sm)',
+                          fontSize: 'var(--font-size-caption)',
                           fontWeight: 'var(--font-weight-bold)'
                         }}
                       >
                         {step.title}
                       </p>
                       <p
-                        className="font-body"
+                        className="font-body hidden xl:block"
                         style={{
                           color: 'var(--color-black)',
-                          fontSize: 'var(--font-size-caption)'
+                          fontSize: '10px'
                         }}
                       >
                         {step.description}
@@ -417,8 +441,8 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
 
                   {index < STEPS.length - 1 && (
                     <ChevronRight
-                      size={24}
-                      className="mx-4 hidden md:block"
+                      size={20}
+                      className="mx-2 flex-shrink-0"
                       style={{ color: 'var(--color-accent)' }}
                     />
                   )}
@@ -433,30 +457,30 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
       <section style={{ paddingBottom: 'var(--space-4xl)' }}>
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Panel - State Space Model (Always visible) */}
+            {/* Left Panel - State Space Model */}
             <div className={currentStep === 'view-model' ? 'lg:col-span-3' : 'lg:col-span-1'}>
-              <StateSpaceModelViewer
-                model={MOCK_STATE_SPACE_MODEL}
-                onSelectVariable={handleSelectVariable}
-                compact={currentStep !== 'view-model'}
-              />
+                <StateSpaceModelViewer
+                  model={MOCK_STATE_SPACE_MODEL}
+                  onSelectVariable={handleSelectVariable}
+                  compact={currentStep !== 'view-model'}
+                />
 
-              {currentStep === 'view-model' && (
-                <button
-                  onClick={nextStep}
-                  className="angular-clip-button w-full mt-4 px-6 py-3 font-heading uppercase tracking-wider transition-all duration-200"
-                  style={{
-                    background: 'var(--color-primary)',
-                    color: 'var(--color-secondary)',
-                    border: '2px solid var(--color-secondary)',
-                    fontSize: 'var(--font-size-body-sm)',
-                    fontWeight: 'var(--font-weight-bold)'
-                  }}
-                >
-                  Continue to HookSpec Editor
-                </button>
-              )}
-            </div>
+                {currentStep === 'view-model' && (
+                  <button
+                    onClick={nextStep}
+                    className="angular-clip-button w-full mt-4 px-6 py-3 font-heading uppercase tracking-wider transition-all duration-200"
+                    style={{
+                      background: 'var(--color-primary)',
+                      color: 'var(--color-secondary)',
+                      border: '2px solid var(--color-secondary)',
+                      fontSize: 'var(--font-size-body-sm)',
+                      fontWeight: 'var(--font-weight-bold)'
+                    }}
+                  >
+                    Continue to HookSpec Editor
+                  </button>
+                )}
+              </div>
 
             {/* Right Panel - Editor/Validation/Submission */}
             {currentStep !== 'view-model' && (
@@ -497,14 +521,32 @@ export default function CreateHookPage({ onNavigate }: CreateHookPageProps) {
                 )}
 
                 {currentStep === 'submit' && hookSpec && (
-                  <SubmissionFlow
-                    hookSpec={hookSpec}
-                    validationPassed={validationPassed}
-                    onSubmit={handleSubmit}
-                    walletConnected={walletConnected}
-                    walletAddress={walletAddress}
-                    onConnectWallet={handleConnectWallet}
-                  />
+                  <>
+                    <SubmissionFlow
+                      hookSpec={hookSpec}
+                      validationPassed={validationPassed}
+                      onSubmit={handleSubmit}
+                      walletConnected={walletConnected}
+                      walletAddress={walletAddress}
+                      onConnectWallet={handleConnectWallet}
+                    />
+
+                    {submissionResult && submissionResult.success && (
+                      <button
+                        onClick={handleContinueToVerification}
+                        className="angular-clip-button w-full px-6 py-3 font-heading uppercase tracking-wider transition-all duration-200"
+                        style={{
+                          background: 'var(--color-primary)',
+                          color: 'var(--color-secondary)',
+                          border: '2px solid var(--color-secondary)',
+                          fontSize: 'var(--font-size-body-sm)',
+                          fontWeight: 'var(--font-weight-bold)'
+                        }}
+                      >
+                        Continue to Code Verification
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             )}

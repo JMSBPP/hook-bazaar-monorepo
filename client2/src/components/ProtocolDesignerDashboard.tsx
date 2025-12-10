@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, DollarSign, Layers, Plus, TrendingUp } from 'lucide-react';
+import { ArrowLeft, DollarSign, Layers, Plus, Search, TrendingUp } from 'lucide-react';
 import Navigation from './Navigation';
 import Footer from './Footer';
 import CreateProtocolDialog from './protocol/CreateProtocolDialog';
@@ -126,8 +126,16 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
   }, [location.state, address, protocols, navigate, location.pathname]);
 
   const handleViewDetails = (protocol: Protocol) => {
-    setSelectedProtocol(protocol);
-    setDetailsDialogOpen(true);
+    // Navigate to the Protocol Admin page with the protocol data
+    if (protocol.protocolId) {
+      navigate(`/ProtocolDashboard/protocol/${protocol.protocolId}/admin`, {
+        state: { protocol },
+      });
+    } else {
+      // Fallback to dialog for protocols without protocolId
+      setSelectedProtocol(protocol);
+      setDetailsDialogOpen(true);
+    }
   };
 
   const handleSaveProtocolDetails = (
@@ -195,33 +203,56 @@ export default function ProtocolDesignerDashboard({ onNavigate }: ProtocolDesign
               </p>
             </div>
 
-            <button
-              onClick={() => {
-                if (!address) {
-                  alert('Please connect your wallet first');
-                  return;
-                }
-                setCreateDialogOpen(true);
-              }}
-              className="angular-clip-button px-6 py-3 font-heading uppercase tracking-wider transition-all duration-200 hover:-translate-y-1 hover:rotate-[-1deg] flex items-center gap-2"
-              style={{
-                background: 'var(--color-primary)',
-                color: 'var(--color-secondary)',
-                border: '2px solid var(--color-secondary)',
-                fontSize: 'var(--font-size-body-sm)',
-                fontWeight: 'var(--font-weight-bold)',
-                boxShadow: '0 0 0 transparent',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = 'var(--shadow-level-2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 0 transparent';
-              }}
-            >
-              <Plus size={20} />
-              Create Protocol
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate('/ProtocolDashboard/hook-market')}
+                className="angular-clip-button px-6 py-3 font-heading uppercase tracking-wider transition-all duration-200 hover:-translate-y-1 hover:rotate-[-1deg] flex items-center gap-2"
+                style={{
+                  background: 'var(--color-white)',
+                  color: 'var(--color-secondary)',
+                  border: '2px solid var(--color-secondary)',
+                  fontSize: 'var(--font-size-body-sm)',
+                  fontWeight: 'var(--font-weight-bold)',
+                  boxShadow: '0 0 0 transparent',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-level-2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 0 transparent';
+                }}
+              >
+                <Search size={20} />
+                Browse Hooks
+              </button>
+              <button
+                onClick={() => {
+                  if (!address) {
+                    alert('Please connect your wallet first');
+                    return;
+                  }
+                  setCreateDialogOpen(true);
+                }}
+                className="angular-clip-button px-6 py-3 font-heading uppercase tracking-wider transition-all duration-200 hover:-translate-y-1 hover:rotate-[-1deg] flex items-center gap-2"
+                style={{
+                  background: 'var(--color-primary)',
+                  color: 'var(--color-secondary)',
+                  border: '2px solid var(--color-secondary)',
+                  fontSize: 'var(--font-size-body-sm)',
+                  fontWeight: 'var(--font-weight-bold)',
+                  boxShadow: '0 0 0 transparent',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = 'var(--shadow-level-2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 0 transparent';
+                }}
+              >
+                <Plus size={20} />
+                Create Protocol
+              </button>
+            </div>
           </div>
         </div>
       </section>
