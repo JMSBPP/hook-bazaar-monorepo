@@ -11,6 +11,7 @@ import {IProtocolAdminPanel} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminPa
 import {IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
+import {PoolId, PoolIdLibrary} from "@uniswap/v4-core/src/types/PoolId.sol";
 
 interface IProtocolHookMediator{
     function initialize(IMasterHook _masterHook,IProtocolAdminClient protocolAdminClient,IPositionManager positionManager) external;
@@ -68,8 +69,9 @@ contract ProtocolHookMediator is IProtocolHookMediator, Context, InitializableBa
                 poolKey,
                 _initialSqrtPrice
             );
+            
 
-            return abi.encode(tick);
+            return abi.encode(tick, PoolIdLibrary.toId(poolKey));
         }
     }
 }

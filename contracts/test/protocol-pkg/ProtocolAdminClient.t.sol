@@ -2,11 +2,12 @@
 pragma solidity 0.8.30;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {ProtocolAdminClient, IProtocolAdminClient} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
+import {ProtocolAdminClient, IProtocolAdminClient, IOwnable} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminClient.sol";
 import {ProtocolAdminRegistry, IProtocolAdminRegistry} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminRegistry.sol";
-import {ProtocolFactoryFacet, IProtocolFactory} from "@hook-bazaar/protocol-pkg/src/ProtocolFactoryFacet.sol";
+import {ProtocolFactoryFacet, IProtocolFactory, IProtocolAdminPanelConsumer} from "@hook-bazaar/protocol-pkg/src/ProtocolFactoryFacet.sol";
+import {IProtocolAdminManager} from "@hook-bazaar/protocol-pkg/src/ProtocolAdminManager.sol";
 
-
+ 
 contract ProtocolAdminClientTest is Test{
 
 
@@ -47,14 +48,18 @@ contract ProtocolAdminClientTest is Test{
         );
         vm.stopPrank();
         //================POST-CONDITIONS====================
-        assertNotEq(IProtocolAdminClient(protocol_admin_client).adminPanel(), address(0x00));
-        assertGt(IProtocolAdminClient(protocol_admin_client).adminPanel().code.length, uint256(0x00));
+        assertEq(protocol_deployer, IOwnable(protocol_admin_client).owner());
+        assertNotEq(IProtocolAdminPanelConsumer(protocol_admin_client).adminPanel(), address(0x00));
+        assertGt(IProtocolAdminPanelConsumer(protocol_admin_client).adminPanel().code.length, uint256(0x00));
+        
     }
 
-    function test__unit__initializeAdminProtocolMustSucceed() public {
+    function test__unit__initializeDoubleMustRevert() public {
         //======================PRE-CONDITIONS=============================
+        test__unit__initializeMustSucceed();
         //=========================TEST===================================
         vm.startPrank(protocol_deployer);
+        vm.expectRevert();
         IProtocolAdminClient(protocol_admin_client).initialize(
             IProtocolAdminRegistry(protocol_admin_registry),
             IProtocolFactory(protocol_factory_facet),
@@ -66,18 +71,31 @@ contract ProtocolAdminClientTest is Test{
 
     function test__unit__createProtocolMustSucceed() public {
         //=================PRE-CONDITIONS=======================    
-        vm.startPrank(protocol_deployer);
-        IProtocolAdminClient(protocol_admin_client).initialize(
-            IProtocolAdminRegistry(protocol_admin_registry),
-            IProtocolFactory(protocol_factory_facet),
-            "http://localhost:3000/metadata/"
-        );
-        vm.stopPrank();
+        test__unit__initializeMustSucceed();
         
+        uint256 beforeTokenId = IProtocolAdminClient(protocol_admin_client).nextTokenId();
         //=======================TEST================================
         vm.startPrank(any_caller);
-        IProtocolAdminClient(protocol_admin_client).create_protocol("DefiHub");
+        (uint256 _protocolId, address _protocolAdminManager) = IProtocolAdminClient(protocol_admin_client).create_protocol("DefiHub");
         vm.stopPrank();
         //=====================POST-CONDITIONS=====================
+        //======================CLIENT=============================
+        uint256 afterTokenId = IProtocolAdminClient(protocol_admin_client).nextTokenId();
+        assertEq(afterTokenId,beforeTokenId + uint256(0x01));
+        assertEq(beforeTokenId, _protocolId);
+        //================ADMIN-MANAGER====================================
+        assertEq(_protocolId, IProtocolAdminManager(_protocolAdminManager).protocolId());
+        assertEq(IProtocolAdminPanelConsumer(protocol_admin_client).adminPanel(),IProtocolAdminPanelConsumer(_protocolAdminManager).adminPanel());
+    }
+
+    function test__unit__createProtocolsWithDuplicateNamesMustRevert() public{
+        //==================PRE-CONDITIONS========================================
+        test__unit__createProtocolMustSucceed();
+        //======================TEST=============================================
+        vm.startPrank(any_caller);
+        vm.expectRevert();
+        IProtocolAdminClient(protocol_admin_client).create_protocol("DefiHub");
+        vm.stopPrank();
+        //===================POST-CONDITIONS=====================================
     }
 }

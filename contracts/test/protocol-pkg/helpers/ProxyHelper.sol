@@ -49,9 +49,10 @@ abstract contract Proxy {
    *
    * This function does not return to its internall call site, it will return directly to the external caller.
    */
-  function _fallback() internal virtual {
+  function _fallback() public virtual {
     _beforeFallback();
     _delegate(_implementation());
+    
   }
 
   /**
@@ -87,6 +88,7 @@ contract ProxyHelper is Proxy{
     impl = _impl;
   }
 
+  
   function implementation() public view returns (address){
     return _implementation();
   }
@@ -94,5 +96,7 @@ contract ProxyHelper is Proxy{
   function _implementation() internal view override returns(address){
     return impl;
   }
+
+  
 
 }

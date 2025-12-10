@@ -4,6 +4,7 @@ pragma solidity >=0.8.30;
 import {console2} from "forge-std/console2.sol";
 import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 
+import {EnumerableMap} from "../../lib/openzeppelin-contracts/contracts/utils/structs/EnumerableMap.sol";
 
 import {IERC165} from "forge-std/interfaces/IERC165.sol";
 
@@ -12,6 +13,26 @@ import "Compose/token/ERC1155/ERC1155Mod.sol" as ERC1155Mod;
 import {ERC1155Facet} from "Compose/token/ERC1155/ERC1155Facet.sol";
 import "Compose/access/Owner/OwnerMod.sol" as OwnerMod;
 
+import {DiamondLoupeFacet} from "Compose/diamond/DiamondLoupeFacet.sol";
+
+interface IProtocolAdminPanelConsumer{
+    function adminPanel() external view returns(address);
+}
+
+library ArrayUtils{
+
+    function indexOf(uint256[] memory arr, uint256 target) internal pure returns (int) {
+        for (uint i = 0; i < arr.length; i++) {
+            if (arr[i] == target) {
+                return int(i); // Found
+        }
+        }
+        return -1; // Not found
+    }
+
+}
+
+
 interface IProtocolFactory{
     function __self() external view returns(address);
 
@@ -19,11 +40,11 @@ interface IProtocolFactory{
     error ProtocolFactoryFacetInvalidInitializer();
     error ProtocolFactoryFacetNotDelegateCall();
     error ProtocolFactoryFacetInvalidDelegateCaller();
-
+    error ProtocolFactoryAlreadyTaken();
     function __initialize(string calldata _baseURI) external;
     function baseURI() external view returns(string memory);
-    function adminPanel() external view returns(address);
     function create_protocol(string calldata _name, address _protocol_admin, uint256 _token_id) external;
+    function getProtocols(address _account) external returns(uint256[] memory);
 }
 
 
@@ -37,7 +58,7 @@ interface IProtocolFactory{
 //     constructor() GenericFactory(msg.sender){}
 // } 
 
-contract ProtocolFactoryFacet is IProtocolFactory, InitializableBase{
+contract ProtocolFactoryFacet is InitializableBase, IProtocolAdminPanelConsumer, IProtocolFactory{
     address immutable public __self;
 
     constructor(){
@@ -49,6 +70,10 @@ contract ProtocolFactoryFacet is IProtocolFactory, InitializableBase{
 
     struct ProtocolFactoryStorage{
         address adminPanel;
+        mapping(address _creator => uint256[] creatorProtocols) protocols;
+        uint256[] names;
+
+        //address 1-->*uint256[]
     }
 
     function getStorage() internal pure returns (ProtocolFactoryStorage storage $) {
@@ -72,37 +97,48 @@ contract ProtocolFactoryFacet is IProtocolFactory, InitializableBase{
     }
 
 
+
+
     function baseURI() public view returns(string memory){
         ERC1155Mod.ERC1155Storage storage e1155$ = ERC1155Mod.getStorage();
         return e1155$.baseURI;
     }
     
-
-    function adminPanel() public view returns(address){
-        ProtocolFactoryStorage storage $ = getStorage();
-        return $.adminPanel;
-    }
-
     // TODO: This needs to check protocolAdmin is compliant and tokenId
     // is compliant too
     // TODO: This is called only on delegate call by the adminPanel
     modifier onlyAdminPanel(){
-        if (address(this) == __self) revert ProtocolFactoryFacetNotDelegateCall();
-        if (address(this) != adminPanel()) revert ProtocolFactoryFacetInvalidDelegateCaller();
+        ProtocolFactoryStorage storage $ = getStorage();
+        address factoryOnPanel = DiamondLoupeFacet($.adminPanel).facetAddress(IProtocolFactory.create_protocol.selector);
+        if (address(this) == __self || factoryOnPanel != __self) revert ProtocolFactoryFacetInvalidDelegateCaller();
+        _;        
+    }
+
+    function adminPanel() external view returns(address){
+        ProtocolFactoryStorage storage $ = getStorage();
+        return $.adminPanel;    
+    }
+
+     // This is only callable after the contract has been initialized
+     // NOTE: This also needs protection against reentrancy
+    modifier nonRepeatedNames(string calldata _name){
+        ProtocolFactoryStorage storage $ = getStorage();
+        if (ArrayUtils.indexOf($.names,uint256(keccak256(bytes(_name)))) != int256(-1)) revert ProtocolFactoryAlreadyTaken();
         _;
     }
 
-    // This is only callable after the contract has been initialized
-   // NOTE: This also needs protection against reentrancy
 
-    function create_protocol(string calldata _name,address _protocol_admin, uint256 _token_id) external onlyInitialized onlyAdminPanel{
-        // TODO: This library must also expose a payload to the protocol admin
-        // and perform checks against the protocol_admin
-        // TODO: This is missing the data param on the mint function
-        console2.log("Caller", msg.sender);
-        ERC1155Mod.mint(_protocol_admin,_token_id,1,abi.encode("0x00"));
-        // NOTE: Needs to concat /ProtocolDashboard/protocolName ?= _name        
+    function create_protocol(string calldata _name,address _protocol_admin, uint256 _token_id) external onlyInitialized onlyAdminPanel nonRepeatedNames(_name){
+        ProtocolFactoryStorage storage $ = getStorage();
+        ERC1155Mod.mint(_protocol_admin,_token_id,1,abi.encode(_name));
         ERC1155Mod.setTokenURI(_token_id, _name);
+        $.protocols[msg.sender].push(_token_id);
+        $.names.push(uint256(keccak256(bytes(_name))));
+    }
+
+    function getProtocols(address _account) external returns(uint256[] memory){
+        ProtocolFactoryStorage storage $ = getStorage();
+        return $.protocols[_account];
     }
 
 
@@ -116,6 +152,5 @@ contract ProtocolFactoryFacet is IProtocolFactory, InitializableBase{
         return e1155$.tokenURIs[_id];
    }
 
-   fallback() external payable{}
 
 }

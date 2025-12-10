@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.30;
 
+import {console2} from "forge-std/console2.sol";
 import {LibGenericFactory} from "compose-extensions/LibGenericFactory.sol";
 import "compose-extensions/GenericFactoryMod.sol" as GenericFactoryMod;
 import {GenericFactory} from "@euler/GenericFactory/GenericFactory.sol";
@@ -8,9 +9,17 @@ import {InitializableBase} from "compose-extensions/LibInitializable.sol";
 import "compose-extensions/InitializableMod.sol" as InitializableMod;
 import "Compose/access/AccessControl/AccessControlMod.sol" as AccessControlMod; 
 
-import {ProtocolAdminManager} from "./ProtocolAdminManager.sol";
+import {ProtocolAdminManager, IProtocolAdminManager} from "./ProtocolAdminManager.sol";
+import {Authority} from "solmate/src/auth/Auth.sol";
+
 // import "./ProtocolAdminClient.sol";
 import {IERC165} from "forge-std/interfaces/IERC165.sol";
+
+import {PoolId} from "@uniswap/v4-core/src/types/PoolId.sol";
+
+
+import {DiamondLoupeFacet} from "Compose/diamond/DiamondLoupeFacet.sol";
+import {IProtocolAdminPanelConsumer} from "@hook-bazaar/protocol-pkg/src/ProtocolFactoryFacet.sol";
 
 interface IGenericFactory{
     function implementation() external view returns(address);
@@ -24,15 +33,10 @@ interface IGenericFactory{
     function getProxyListLength() external view returns (uint256);
     function getProxyListSlice(uint256 start, uint256 end) external view returns (address[] memory list);
 }
-interface IVersionControl{
-    // TODO: This needs protection for attackers altering versions on re-entrancy or multicalls
 
-    function version() external view returns(uint64);
-    function updateVersion() external returns(uint64);
-
-}
 
 interface IProtocolAdminRegistry{
+
     error ProtocolAdminRegistryInvalidTokenId();
     error ProtocolAdminRegistryUninitialized();
     error ProtocolAdminRegistryNotDelegateCall();
@@ -42,13 +46,19 @@ interface IProtocolAdminRegistry{
 
     function __self() external view returns(address);
     function _initialize() external;
-    function protocol_manager(uint256 _protocolId) external returns(address);
 
     function adminManagerTemplate() external returns(address);
     function upgradeAdmin() external returns(address);
+
+    function setProtocolManager(uint256 _protocolId,address _protocolCreator) external returns(address);
+    function getProtocolManager(uint256 _protcolId) external view returns(address);
+
+    function addPool(address _protocolAdminManager, PoolId _poolId) external;
+    function getProtocolPools(address _protocolAdminManager) external returns(PoolId[] memory);
+    function isPoolCreator(address _adminManager,address _account) external returns(bool);
 }
 
-contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, InitializableBase{
+contract ProtocolAdminRegistry is IProtocolAdminRegistry, InitializableBase, IProtocolAdminPanelConsumer{
     
     // NOTE: delegate call only guard
     address immutable public __self;
@@ -65,6 +75,7 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
 
     struct ProtocolAdminRegistryStorage{
         // NOTE: One protocol has one admin
+        address adminPanel;
         uint64 version;
         mapping(uint256 tokenId => address protocol_manager) protocol_managers;
         mapping(uint256 tokenId => address protocol_admin_operator) protocol_admin_operators;
@@ -80,34 +91,29 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
         }
     }
 
+    function adminPanel() public view returns(address){
+        ProtocolAdminRegistryStorage storage $ = getStorage();
+        return $.adminPanel;
+    }
+
     function version() public view returns(uint64){
         ProtocolAdminRegistryStorage storage $ = getStorage();
         return $.version;
     }
     // TODO: This needs access control protection
 
-    function updateVersion() public returns(uint64){
+    function _updateVersion() private returns(uint64){
         ProtocolAdminRegistryStorage storage $ = getStorage();
         $.version = $.version == uint64(0x00) ? STARTER_VERSION : $.version++;
         return $.version;
     }
 
-
- 
-
-    function _initialize() external reinitializer(updateVersion()){
+    function _initialize() external reinitializer(_updateVersion()){
         ProtocolAdminRegistryStorage storage $ = getStorage();
-        
         LibGenericFactory.GenericFactoryStorage storage g$ = LibGenericFactory.getStorage();
         g$.upgradeAdmin = msg.sender;
-        // TODO: Further introspection checks are suggested here
-        // if (msg.sender.code.length == uint256(0x00)) revert ProtocolAdminRegistryInvalidInitializer();
-        // NOTE: The msg.sender in our implementation
-        // is the ProtocolAdminPanel
-        
+        $.adminPanel = address(this);
         LibGenericFactory.setImplementation(address(new ProtocolAdminManager()));
-         
-
     }
 
   
@@ -130,47 +136,48 @@ contract ProtocolAdminRegistry is IVersionControl ,IProtocolAdminRegistry, Initi
 
     // // NOTE The function can only be called through delegate
     // // call, and the delegate caller must be the admin panel
-    function onlyAdminPanel() private {
-        if (address(this) == __self) revert ProtocolAdminRegistryNotDelegateCall();
-        // if (address(this) != upgradeAdmin()) revert ProtocolAdminRegistryInvalidDelegateCaller();
-        
+    
+    modifier onlyAdminPanel(){
+        ProtocolAdminRegistryStorage storage $ = getStorage();
+        address registryOnPanel = DiamondLoupeFacet($.adminPanel).facetAddress(IProtocolAdminRegistry.setProtocolManager.selector);
+        if (address(this) == __self || registryOnPanel != __self) revert ProtocolAdminRegistryNotDelegateCall();
+        _;        
     }
 
     function upgradeAdmin() public initialized returns(address){
         return LibGenericFactory.upgradeAdmin();
     }
 
-    function protocol_manager(uint256 _protocolId) external initialized returns(address){
-        if (_protocolId == uint256(0x00)) return address(0x00);
+    function setProtocolManager(uint256 _protocolId, address _protocolCreator) external initialized onlyAdminPanel returns(address){
         ProtocolAdminRegistryStorage storage $ = getStorage();
 
         if ($.protocol_managers[_protocolId] == address(0x00)){
-            // NOTE: This protects for the delegate call
-            
-            onlyAdminPanel();
-            // TODO: Now we need protection for the Context to be msg.sender == protocolAdminClient AND 
-            // msg.sig == IProtocolAdminClient.create_protocol.selector
-            // Regiostry does not reference client
-
-            // TODO: This
-            // msg.sender == protocolAdminClient needs to be checked with introspection on CLient since
-            // if (
-            //     !IERC165(address(this)).supportsInterface(type(IProtocolAdminClient).interfaceId)
-            //     ||
-            //     _parentSig != CREATE_PROTOCOL_CLIENT_SIG
-            // ) revert ProtocolAdminRegistryInvalidContextCall();
-
-            $.protocol_managers[_protocolId] = LibGenericFactory.createProxy(adminManagerTemplate(), false, abi.encode("0x00"));
+            // Pass both protocolCreator and adminPanel (address(this) in delegatecall context)
+            $.protocol_managers[_protocolId] = LibGenericFactory.createProxy(adminManagerTemplate(), false, abi.encodePacked(_protocolCreator, address(this)));
         }
 
         return $.protocol_managers[_protocolId];
     }
 
-    function protocolManagers(uint256 _tokenId) external returns(address){
+    function getProtocolManager(uint256 _tokenId) external view returns(address){
         ProtocolAdminRegistryStorage storage $ = getStorage();
         return $.protocol_managers[_tokenId];
         
     }
 
+    function isPoolCreator(address _adminManager, address _account) external returns(bool){
+        // TODO: Targert is the DEX engine entry point address
+        return Authority(_adminManager).canCall(_account, address(0x00), bytes4(keccak256("create_pool(uint256,bytes,uint160)")));
+    }
+
+    function addPool(address _protocolAdminManager, PoolId _poolId) external onlyAdminPanel{
+        IProtocolAdminManager(_protocolAdminManager).setPool(_poolId);
+    }
+
+    function getProtocolPools(address _protocolAdminManager) external returns(PoolId[] memory){
+        return IProtocolAdminManager(_protocolAdminManager).getPools();
+    }
+
+ 
  
 }
