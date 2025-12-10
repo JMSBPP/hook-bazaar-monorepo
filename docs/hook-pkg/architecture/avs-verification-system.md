@@ -7,70 +7,172 @@
 
 ---
 
-## 1. Executive Summary
+# Terminology
+| Concept                      | Meaning                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------- |
+| **AVS**                      | The service being secured; defines quorums and requirements               |
+| **Operator**                 | Entity providing security/work                                            |
+| **Quorum**                   | Configuration of what stake types an AVS accepts and how it weights them  |
+| **Registering with quorums** | Operators aligning themselves to the AVS's defined security configuration |
 
-This document describes the **HookAttestationAVS** - an EigenLayer Actively Validated Service that verifies hook implementations match their formal specifications **without revealing the source code**. The system enables:
 
-1. **Hook developers** to prove their implementations are correct
-2. **Integrators** to trust hooks based on cryptoeconomic guarantees
-3. **The marketplace** to provide verified, IP-protected hooks
+| Your Concept                                                                                | Meaning                                                                                                             |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **HookSpec (HaaS)**                                                                         | The “service” definition — analogous to an AVS                                                                      |
+| **HookDeveloper**                                                                           | The work-provider — analogous to an operator                                                                        |
+| **HookContract**                                                                            | The functional object the developer activates                                                                       |
+| **Bonded Participation**                                                                    | Your equivalent of “registration with stake”                                                                        |
+| **Execution Bands / Functionality Sets / Capability Groups** *(your equivalent of quorums)* | A grouping/configuration of functional requirements or stake-weighted participation logic defined inside a HookSpec |
+
+
+- A Researcher is a HookSpec generator role
+    -  A Researcher posts HookSpec and compliant with StateSpaceModel and this HookSpec can be fullfilled by Hooks developed by HookDevelopers
+
+- A HookSpec defines a AVS (AVS is verifiable SaaS => HookSpec > HaaS)
+
+- A set of HookContracts is an on-chain AVS component of the HookSpec.
+- A HookDeveloper operates HookContracts \in  HooksSpec
+
+- HookDevelopers are operators which services Hooks are compliant with a HooksSpec_X
+
+- A HookLicense is the permission(resgistration) to perform HookContracts \in HooksSpec_X
+
+- HookDeveloper commits to do HookSpec by deploying the HooksContracts \in HookSpec
+
+```solidity
+struct HookLicense{
+    uint256 licenseId;
+    StrategyParams[] HaaS;
+    ISocketManager socketManager;    
+}
+// - A HookLicense has a one-to-one retlation with a IStrategy
+contract HaaSVendorManagement{
+
+    struct HaaSVendorManagement{
+        IServiceManager vendorManager;
+        mapping(uint256 licenceId => IStrategyManager HaaS) hookLicenses;
+    }
+
+    function commitTo(
+        HookSpec HookServiceSpec,
+        ISignatureUtils.SignatureWithSaltAndExpiry termsAndConditionsSig,
+        OperatorAccount operatorAccount
+    ) external{
+
+        vendorManager.registerOperatorToAVS(
+            operatorAccount,
+            termsAndConditionsSig
+        );
+        uint256 licenseId = ERC721Mod.mint();
+        hookLicenses[licenseId] = IHookLicense; 
+
+    }
+}
+```
+
+##  System Architecture Overview
+## Market Integration 
+
+- The incorporation of a HooksContracts --> HaaS on pools is funded through funding a HookLicense Escrow-Conditioned Service Delivery (ECSD)
+
+```solidity
+contract EscrowCoordinator{
+
+    struct EscrowCoordinatorStorage{
+        IMarketOracle marketOracle;
+        IStrategyManager depositStage;
+        IHaaSVendorManagement vendorManagement;
+    }
+
+    function postBond(uint256 licenseId) external {
+        (IERC20 paymentToken, uint256 bondAmount) = marketOracle.getBondDetails(licenseId);
+        depositStage.deposit(vendorManagement.hookLicenses[licenceId],paymentToken,bondAmount);
+    }
+}
+
+```
+- Once an authorized protocol posts a bond to obtain a HookLicense and thereby gain access to specific pool functionality, the HookDeveloper enters an incentive-aligned engagement by committing functionality to the protocol—effectively a staked registration backed by a performance bond (**Registration With Stake**).
+
+## [Registration With Stake (Quorums)](../../avs-integration/Quorums.md)
+
+- The HookContracts ∈ HookSpec are a collection of modules that all semantically fulfill the HookSpec. Each module has a one-to-one relationship with a Quorum. In other words, each module has a multiplier that determines how much it contributes to the overall HookSpec and at what level of accuracy. Thus, the Quorum numbers represent the number of modules that compose the HookContracts codebase (or GitHub repository) maintained by the HookDeveloper.
+
+```solidity
+
+/**
+* @notice In weighing a particular strategy, the amount of underlying asset for that strategy is
+* multiplied by its multiplier, then divided by WEIGHTING_DIVISOR
+*/
+struct StrategyParams {
+    IStrategy strategy;
+    uint96 multiplier;
+}
+
+struct HookLicense{
+    uint256 licenseId;
+    StrategyParams[] HaaS;    
+}
+```
+
+
+- Thus postBond receival on the respective HookLicense associated with HooksContracts the hookDeveloper ... and it's stake is calculated considering the importance (added value) that will provide to the pool relative to the Protocol pool
+
+
+> HookDevelopers as operators
+
+When HookDevelopers commit bonded participation for a HookContract within a HookSpec (HaaS), they sbmit their code base (from which quorumsAVS specific are calculated) within the HaaS (HookSpec) to register for.
+
+
+
+There now exists a relationship between **HookDevelopers**, their **bonded participation**, and how HaaS define the security they want via quorums. 
+    - [StakeRegistry]()
+    - [IndexRegistry]()
+    - [BLSApkRegistry]()
+
+- Since we have a few registries that help our service manage state (both operator and stake state) we need a way to consistently interact with these registries and that's the role of the [RegistryCoordinator](../../avs-integration/RegistryCoordinator.md)
+
+- **HookDevelopers** enter (commit bonded participation)  the system on [RegistryCoordinator](../../avs-integration/RegistryCoordinator.md)
+
+```solidity
+
+contract ClearingHouse{
+    struct ClearingHouse{
+        IRegistryCoordinator HaaSClearingCoordinator;
+        IHaaSHub haasHub;
+    }
+
+    function acceptBondedEngagement(SignatureWithSaltAndExpiry memory operatorSignature,uint256 licenseId) external{
+        (bytes memory quorumNumbers, IBLSApkRegistry.PubkeyRegistrationParams calldata params) = haasHub.getHaaSEngamentParams(licenseId);
+        bytes memory socket = haasHub.getOperatorSocket(licenseId);
+        HaaSClearingCoordinator.registerOperator(quorumNumbers, socket,params,operatorSignature);
+    } 
+}
+```
+
+- The HookDeveloper
+
+
+
+## HookAttestationAVS (Offchain) 
+
+- From now is a single operator that is paid by a weighted averga of protocol and hook developer bond 
+
+- The HookAttestationAVS is the off-chain component of the HookSpec AVS, it proves the a HookContracts \in HookSpec
+    - Verifies that HookContracts \in HokSpec are: 
+        - Semantically compatilble with StateSpace model
+        - Semantically equivalent with HookSpec
+        - Provides a score and metrics
+
+
+- It verifies hook implementations match their formal specifications **without revealing the source code**. The system enables **Hook developers** to prove their implementations are correct
+
+- It has a I/O module with API endpoints to protocol desginers
+    - The inputs are data protocol desginres wnat to prove calimed functionality againts (Thus mdoule needs pto provide sampling , statisical methods)
+    - The OUtpues are the HookAttestationVS proof result agains the given data 
 
 ---
 
-## 2. System Architecture Overview
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           HOOK BAZAAR ECOSYSTEM                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌──────────────────┐                        ┌──────────────────────────┐   │
-│  │   HOOK DEVELOPER │                        │     HOOK INTEGRATOR      │   │
-│  │                  │                        │                          │   │
-│  │  1. Write Spec   │                        │  6. Query Attestation    │   │
-│  │  2. Implement    │                        │  7. Deploy Verified Hook │   │
-│  │  3. Request AVS  │                        │                          │   │
-│  └────────┬─────────┘                        └────────────┬─────────────┘   │
-│           │                                               │                  │
-│           ▼                                               ▼                  │
-│  ┌────────────────────────────────────────────────────────────────────┐     │
-│  │                    HOOK ATTESTATION AVS                             │     │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌───────────┐  │     │
-│  │  │   Service   │  │    Task     │  │   BLS Sig   │  │  Slashing │  │     │
-│  │  │   Manager   │  │   Manager   │  │   Checker   │  │  Registry │  │     │
-│  │  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └─────┬─────┘  │     │
-│  └─────────┼────────────────┼────────────────┼───────────────┼────────┘     │
-│            │                │                │               │               │
-│            ▼                ▼                ▼               ▼               │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                      AVS OPERATOR NETWORK                            │    │
-│  │                                                                      │    │
-│  │   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐           │    │
-│  │   │Operator 1│  │Operator 2│  │Operator 3│  │Operator N│   ...     │    │
-│  │   │          │  │          │  │          │  │          │           │    │
-│  │   │ Sampler  │  │ Sampler  │  │ Sampler  │  │ Sampler  │           │    │
-│  │   │ Verifier │  │ Verifier │  │ Verifier │  │ Verifier │           │    │
-│  │   └──────────┘  └──────────┘  └──────────┘  └──────────┘           │    │
-│  └──────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-│  ┌─────────────────────────────────────────────────────────────────────┐    │
-│  │                      ON-CHAIN INFRASTRUCTURE                         │    │
-│  │                                                                      │    │
-│  │   ┌──────────────┐    ┌──────────────┐    ┌──────────────┐         │    │
-│  │   │ Hook Market  │    │  Pool Mgr    │    │  Fhenix CoFHE│         │    │
-│  │   │   (NFTs)     │◄──►│  (Uniswap)   │◄──►│  (Encrypted) │         │    │
-│  │   └──────────────┘    └──────────────┘    └──────────────┘         │    │
-│  │                                                                      │    │
-│  │   ┌──────────────┐    ┌──────────────┐                              │    │
-│  │   │    IPFS      │    │  Attestation │                              │    │
-│  │   │ (Spec Docs)  │    │   Registry   │                              │    │
-│  │   └──────────────┘    └──────────────┘                              │    │
-│  └──────────────────────────────────────────────────────────────────────┘    │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
 
 ## 3. Core Components
 

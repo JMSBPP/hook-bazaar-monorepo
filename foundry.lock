@@ -2,7 +2,37 @@
   "contracts/lib/Compose": {
     "rev": "f29931feff7392a7c06afbd02b9c95ae2cb0f959"
   },
+  "contracts/lib/compose-extensions": {
+    "rev": "2e8ca3c44ef963015d809cd9f103e86988f5248d"
+  },
+  "contracts/lib/eigenlayer-contracts": {
+    "tag": {
+      "name": "v1.8.1",
+      "rev": "31aade2fc3bf6e2c0160cc2e7c7be1a6017296e5"
+    }
+  },
+  "contracts/lib/eigenlayer-middleware": {
+    "tag": {
+      "name": "v1.5.0",
+      "rev": "a7a5492b5a0107745c7f4938d37a8f64985274d6"
+    }
+  },
+  "contracts/lib/fhenix-contracts": {
+    "rev": "00e1eb38e6adb1c28e97cd40d9095668930aee99"
+  },
   "contracts/lib/forge-std": {
     "rev": "7117c90c8cf6c68e5acce4f09a6b24715cea4de6"
-  }1
+  },
+  "contracts/lib/foundry-devops": {
+    "rev": "efff097a87e70c3d15661c9f2a2daeae0b33d5d5"
+  },
+  "contracts/lib/openzeppelin-contracts": {
+    "rev": "69c8def5f222ff96f2b5beff05dfba996368aa79"
+  },
+  "contracts/lib/universal-router": {
+    "rev": "050b93cf4e9508b78412f23ad66e85d5c76a45b5"
+  },
+  "contracts/lib/v4-periphery": {
+    "rev": "3779387e5d296f39df543d23524b050f89a62917"
+  }
 }

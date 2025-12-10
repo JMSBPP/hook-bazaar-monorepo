@@ -53,3 +53,9 @@ Again generate a specification document compliant with guyidliens and implemtn t
 
 Now the View Details button on the ProtocolDashboard NEEDS to prompt to a another page where the IProtocolAdminManager and
 IProtocolAdminClient is exposed on the UI with buttons for eahc service, for the AdminCLient it onyl needs to expose the createPool and setProtocolRevenu and asetPOolRevenue endpoints. This is ONLY FRONT END. Generate first the specification coherenmt with guidelines and the the front end code make sure it builds on npm run dev only
+
+
+- A protocol can also delegate the ROLE of RESEARCHER whose job is to be a HookSpec generator
+- A Researcher is a HookSpec generator role
+    -  A Researcher posts HookSpec and compliant with StateSpaceModel and this HookSpec can be fullfilled by Hooks developed by HookDevelopers
+     
