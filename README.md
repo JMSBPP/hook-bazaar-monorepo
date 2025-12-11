@@ -18,17 +18,39 @@
 
 
 ## Table of Contents
-- [Hook Bazaar Monorepo](#Hook Bazaar Monorepo)
+- [Hook Bazaar Monorepo](#hook-bazaar-monorepo)
   - [Table of Contents](#table-of-contents)
-  - [Demo](#demo)
   - [Problem Description](#problem-description)
   - [Solution Overview](#solution-overview)
-  - [Arquitecture](#arquitecture)
+  - [Architecture](#architecture)
   - [Setup](#setup)
-    - [Build](#build)
-    - [Test](#test)
-    - [Deploy](#deploy)
   - [References](#references)
+
+## Problem Description
+
+Hook Bazaar solves **9 critical market failures** in the Uniswap v4 ecosystem:
+
+1. **No marketplace for hooks** — Supply and demand exist but no mechanism connects them
+2. **High barriers to entry** — Custom hooks cost $10k–$100k+ and take weeks/months to develop
+3. **No developer incentives** — No monetization model or audience for hook developers
+4. **Lack of standardization** — No way to objectively evaluate hook safety or correctness
+5. **No hook composition** — Cannot safely combine multiple hooks despite v4 support
+6. **No competition mechanism** — Best hooks don't naturally rise to the top
+7. **No IP protection** — Public code prevents premium algorithm development
+8. **No reputation system** — High adoption risk due to lack of trust signals
+9. **Unsustainable economics** — No revenue model to support ecosystem growth
+
+**Result**: Despite Uniswap v4's powerful hooks primitive, the ecosystem lacks the infrastructure to enable widespread adoption and sustainable development.
+
+📖 **[Read the full Problem Description](docs/problem-description/PROBLEM_DESCRIPTION.md)** for detailed analysis of each market failure and how Hook Bazaar solves them.
+
+## Solution Overview
+
+Hook Bazaar is a **decentralized marketplace and infrastructure layer** for Uniswap v4 hooks that:
+
+- **For Developers**: Direct monetization (flat/revenue-share/hybrid), professional reputation profiles, IP protection via FHE
+- **For Protocols**: Instant deployment (minutes vs weeks), lower costs ($100s vs $10k+), pre-audited hooks, multi-hook composition
+- **For Ecosystem**: Self-sustaining economic model, quality through competition, accelerated v4 adoption
 
 
 # Setup
