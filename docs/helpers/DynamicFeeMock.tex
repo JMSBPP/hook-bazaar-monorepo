@@ -1,0 +1,107 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Hook Bazaar}
+\lhead{DynamicFeeMock v1.0}
+\cfoot{\thepage}
+
+\titlespacing*{\section}{0pt}{1.5ex}{0.5ex}
+\titlespacing*{\subsection}{0pt}{1ex}{0.3ex}
+
+\begin{document}
+
+\begin{center}
+\Large\textbf{DynamicFeeMock Hook Specification}\\[0.3em]
+\normalsize Hook Bazaar Formal Specification Format\\[0.2em]
+\small Version 1.0 \quad|\quad Category: FEE\_MANAGEMENT \quad|\quad License: MIT
+\end{center}
+
+\vspace{0.5em}
+\hrule
+\vspace{0.5em}
+
+\section*{1. Hook State Variables ($H$)}
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+\textbf{Symbol} & \textbf{Type} & \textbf{Description} & \textbf{Initial} \\
+\midrule
+$\phi_{base}$ & \texttt{uint24} & Base fee (basis points) & 3000 \\
+$\phi_{min}$ & \texttt{uint24} & Minimum fee bound & 100 \\
+$\phi_{max}$ & \texttt{uint24} & Maximum fee bound & 10000 \\
+$\alpha$ & \texttt{uint256} & Volatility coefficient & $10^{16}$ \\
+$V_{acc}$ & \texttt{uint256} & Accumulated volatility index & 0 \\
+$t_{last}$ & \texttt{uint256} & Last update timestamp & 0 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{2. Pool State Dependencies (from $\mathcal{S}_T$)}
+
+\textbf{Reads:} $\sqrt{P}$ (sqrtPriceX96), $t_c$ (tick), $\phi_{lp}$ (lpFee), $L_{act}$ (liquidity)\\
+\textbf{Writes:} $\phi_{lp}$ (lpFee via \texttt{beforeSwap} return)
+
+\section*{3. State Transition: \texttt{beforeSwap}}
+
+\textbf{Preconditions:}
+\begin{itemize}
+\setlength\itemsep{-0.2em}
+\item $L_{act} > 0$ (pool has active liquidity)
+\item $\phi_{min} \leq \phi_{base} \leq \phi_{max}$
+\end{itemize}
+
+\textbf{Transition Equations:}
+
+\begin{align}
+\Delta P &= \left| \sqrt{P}_{current} - \sqrt{P}_{last} \right| \label{eq:delta_p}\\[0.3em]
+V_{acc}' &= V_{acc} + \frac{\Delta P \cdot \alpha}{10^{18}} \label{eq:vacc}\\[0.3em]
+\sigma &= \frac{V_{acc}'}{t_{current} - t_{last} + 1} \label{eq:sigma}\\[0.3em]
+\phi_{dynamic} &= \min\left(\phi_{max}, \max\left(\phi_{min}, \phi_{base} + \sigma\right)\right) \label{eq:phi}
+\end{align}
+
+\textbf{Postconditions:}
+\begin{itemize}
+\setlength\itemsep{-0.2em}
+\item $\phi_{min} \leq \phi_{dynamic} \leq \phi_{max}$ (fee bounds invariant)
+\item $V_{acc}' \geq V_{acc}$ (volatility monotonic)
+\end{itemize}
+
+\textbf{Return:} $(\texttt{selector}, \Delta_0 = 0, \phi_{dynamic})$
+
+\section*{4. Invariants}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{ID} & \textbf{Expression} & \textbf{Severity} \\
+\midrule
+INV-1 & $\phi_{min} \leq \phi_{lp} \leq \phi_{max}$ & Critical \\
+INV-2 & $V_{acc}' \geq V_{acc}$ & Warning \\
+INV-3 & $\phi_{base} \in [100, 10000]$ & Critical \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{5. Constant Product Reference}
+
+From the dual-index state-space model, the tick-wise invariant holds:
+$$K - X' \leq K' \leq K \quad \text{where} \quad K = X \cdot Y$$
+
+The hook does \textbf{not} modify $K$; it only adjusts $\phi_{lp}$ based on volatility.
+
+\vspace{0.5em}
+\hrule
+\vspace{0.3em}
+\begin{center}
+\small\textit{Specification URI: ipfs://QmDynamicFeeMockSpec... | Attestation: Pending AVS}
+\end{center}
+
+\end{document}

@@ -168,8 +168,30 @@ forge build
 ### Test
 
 ```bash
+# Run implemented tests only (excludes placeholder test files)
+make test-implemented
+
+# Run fork tests (requires ALCHEMY_API_KEY env var)
+make test-fork
+
+# Run all tests including placeholders
 forge test
+```
+
+> **Note**: Some test files in `contracts/test/` are placeholders for future implementation (e.g., `hook-pkg/`, `hooks-operator-avs/`). Use `make test-implemented` for actual test coverage.
+
+```bash
 cd operator && npm test
+```
+
+### Attestation Simulation
+
+```bash
+# Terminal 1
+anvil
+
+# Terminal 2
+cd operator && npx tsx integration/runSimulation.ts
 ```
 
 ### Deploy

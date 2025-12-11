@@ -1,0 +1,147 @@
+{
+  "version": "1.0.0",
+  "hookAddress": "0x0000000000000000000000000000000000000000",
+  "specificationHash": "QmDynamicFeeMockSpec",
+  "callbacks": ["beforeSwap"],
+  "hookStateVariables": [
+    {
+      "name": "baseFee",
+      "type": "uint24",
+      "description": "Base fee in basis points",
+      "initialValue": "3000"
+    },
+    {
+      "name": "minFee",
+      "type": "uint24",
+      "description": "Minimum fee bound",
+      "initialValue": "100"
+    },
+    {
+      "name": "maxFee",
+      "type": "uint24",
+      "description": "Maximum fee bound",
+      "initialValue": "10000"
+    },
+    {
+      "name": "alpha",
+      "type": "uint256",
+      "description": "Volatility coefficient",
+      "initialValue": "10000000000000000"
+    },
+    {
+      "name": "volatilityAccumulator",
+      "type": "uint256",
+      "description": "Accumulated volatility index",
+      "initialValue": "0"
+    },
+    {
+      "name": "lastUpdateTimestamp",
+      "type": "uint256",
+      "description": "Last update timestamp",
+      "initialValue": "0"
+    }
+  ],
+  "poolStateDependencies": {
+    "reads": ["sqrtPriceX96", "tick", "lpFee", "liquidity"],
+    "writes": ["lpFee"]
+  },
+  "transitionFunctions": [
+    {
+      "callback": "beforeSwap",
+      "description": "Computes dynamic fee based on price volatility",
+      "inputs": [
+        { "name": "sender", "type": "address", "description": "Swap sender" },
+        { "name": "key", "type": "PoolKey", "description": "Pool key" },
+        { "name": "params", "type": "SwapParams", "description": "Swap parameters" }
+      ],
+      "outputs": [
+        { "name": "selector", "type": "bytes4", "description": "Function selector" },
+        { "name": "delta", "type": "BeforeSwapDelta", "description": "Always zero" },
+        { "name": "lpFeeOverride", "type": "uint24", "description": "Dynamic fee" }
+      ],
+      "equations": [
+        "deltaP = |sqrtPrice_current - sqrtPrice_last|",
+        "V_acc' = V_acc + (deltaP * alpha) / 10^18",
+        "sigma = V_acc' / (t_current - t_last + 1)",
+        "phi_dynamic = min(maxFee, max(minFee, baseFee + sigma))"
+      ],
+      "constraints": [
+        "liquidity > 0",
+        "minFee <= baseFee <= maxFee"
+      ]
+    }
+  ],
+  "invariants": [
+    {
+      "id": "INV-1",
+      "name": "Fee Bounds",
+      "description": "Dynamic fee must stay within configured bounds",
+      "expression": "minFee <= lpFee <= maxFee",
+      "severity": "critical"
+    },
+    {
+      "id": "INV-2",
+      "name": "Volatility Monotonic",
+      "description": "Volatility accumulator can only increase",
+      "expression": "V_acc' >= V_acc",
+      "severity": "warning"
+    },
+    {
+      "id": "INV-3",
+      "name": "Base Fee Range",
+      "description": "Base fee must be within valid range",
+      "expression": "baseFee >= 100 AND baseFee <= 10000",
+      "severity": "critical"
+    }
+  ],
+  "testVectors": [
+    {
+      "id": "TV-1",
+      "description": "Low volatility results in base fee",
+      "preState": {
+        "sqrtPrice": "79228162514264337593543950336",
+        "V_acc": "0",
+        "baseFee": "3000"
+      },
+      "input": {
+        "deltaPrice": "1000000000"
+      },
+      "expectedPostState": {
+        "lpFee": "3000"
+      },
+      "tolerance": 100
+    },
+    {
+      "id": "TV-2",
+      "description": "High volatility increases fee",
+      "preState": {
+        "sqrtPrice": "79228162514264337593543950336",
+        "V_acc": "5000000000000000000",
+        "baseFee": "3000"
+      },
+      "input": {
+        "deltaPrice": "1000000000000000000"
+      },
+      "expectedPostState": {
+        "lpFee": "8000"
+      },
+      "tolerance": 500
+    },
+    {
+      "id": "TV-3",
+      "description": "Fee capped at maximum",
+      "preState": {
+        "sqrtPrice": "79228162514264337593543950336",
+        "V_acc": "100000000000000000000",
+        "baseFee": "3000"
+      },
+      "input": {
+        "deltaPrice": "10000000000000000000"
+      },
+      "expectedPostState": {
+        "lpFee": "10000"
+      },
+      "tolerance": 0
+    }
+  ]
+}

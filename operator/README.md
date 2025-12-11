@@ -309,6 +309,18 @@ DRY_RUN=1 npm start
 DRY_RUN=0 npm start
 ```
 
+### Attestation Simulation
+
+Runs a DynamicFeeMock attestation simulation with console report output.
+
+```bash
+# Terminal 1
+anvil
+
+# Terminal 2
+npx tsx integration/runSimulation.ts
+```
+
 ### Manual Task Processing (Testing)
 
 ```typescript
