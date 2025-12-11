@@ -77,6 +77,7 @@ npm test
 **Run operator in dry-run mode:**
 ```bash
 cp .env.example .env
+anvil  // on separate terminal
 npm start
 ```
 

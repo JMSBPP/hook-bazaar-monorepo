@@ -34,9 +34,6 @@ contract MasterHook is IMasterHook, InitializableBase{
         }
     }
 
-
-    
-
     function initialize(address _poolManager, address _allHookImpl) external initializer{
         MasterHookStorage storage $ = getStorage();
         AccessControlMod.setRoleAdmin(AccessControlMod.DEFAULT_ADMIN_ROLE, PROTOCOL_ADMIN);
@@ -81,9 +78,6 @@ contract MasterHook is IMasterHook, InitializableBase{
         // if (!IERC165(_hook).supportsInterface(type(IHooks).interfaceId)) revert MasterHook__NotValidHook();       
         bytes4[] memory _hookSelectors = LibHookSelectors.hookSelectors(IHooks(_hook));
         bytes4[] memory _allSelectors = LibHookSelectors.appendSelectors(_hookSelectors, _additionalSelectors);
-        
-        // Call replace and add functions directly - need to convert memory to calldata
-        // Since we can't convert memory to calldata, we'll use a helper approach
         _replaceHookFunctions(_hook, _hookSelectors);
         _addHookFunctions(_hook, _additionalSelectors);
         
