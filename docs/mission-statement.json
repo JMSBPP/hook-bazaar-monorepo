@@ -1,0 +1,26 @@
+{
+    "name": "HookBazaar",
+    "purpose": "Enable trustless monetization of Uniswap V4 hooks through mathematical specifications, IP-protected implementations, and cryptoeconomic verification - connecting hook developers with protocol integrators while providing behavioral guarantees backed by economic stake.",
+    "composition": [
+        "protocol-pkg: Protocol lifecycle management for pool creation and administration",
+        "hooks-operator-avs: EigenLayer AVS for hook specification attestation and verification",
+        "hook-pkg: HaaS (Hooks-as-a-Service) facet system for hook development and deployment",
+        "master-hook-pkg: Diamond-pattern multi-hook composition and routing",
+        "operator: Off-chain attestation task processing runtime"
+    ],
+    "responsibilities": [
+        "R1: Provide protocol administrators with permissioned pool creation and management interfaces, contributing to the environment goal of enabling non-technical users to deploy custom DEX configurations.",
+        "R2: Verify hook implementations conform to mathematical specifications via decentralized operator sampling, contributing to the environment goal of establishing trustless behavioral guarantees.",
+        "R3: Issue, manage, and enforce HookLicenses as NFTs representing developer commitments to specifications, contributing to the environment goal of enabling IP-protected monetization.",
+        "R4: Coordinate bonded engagements between hook developers and protocols with escrow-backed service delivery, contributing to the environment goal of accountable service relationships.",
+        "R5: Record and maintain attestation status with challenge windows and revocation mechanisms, contributing to the environment goal of continuous compliance verification.",
+        "R6: Enable hook composition through Diamond-pattern facet routing with selector-level conflict detection, contributing to the environment goal of safe multi-hook execution."
+    ],
+    "exclusions": [
+        "E1: Does not perform formal verification (TLA+, Coq proofs) - relies on behavioral sampling against specifications.",
+        "E2: Does not provide insurance or coverage products for hook failures.",
+        "E3: Does not support hooks for protocols other than Uniswap V4 in initial release.",
+        "E4: Does not implement cross-chain hook deployment or state synchronization.",
+        "E5: Does not include DAO governance of marketplace parameters."
+    ]
+}

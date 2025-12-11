@@ -1,0 +1,71 @@
+{
+    "root": "HookBazaar Mission Statement",
+    "functions": [
+        {
+            "name": "Protocol Administration",
+            "services": [
+                "create_protocol: Initialize protocol with admin manager and NFT ownership",
+                "create_pool: Deploy Uniswap V4 pool through hook mediator with access control",
+                "delegatePoolCreatorRole: Grant pool creation permissions to accounts",
+                "setURI: Configure protocol metadata (ZORA, website, social links)"
+            ]
+        },
+        {
+            "name": "Hook Attestation",
+            "services": [
+                "createAttestationTask: Submit hook for specification verification with pools and callbacks",
+                "respondToAttestationTask: Record operator consensus on specification compliance",
+                "challengeFalsePositive: Contest incorrect compliant attestation with counter-sample",
+                "challengeFalseNegative: Contest incorrect non-compliant attestation with compliance samples",
+                "recordAttestation: Store verified attestation with expiration",
+                "revokeAttestation: Invalidate attestation on successful challenge",
+                "renewAttestation: Extend attestation validity after re-verification"
+            ]
+        },
+        {
+            "name": "Vendor Management",
+            "services": [
+                "commitToHookSpec: Register hook developer with specification URI and receive license NFT",
+                "getHookLicense: Retrieve license details and strategies",
+                "revokeLicense: Invalidate developer license",
+                "getHaaSEngagementParams: Retrieve quorum and pubkey params for bonded engagement"
+            ]
+        },
+        {
+            "name": "Bonded Engagement",
+            "services": [
+                "acceptBondedEngagement: Register operator with clearing coordinator for license",
+                "terminateBondedEngagement: Deregister operator and end engagement",
+                "postBond: Deposit collateral for license engagement",
+                "releaseBond: Return collateral after lock period",
+                "slashBond: Penalize collateral for non-compliance"
+            ]
+        },
+        {
+            "name": "Operator Verification (Off-chain)",
+            "services": [
+                "processAttestationTask: Execute spec-parsing, state-sampling, compliance-checking workflow",
+                "sampleStatesForTask: Collect pre/post state transitions across pools and callbacks",
+                "checkCompliance: Verify sampled states against specification invariants",
+                "submitResponse: Aggregate results and submit on-chain (BLS signature pending)"
+            ]
+        },
+        {
+            "name": "Hook Development",
+            "services": [
+                "HaaSFacet callbacks: beforeSwap, afterSwap, beforeAddLiquidity, afterAddLiquidity, etc.",
+                "setAuthorization: Grant developer permissions on hook facet",
+                "HookStateLens: Read hook state for external verification"
+            ]
+        },
+        {
+            "name": "Service Management",
+            "services": [
+                "registerOperatorToAVS: Onboard operator with stake",
+                "deregisterOperatorFromAVS: Remove operator from service",
+                "slashOperator: Penalize operator stake for offenses",
+                "getOperatorStake: Query operator collateral"
+            ]
+        }
+    ]
+}

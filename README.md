@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <img src="https://img.shields.io/badge/Solidity-363636?style=for-the-badge&logo=solidity&logoColor=white" alt="Solidity-"/> 
+  <img src="https://img.shields.io/badge/Solidity-363636?style=for-the-badge&logo=solidity&logoColor=white" alt="Solidity-"/>
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React"/>
   <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite"/>
@@ -15,12 +15,11 @@
   <img src="client2/src/assets/d9960bdb814135603341883999ea9dc547d831b8.png" alt="Description" width="300"/>
 </p>
 
-
-
 ## Table of Contents
 - [Hook Bazaar Monorepo](#hook-bazaar-monorepo)
   - [Table of Contents](#table-of-contents)
   - [Problem Description](#problem-description)
+  - [Demo](#demo)
   - [Solution Overview](#solution-overview)
   - [Architecture](#architecture)
   - [Setup](#setup)
@@ -44,6 +43,14 @@ Hook Bazaar solves **9 critical market failures** in the Uniswap v4 ecosystem:
 
 📖 **[Read the full Problem Description](docs/problem-description/PROBLEM_DESCRIPTION.md)** for detailed analysis of each market failure and how Hook Bazaar solves them.
 
+---
+
+## Demo
+
+<!-- Demo section placeholder -->
+
+---
+
 ## Solution Overview
 
 Hook Bazaar is a **decentralized marketplace and infrastructure layer** for Uniswap v4 hooks that:
@@ -52,66 +59,143 @@ Hook Bazaar is a **decentralized marketplace and infrastructure layer** for Unis
 - **For Protocols**: Instant deployment (minutes vs weeks), lower costs ($100s vs $10k+), pre-audited hooks, multi-hook composition
 - **For Ecosystem**: Self-sustaining economic model, quality through competition, accelerated v4 adoption
 
+Hook Bazaar enables trustless monetization of Uniswap V4 hooks through:
 
-# Setup
+- **Centralized Discovery Layer**: Connects hook supply with protocol demand
+- **Ready-Made Hooks**: Reduces deployment time from weeks to minutes
+- **Direct Monetization**: Fixed-price, revenue-share, or hybrid licensing models
+- **Mathematical Specifications**: Hook Specification Format for objective behavior verification
+- **MasterHook Diamond**: Safe multi-hook composition with selector-level routing
+- **Fhenix CoFHE Integration**: Encrypted implementations protecting developer IP
+- **EigenLayer AVS**: Cryptoeconomic guarantees with slashing for false attestations
 
-Minimal setup to run the frontend and indexer locally.
+**Value Delivery:**
+- Hook developers: IP protection, monetization, reputation building
+- Protocol designers: Instant deployment, lower costs, pre-verified hooks
+- Ecosystem: Self-sustaining economics, quality improvement through competition
 
-## Prerequisites
+[Full Documentation](docs/README.md)
+
+---
+
+## Architecture
+
+### System Context
+
+```mermaid
+flowchart TB
+    subgraph HookBazaar["Hook Bazaar System"]
+        ProtocolPkg["protocol-pkg"]
+        HooksOperatorAVS["hooks-operator-avs"]
+        HookPkg["hook-pkg"]
+        MasterHookPkg["master-hook-pkg"]
+    end
+
+    ProtocolAdmin["Protocol Admin"] -->|"create_protocol\ncreate_pool"| ProtocolPkg
+    HookDeveloper["Hook Developer"] -->|"commitToHookSpec"| HookPkg
+    AVSOperator["AVS Operator"] -->|"respondToTask"| HooksOperatorAVS
+
+    ProtocolPkg -->|"initialize"| UniswapV4["Uniswap V4"]
+    HooksOperatorAVS -->|"register/slash"| EigenLayer["EigenLayer"]
+    HookPkg -->|"fetch spec"| IPFS["IPFS"]
+    HookPkg -.->|"encrypted"| Fhenix["Fhenix CoFHE"]
+```
+
+**Goal**: Define environment boundary between Hook Bazaar and external systems (Uniswap V4, EigenLayer, IPFS, Fhenix).
+
+[Full Context Diagram](docs/context-diagram.md)
+
+### Package Structure
+
+| Package | Purpose |
+|---------|---------|
+| `protocol-pkg` | Protocol lifecycle management for pool administration |
+| `hooks-operator-avs` | EigenLayer AVS for hook specification attestation |
+| `hook-pkg` | Hook development, marketplace, and IP protection |
+| `master-hook-pkg` | Diamond-pattern multi-hook composition |
+| `operator/` | Off-chain attestation task processing runtime |
+
+[Package Documentation](docs/README.md#package-documentation)
+
+### Bonded Hooks Comparison
+
+| Dimension | Bonded Hooks | Hook Bazaar |
+|-----------|-------------|-------------|
+| Primary Focus | Low-code composition | IP-protected marketplace |
+| Target User | Pool admins | Hook developers |
+| Verification | Centralized AVS | Decentralized EigenLayer AVS |
+| IP Model | Open source | Encrypted implementations |
+
+**Key Differentiator**: Hook Bazaar provides mathematical specification verification with cryptoeconomic guarantees (slashing).
+
+[Full Comparison](docs/hook-pkg/architecture/bonded-hooks-comparison.md) | [Operator EigenLayer Integration](operator/README.md)
+
+---
+
+## Setup
+
+### Prerequisites
 
 - Node.js v18+
 - Foundry
 
-## Quick Start
-
-
-### 1. Install Dependencies
+### Build
 
 ```bash
 npm install
 forge install
+forge build
 ```
 
-### 2. Frontend
-
-Start the frontend development server:
+### Test
 
 ```bash
+forge test
+cd operator && npm test
+```
+
+### Deploy
+
+```bash
+# Frontend
 npm run dev
-```
+# Frontend runs on: http://localhost:3000
 
-Frontend runs on: **http://localhost:3000**
-
-### 3. HookAttestationAVS Operator
-
-The operator verifies hook implementations match their specifications without accessing source code.
-
-```bash
+# Operator (dry-run mode)
 cd operator
-npm install
-```
-
-**Run tests:**
-```bash
-npm test
-```
-
-**Run operator in dry-run mode:**
-```bash
 cp .env.example .env
-anvil  // on separate terminal
+anvil  # on separate terminal
 npm start
 ```
 
-**Constraints:**
+**Operator Constraints:**
 - Dry-run mode only (on-chain contracts not yet deployed)
 - Uses mock state sampler (real IHookStateView pending)
 - BLS signatures and multi-operator consensus pending EigenLayer integration
 
-See `operator/INTEGRATION_ROADMAP.md` for full integration requirements.
+See [operator/README.md](operator/README.md) for full documentation.
 
-### 4. Contracts
-- `forge build` - Compile contracts
-- `forge test` - Run tests
+---
 
+## References
 
+### Documentation
+
+- [Full Documentation Index](docs/README.md)
+- [Mission Statement (JSON)](docs/mission-statement.json)
+- [Function Refinement Tree (JSON)](docs/function-refinement-tree.json)
+- [Context Diagram](docs/context-diagram.md)
+
+### Package Specifications
+
+- [protocol-pkg](docs/protocol-pkg/solutionSpec.md)
+- [hooks-operator-avs](docs/hook-attestation-pkg/solutionSpec.md)
+- [hook-pkg/development](docs/hook-pkg/development/solutionSpec.md)
+- [hook-pkg/market](docs/hook-pkg/market/solutionSpec.md)
+- [hook-pkg/cofhe-haas](docs/hook-pkg/cofhe-haas/solutionSpec.md)
+
+### Architecture
+
+- [AVS Verification System](docs/hook-pkg/architecture/avs-verification-system.md)
+- [Bonded Hooks Comparison](docs/hook-pkg/architecture/bonded-hooks-comparison.md)
+- [Market Structure](docs/hook-market-pkg/market_structure_docs.md)

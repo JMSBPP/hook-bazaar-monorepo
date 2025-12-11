@@ -109,7 +109,9 @@ desktop.ini
 # Project-Specific Documentation (Internal Use)
 # =============================================================================
 AGENTS.md
+CLAUDE.md
 CREATE_PROTOCOL_PR.md
+NOTES.md
 QWEN.md
 TODO.md
 

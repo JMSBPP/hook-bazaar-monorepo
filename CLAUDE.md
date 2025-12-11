@@ -1,7 +1,3 @@
-
-
-
-
 # GitHub 
 
 The branch we will be psuhing to ins uhi7
