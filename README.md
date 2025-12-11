@@ -59,17 +59,35 @@ Hook Bazaar is a **decentralized marketplace and infrastructure layer** for Unis
 - **For Protocols**: Instant deployment (minutes vs weeks), lower costs ($100s vs $10k+), pre-audited hooks, multi-hook composition
 - **For Ecosystem**: Self-sustaining economic model, quality through competition, accelerated v4 adoption
 
-Hook Bazaar enables trustless monetization of Uniswap V4 hooks through:
+### Core Features
 
 - **Centralized Discovery Layer**: Connects hook supply with protocol demand
 - **Ready-Made Hooks**: Reduces deployment time from weeks to minutes
 - **Direct Monetization**: Fixed-price, revenue-share, or hybrid licensing models
 - **Mathematical Specifications**: Hook Specification Format for objective behavior verification
 - **MasterHook Diamond**: Safe multi-hook composition with selector-level routing
-- **Fhenix CoFHE Integration**: Encrypted implementations protecting developer IP
-- **EigenLayer AVS**: Cryptoeconomic guarantees with slashing for false attestations
 
-**Value Delivery:**
+### Sponsor Integrations
+
+#### Fhenix CoFHE — IP Protection Layer
+Encrypts hook implementations on-chain to prevent bytecode decompilation and IP theft.
+- Encrypted type wrappers (`EPoolKey`, `ESwapParams`, `EBalanceDelta`)
+- Plaintext ↔ encrypted boundary at `CoFHEHook` contract
+- Authorized verifier access for AVS sampling
+
+[CoFHE Integration Spec](docs/hook-pkg/cofhe-haas/solutionSpec.md)
+
+#### EigenLayer AVS — Attestation Layer
+Provides cryptoeconomic guarantees for hook specification compliance via staked operators.
+- `HookAttestationTaskManager`: Task creation and response handling
+- `HookAttestationServiceManager`: Operator registration and slashing
+- Challenge mechanism with 50% slash for false positives, 30% for false negatives
+- Off-chain operator runtime for state sampling and compliance checking
+
+[AVS Integration Spec](docs/hook-attestation-pkg/solutionSpec.md) | [Operator Runtime](operator/README.md)
+
+### Value Delivery
+
 - Hook developers: IP protection, monetization, reputation building
 - Protocol designers: Instant deployment, lower costs, pre-verified hooks
 - Ecosystem: Self-sustaining economics, quality improvement through competition
