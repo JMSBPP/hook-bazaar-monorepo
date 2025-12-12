@@ -47,7 +47,9 @@ Hook Bazaar solves **9 critical market failures** in the Uniswap v4 ecosystem:
 
 ## Demo
 
-<!-- Demo section placeholder -->
+[![Watch the Demo](https://img.shields.io/badge/Watch-Demo-E85A4F?style=for-the-badge&logo=loom&logoColor=white)](https://www.loom.com/share/8f8f5873702b4f6db3215892d824bba2)
+
+[🎥 Watch the full demo on Loom](https://www.loom.com/share/8f8f5873702b4f6db3215892d824bba2)
 
 ---
 
@@ -191,7 +193,9 @@ cd operator && npm test
 anvil
 
 # Terminal 2
-cd operator && npx tsx integration/runSimulation.ts
+cd operator
+npm install
+npx tsx integration/runSimulation.ts
 ```
 
 ### Deploy

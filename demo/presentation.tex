@@ -1,21 +1,12 @@
 \documentclass[aspectratio=169]{beamer}
 
 % ============================================
-% HOOK BAZAAR THEME - MATCHING UI AESTHETICS
+% HOOKBAZAAR THEME - DIAGRAM-FOCUSED PRESENTATION
 % ============================================
-% Colors from client2/src/index.css:
-% --color-primary: gold (#FFD700)
-% --color-bg-darkest: #000814 (deep navy)
-% --color-bg-dark: #001f3f (navy)
-% --color-secondary: #003366
-% --color-accent: #e85a4f (coral/terracotta)
-% --color-white: #fff
-
 \usepackage{fontspec}
 \usepackage{tikz}
-\usetikzlibrary{positioning}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, calc}
 \usepackage{graphicx}
-\usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{fontawesome5}
 
@@ -27,376 +18,419 @@
 \definecolor{hbAccent}{HTML}{E85A4F}       % Coral/Terracotta
 \definecolor{hbWhite}{HTML}{FFFFFF}        % White
 \definecolor{hbMarble}{HTML}{F5F5F0}       % Marble Light
+\definecolor{hbSuccess}{HTML}{28A745}      % Green
 
-% Beamer theme configuration
+% Beamer configuration
 \usetheme{default}
 \usecolortheme{default}
 
-% Set background and foreground
 \setbeamercolor{background canvas}{bg=hbBgDarkest}
 \setbeamercolor{normal text}{fg=hbWhite}
 \setbeamercolor{frametitle}{fg=hbPrimary}
-\setbeamercolor{title}{fg=hbPrimary}
-\setbeamercolor{subtitle}{fg=hbWhite}
-\setbeamercolor{author}{fg=hbMarble}
-\setbeamercolor{date}{fg=hbMarble}
 \setbeamercolor{item}{fg=hbPrimary}
-\setbeamercolor{subitem}{fg=hbAccent}
-\setbeamercolor{block title}{fg=hbBgDarkest, bg=hbPrimary}
-\setbeamercolor{block body}{fg=hbWhite, bg=hbSecondary}
-\setbeamercolor{structure}{fg=hbPrimary}
 
-% Remove navigation symbols
 \setbeamertemplate{navigation symbols}{}
 
-% Custom frame title with gold underline
 \setbeamertemplate{frametitle}{
-    \vspace{0.5cm}
-    {\Large\bfseries\insertframetitle}
-    \vspace{0.1cm}
+    \vspace{0.25cm}
+    {\large\bfseries\insertframetitle}
     \par
-    \textcolor{hbPrimary}{\rule{\textwidth}{2pt}}
-    \vspace{0.3cm}
+    \textcolor{hbPrimary}{\rule{\textwidth}{1.5pt}}
+    \vspace{0.15cm}
 }
 
-% Custom footline
 \setbeamertemplate{footline}{
     \hbox{%
-    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
-        \hspace*{2ex}\textcolor{hbPrimary}{\tiny Hook Bazaar}
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2ex,dp=1ex,left]{author in head/foot}%
+        \hspace*{2ex}\textcolor{hbPrimary}{\tiny HookBazaar}
     \end{beamercolorbox}%
-    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
-        \textcolor{hbMarble}{\tiny\insertshorttitle}
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2ex,dp=1ex,center]{title in head/foot}%
+        \textcolor{hbMarble}{\tiny Hook-as-a-Service}
     \end{beamercolorbox}%
-    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \begin{beamercolorbox}[wd=.333333\paperwidth,ht=2ex,dp=1ex,right]{date in head/foot}%
         \textcolor{hbMarble}{\tiny\insertframenumber{} / \inserttotalframenumber}\hspace*{2ex}
     \end{beamercolorbox}}%
-    \vskip0pt%
 }
 
-% Custom itemize
 \setbeamertemplate{itemize item}{\textcolor{hbPrimary}{\faAngleRight}}
-\setbeamertemplate{itemize subitem}{\textcolor{hbAccent}{\faAngleDoubleRight}}
-
-% Fonts - Space Grotesk style (use system sans as fallback)
-\setsansfont{Inter}[
-    BoldFont={Inter Bold},
-    Scale=1.0
-]
-
-% Title and content
-\title{\textbf{Hook Bazaar}}
-\subtitle{Decentralized Marketplace for Uniswap v4 Hooks}
-\author{UHI7 Team}
-\date{December 2025}
 
 \begin{document}
 
 % ============================================
-% SLIDE 1: TITLE / INTRO
+% SLIDE 0: TEAM INTRODUCTION
+% ============================================
+\begin{frame}{Meet the Team}
+
+\begin{center}
+\vspace{0.3cm}
+\textcolor{hbPrimary}{\large\textbf{UHI7 Team}}
+
+\vspace{0.8cm}
+
+\begin{tikzpicture}[scale=0.9]
+    % Team member 1 - JMSBPP
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=8pt, minimum width=3.5cm, minimum height=2.2cm] (m1) at (-4.5,0) {};
+    \node[text=hbPrimary, font=\small\bfseries] at (-4.5,0.6) {JMSBPP};
+    \node[text=hbMarble, font=\scriptsize] at (-4.5,0.1) {EVM-based DEX};
+    \node[text=hbMarble, font=\scriptsize] at (-4.5,-0.25) {AMM Hooks};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=3pt, font=\tiny, text=hbAccent] at (-4.5,-0.75) {\faGithub\ JMSBPP};
+
+    % Team member 2 - viktor81562
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=8pt, minimum width=3.5cm, minimum height=2.2cm] (m2) at (0,0) {};
+    \node[text=hbPrimary, font=\small\bfseries] at (0,0.6) {Viktor};
+    \node[text=hbMarble, font=\scriptsize] at (0,0.1) {Smart Contract};
+    \node[text=hbMarble, font=\scriptsize] at (0,-0.25) {Development};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=3pt, font=\tiny, text=hbAccent] at (0,-0.75) {\faGithub\ viktor81562};
+
+    % Team member 3 - iam-Truong
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=8pt, minimum width=3.5cm, minimum height=2.2cm] (m3) at (4.5,0) {};
+    \node[text=hbPrimary, font=\small\bfseries] at (4.5,0.6) {Truong};
+    \node[text=hbMarble, font=\scriptsize] at (4.5,0.1) {Full Stack};
+    \node[text=hbMarble, font=\scriptsize] at (4.5,-0.25) {Development};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=3pt, font=\tiny, text=hbAccent] at (4.5,-0.75) {\faGithub\ iam-Truong};
+\end{tikzpicture}
+
+\vspace{0.8cm}
+
+\textcolor{hbMarble}{\small Building infrastructure for the Uniswap v4 hooks economy}
+\end{center}
+\end{frame}
+
+% ============================================
+% SLIDE 1: TITLE - MARKETPLACE DIAGRAM
 % ============================================
 \begin{frame}
 \begin{center}
-\vspace{1cm}
-{\Huge\textcolor{hbPrimary}{\textbf{Hook Bazaar}}}
+\vspace{0.3cm}
+{\Huge\textcolor{hbPrimary}{\textbf{HookBazaar}}}
+\vspace{0.2cm}
+
+\textcolor{hbMarble}{\large Hook-as-a-Service for Uniswap v4}
 
 \vspace{0.5cm}
 
-\textcolor{hbMarble}{\large Decentralized Marketplace for Uniswap v4 Hooks}
+\begin{tikzpicture}[scale=0.85]
+    % Central marketplace
+    \node[draw=hbPrimary, line width=2pt, fill=hbSecondary, rounded corners=8pt, minimum width=3.2cm, minimum height=1.3cm] (market) {\textcolor{hbPrimary}{\textbf{HookBazaar}}};
 
-\vspace{1.5cm}
+    % Hook developers (left)
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm, left=2.2cm of market] (dev1) {\textcolor{hbWhite}{\small Hook Dev}};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm, above=0.25cm of dev1] (dev2) {\textcolor{hbWhite}{\small Hook Dev}};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm, below=0.25cm of dev1] (dev3) {\textcolor{hbWhite}{\small Hook Dev}};
 
-\begin{tikzpicture}
-    \draw[hbPrimary, line width=2pt] (-4,0) -- (4,0);
-\end{tikzpicture}
-
-\vspace{1cm}
-
-\textcolor{hbWhite}{Building the Infrastructure Layer for the}\\[0.3cm]
-\textcolor{hbPrimary}{\textbf{Uniswap v4 Hooks Economy}}
-
-\vspace{1.5cm}
-
-{\small\textcolor{hbMarble}{UHI7 Team $\cdot$ December 2025}}
-\end{center}
-\end{frame}
-
-% ============================================
-% SLIDE 2: PROBLEM / CHALLENGES
-% ============================================
-\begin{frame}{The Problem: 9 Critical Market Failures}
-
-\begin{columns}[T]
-\begin{column}{0.48\textwidth}
-\textcolor{hbAccent}{\textbf{Market Infrastructure}}
-\begin{itemize}
-    \item \textbf{No marketplace} for hooks
-    \item Supply \& demand exist --- no connection
-    \item No competition mechanism
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textcolor{hbAccent}{\textbf{Developer Pain Points}}
-\begin{itemize}
-    \item No monetization model
-    \item No IP protection (code is public)
-    \item No reputation system
-\end{itemize}
-\end{column}
-
-\begin{column}{0.48\textwidth}
-\textcolor{hbAccent}{\textbf{Protocol Barriers}}
-\begin{itemize}
-    \item Custom hooks: \textcolor{hbPrimary}{\$10k--\$100k+}
-    \item Development time: \textcolor{hbPrimary}{weeks--months}
-    \item High audit costs \& risk
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textcolor{hbAccent}{\textbf{Ecosystem Gaps}}
-\begin{itemize}
-    \item No standardization
-    \item No multi-hook composition
-    \item Unsustainable economics
-\end{itemize}
-\end{column}
-\end{columns}
-
-\vspace{0.8cm}
-
-\begin{center}
-\begin{tikzpicture}
-    \node[draw=hbAccent, thick, rounded corners, fill=hbSecondary, text=hbWhite, inner sep=10pt] {
-        \textbf{Result:} Despite v4's power, the ecosystem lacks infrastructure for adoption
-    };
-\end{tikzpicture}
-\end{center}
-\end{frame}
-
-% ============================================
-% SLIDE 3: SOLUTION OVERVIEW
-% ============================================
-\begin{frame}{The Solution: Hook Bazaar}
-
-\begin{center}
-\textcolor{hbPrimary}{\large\textbf{A Decentralized Marketplace \& Infrastructure Layer}}
-\end{center}
-
-\vspace{0.5cm}
-
-\begin{columns}[T]
-\begin{column}{0.32\textwidth}
-\begin{block}{\faCode\ For Developers}
-\begin{itemize}
-    \item Direct monetization
-    \item IP protection via FHE
-    \item Reputation profiles
-    \item Professional exposure
-\end{itemize}
-\end{block}
-\end{column}
-
-\begin{column}{0.32\textwidth}
-\begin{block}{\faBuilding\ For Protocols}
-\begin{itemize}
-    \item Instant deployment
-    \item \textcolor{hbPrimary}{\$100s} vs \$10k+
-    \item Pre-audited hooks
-    \item Multi-hook composition
-\end{itemize}
-\end{block}
-\end{column}
-
-\begin{column}{0.32\textwidth}
-\begin{block}{\faGlobe\ For Ecosystem}
-\begin{itemize}
-    \item Self-sustaining model
-    \item Quality via competition
-    \item Network effects
-    \item V4 adoption boost
-\end{itemize}
-\end{block}
-\end{column}
-\end{columns}
-
-\vspace{0.8cm}
-
-\begin{center}
-\textcolor{hbMarble}{Time-to-market: \textcolor{hbAccent}{\textbf{weeks}} $\rightarrow$ \textcolor{hbPrimary}{\textbf{minutes}}}
-\end{center}
-\end{frame}
-
-% ============================================
-% SLIDE 4: SOLUTION APPROACH
-% ============================================
-\begin{frame}{Architecture \& Approach}
-
-\begin{center}
-\begin{tikzpicture}[
-    box/.style={draw=hbPrimary, thick, rounded corners=3pt, fill=hbSecondary, text=hbWhite, minimum width=2.8cm, minimum height=1cm, align=center, font=\small},
-    external/.style={draw=hbAccent, thick, rounded corners=3pt, fill=hbBgDark, text=hbMarble, minimum width=2.2cm, minimum height=0.8cm, align=center, font=\scriptsize},
-    arrow/.style={->, thick, hbPrimary}
-]
-    % Core packages
-    \node[box] (protocol) at (0,2) {protocol-pkg\\{\tiny Protocol Lifecycle}};
-    \node[box] (hook) at (4,2) {hook-pkg\\{\tiny Marketplace + IP}};
-    \node[box] (avs) at (0,0) {hooks-operator-avs\\{\tiny Attestation}};
-    \node[box] (master) at (4,0) {master-hook-pkg\\{\tiny Composition}};
-
-    % External systems
-    \node[external] (uniswap) at (-3,2) {Uniswap V4};
-    \node[external] (eigen) at (-3,0) {EigenLayer};
-    \node[external] (ipfs) at (7,2) {IPFS};
-    \node[external] (fhenix) at (7,0) {Fhenix FHE};
+    % Protocols (right)
+    \node[draw=hbSuccess, fill=hbBgDark, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm, right=2.2cm of market] (proto1) {\textcolor{hbWhite}{\small Protocol}};
+    \node[draw=hbSuccess, fill=hbBgDark, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm, above=0.25cm of proto1] (proto2) {\textcolor{hbWhite}{\small Protocol}};
+    \node[draw=hbSuccess, fill=hbBgDark, rounded corners=4pt, minimum width=2.2cm, minimum height=0.7cm, below=0.25cm of proto1] (proto3) {\textcolor{hbWhite}{\small Protocol}};
 
     % Arrows
-    \draw[arrow] (protocol) -- (uniswap);
-    \draw[arrow] (avs) -- (eigen);
-    \draw[arrow] (hook) -- (ipfs);
-    \draw[arrow] (hook) -- (fhenix);
-    \draw[arrow, hbAccent] (protocol) -- (hook);
-    \draw[arrow, hbAccent] (avs) -- (hook);
-    \draw[arrow, hbAccent] (master) -- (hook);
+    \draw[-{Stealth}, hbAccent, thick] (dev1) -- (market) node[midway, above, font=\tiny, text=hbMarble] {Hooks};
+    \draw[-{Stealth}, hbAccent, thick] (dev2) -- (market);
+    \draw[-{Stealth}, hbAccent, thick] (dev3) -- (market);
+
+    \draw[-{Stealth}, hbSuccess, thick] (market) -- (proto1) node[midway, above, font=\tiny, text=hbMarble] {Verified};
+    \draw[-{Stealth}, hbSuccess, thick] (market) -- (proto2);
+    \draw[-{Stealth}, hbSuccess, thick] (market) -- (proto3);
+
+    % Revenue flow
+    \draw[-{Stealth}, hbPrimary, thick, dashed] (proto1.south) to[bend right=35] node[midway, below, font=\scriptsize, text=hbPrimary] {Revenue \$} (dev1.south);
 \end{tikzpicture}
+
+\vspace{0.4cm}
+\textcolor{hbMarble}{\small IP Protection $\cdot$ Formal Verification $\cdot$ Revenue Share}
+
+\vspace{0.3cm}
+\href{https://www.loom.com/share/8f8f5873702b4f6db3215892d824bba2}{\textcolor{hbAccent}{\faVideo\ \underline{Watch Demo}}}
 \end{center}
-
-\vspace{0.5cm}
-
-\begin{columns}[T]
-\begin{column}{0.48\textwidth}
-\textcolor{hbPrimary}{\textbf{Core Packages}}
-\begin{itemize}
-    \item \textbf{protocol-pkg}: Pool administration
-    \item \textbf{hook-pkg}: Development \& marketplace
-    \item \textbf{hooks-operator-avs}: EigenLayer attestation
-    \item \textbf{master-hook-pkg}: Diamond composition
-\end{itemize}
-\end{column}
-
-\begin{column}{0.48\textwidth}
-\textcolor{hbPrimary}{\textbf{Sponsor Integrations}}
-\begin{itemize}
-    \item \textbf{Fhenix CoFHE}: Encrypted hooks for IP protection
-    \item \textbf{EigenLayer AVS}: Cryptoeconomic guarantees via staked operators
-\end{itemize}
-\end{column}
-\end{columns}
 \end{frame}
 
 % ============================================
-% SLIDE 5: FEATURE 1 - HOOK SPECIFICATION FORMAT
+% SLIDE 2: THE PROBLEM - VISUAL COST BREAKDOWN
 % ============================================
-\begin{frame}{Key Feature: Mathematical Hook Specifications}
+\begin{frame}{The Problem: Broken Economics}
 
-\begin{columns}[T]
-\begin{column}{0.55\textwidth}
-\textcolor{hbPrimary}{\large\textbf{Hook Specification Format (HSF)}}
-
-\vspace{0.3cm}
-
-\textcolor{hbAccent}{\textbf{Why It Matters}}
-\begin{itemize}
-    \item Objective behavior verification
-    \item Formal state machine definitions
-    \item Machine-readable specifications
-    \item Foundation for AVS attestation
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textcolor{hbAccent}{\textbf{What It Enables}}
-\begin{itemize}
-    \item \textbf{Trust}: Verify before integrating
-    \item \textbf{Comparison}: Objective evaluation
-    \item \textbf{Slashing}: Proof of misbehavior
-    \item \textbf{Composition}: Safe multi-hook stacking
-\end{itemize}
-\end{column}
-
-\begin{column}{0.42\textwidth}
-\begin{tikzpicture}
-    \node[draw=hbPrimary, thick, fill=hbSecondary, text=hbMarble, rounded corners, inner sep=8pt, font=\scriptsize, align=left] {
-        \textcolor{hbPrimary}{\texttt{// Hook State Model}}\\[2pt]
-        \texttt{States: \{Inactive, Active\}}\\[2pt]
-        \texttt{Events: \{beforeSwap, afterSwap\}}\\[2pt]
-        \texttt{Invariants:}\\
-        \texttt{\ \ fee $\leq$ MAX\_FEE}\\
-        \texttt{\ \ balance $\geq$ 0}\\[4pt]
-        \textcolor{hbPrimary}{\texttt{// Transition}}\\[2pt]
-        \texttt{beforeSwap(params):}\\
-        \texttt{\ \ require(state == Active)}\\
-        \texttt{\ \ fee = computeFee(params)}\\
-        \texttt{\ \ emit FeeUpdated(fee)}
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+    % Cost barrier at top
+    \node[draw=hbAccent, line width=2pt, fill=hbBgDark, rounded corners=6pt, minimum width=5cm, minimum height=1.3cm, align=center] (cost) at (0,2.5) {
+        \textcolor{hbAccent}{\large\textbf{\$30k -- \$130k+}}\\[-2pt]
+        \textcolor{hbMarble}{\scriptsize per hook deployment}
     };
+
+    % Three problem pillars
+    \node[draw=hbPrimary, fill=hbSecondary, rounded corners=4pt, minimum width=3.5cm, minimum height=2.2cm, align=center] (devs) at (-5,-0.5) {
+        \textcolor{hbPrimary}{\faCode}\\[3pt]
+        \textcolor{hbWhite}{\small\textbf{Hook Devs}}\\[5pt]
+        \textcolor{hbMarble}{\scriptsize No IP compensation}\\
+        \textcolor{hbMarble}{\scriptsize <20\% win prizes}\\
+        \textcolor{hbMarble}{\scriptsize No revenue share}
+    };
+
+    \node[draw=hbPrimary, fill=hbSecondary, rounded corners=4pt, minimum width=3.5cm, minimum height=2.2cm, align=center] (protocols) at (0,-0.5) {
+        \textcolor{hbPrimary}{\faBuilding}\\[3pt]
+        \textcolor{hbWhite}{\small\textbf{Protocols}}\\[5pt]
+        \textcolor{hbMarble}{\scriptsize High dev costs}\\
+        \textcolor{hbMarble}{\scriptsize Audit expenses}\\
+        \textcolor{hbMarble}{\scriptsize No hook choice}
+    };
+
+    \node[draw=hbPrimary, fill=hbSecondary, rounded corners=4pt, minimum width=3.5cm, minimum height=2.2cm, align=center] (pools) at (5,-0.5) {
+        \textcolor{hbPrimary}{\faWater}\\[3pt]
+        \textcolor{hbWhite}{\small\textbf{Pools}}\\[5pt]
+        \textcolor{hbMarble}{\scriptsize No routing agency}\\
+        \textcolor{hbMarble}{\scriptsize Single hook limit}\\
+        \textcolor{hbMarble}{\scriptsize No flexibility}
+    };
+
+    % Arrows from cost
+    \draw[-{Stealth}, hbAccent, thick] (cost.south) -- (devs.north);
+    \draw[-{Stealth}, hbAccent, thick] (cost.south) -- (protocols.north);
+    \draw[-{Stealth}, hbAccent, thick] (cost.south) -- (pools.north);
+
+    % Question
+    \node[text=hbPrimary, font=\large\bfseries] at (0,-3) {What if this could be different?};
 \end{tikzpicture}
-
-\vspace{0.3cm}
-
-\begin{center}
-\textcolor{hbMarble}{\scriptsize Specifications stored on IPFS}\\
-\textcolor{hbMarble}{\scriptsize Verified by EigenLayer operators}
 \end{center}
-\end{column}
-\end{columns}
 \end{frame}
 
 % ============================================
-% SLIDE 6: FEATURE 2 - AVS ATTESTATION
+% SLIDE 3: SOLUTION - SYSTEM ARCHITECTURE
 % ============================================
-\begin{frame}{Key Feature: EigenLayer AVS Attestation}
-
-\begin{columns}[T]
-\begin{column}{0.55\textwidth}
-\textcolor{hbPrimary}{\large\textbf{Cryptoeconomic Guarantees}}
-
-\vspace{0.3cm}
-
-\textcolor{hbAccent}{\textbf{Why It Matters}}
-\begin{itemize}
-    \item Staked operators verify hook behavior
-    \item Economic penalties for false attestations
-    \item Decentralized trust --- no central authority
-    \item Continuous compliance monitoring
-\end{itemize}
-
-\vspace{0.5cm}
-
-\textcolor{hbAccent}{\textbf{Slashing Mechanism}}
-\begin{itemize}
-    \item \textbf{50\% slash}: False positive attestation
-    \item \textbf{30\% slash}: False negative (missed violation)
-    \item Challenge window for disputes
-    \item Proof submitted on-chain
-\end{itemize}
-\end{column}
-
-\begin{column}{0.42\textwidth}
-\begin{tikzpicture}[
-    node distance=0.8cm,
-    box/.style={draw=hbPrimary, thick, rounded corners=2pt, fill=hbSecondary, text=hbWhite, minimum width=2.5cm, minimum height=0.7cm, align=center, font=\scriptsize},
-    arrow/.style={->, thick, hbPrimary}
-]
-    \node[box] (task) {Task Created};
-    \node[box, below=of task] (sample) {Operator Samples\\Hook State};
-    \node[box, below=of sample] (verify) {Verify Against\\Specification};
-    \node[box, below=of verify] (attest) {Submit\\Attestation};
-    \node[box, below=of attest] (challenge) {Challenge\\Window};
-
-    \draw[arrow] (task) -- (sample);
-    \draw[arrow] (sample) -- (verify);
-    \draw[arrow] (verify) -- (attest);
-    \draw[arrow] (attest) -- (challenge);
-\end{tikzpicture}
-
-\vspace{0.3cm}
+\begin{frame}{The Solution: HookBazaar Architecture}
 
 \begin{center}
-\textcolor{hbMarble}{\scriptsize Powered by EigenLayer restaking}
+\begin{tikzpicture}[scale=0.75]
+    % Protocol Developer
+    \node[draw=hbSuccess, line width=1.5pt, fill=hbBgDark, rounded corners=5pt, minimum width=2.5cm, minimum height=0.9cm] (protodev) at (-6.5,2) {\textcolor{hbSuccess}{\small Protocol Dev}};
+
+    % Protocol with pools
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=6pt, minimum width=4cm, minimum height=2.2cm] (protocol) at (-6.5,-0.8) {};
+    \node[text=hbPrimary, font=\small\bfseries] at (-6.5,0.1) {Protocol};
+
+    % Pools
+    \node[draw=hbMarble, fill=hbBgDark, rounded corners=2pt, minimum width=0.8cm, minimum height=0.5cm, font=\tiny] at (-7.5,-0.8) {Pool};
+    \node[draw=hbMarble, fill=hbBgDark, rounded corners=2pt, minimum width=0.8cm, minimum height=0.5cm, font=\tiny] at (-6.5,-0.8) {Pool};
+    \node[draw=hbMarble, fill=hbBgDark, rounded corners=2pt, minimum width=0.8cm, minimum height=0.5cm, font=\tiny] at (-5.5,-0.8) {Pool};
+    \node[draw=hbPrimary, fill=hbBgDark, rounded corners=2pt, minimum width=3cm, minimum height=0.4cm, font=\tiny, text=hbPrimary] at (-6.5,-1.5) {Revenue Vault};
+
+    \draw[-{Stealth}, hbSuccess, thick] (protodev) -- (protocol);
+
+    % Master Hook
+    \node[draw=hbPrimary, line width=2pt, fill=hbSecondary, rounded corners=5pt, minimum width=2cm, minimum height=1cm, align=center] (master) at (-2.5,-0.8) {
+        \textcolor{hbPrimary}{\scriptsize\textbf{Master}}\\[-2pt]
+        \textcolor{hbPrimary}{\scriptsize\textbf{Hook}}
+    };
+
+    \draw[-{Stealth}, hbPrimary, thick] (protocol) -- (master);
+
+    % HookBazaar
+    \node[draw=hbPrimary, line width=2pt, fill=hbBgDark, rounded corners=8pt, minimum width=3.2cm, minimum height=2.4cm] (bazaar) at (1.5,-0.8) {};
+    \node[text=hbPrimary, font=\bfseries] at (1.5,0.1) {HookBazaar};
+
+    % Hooks in marketplace
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=2pt, minimum width=0.6cm, minimum height=0.4cm, font=\tiny] at (0.8,-0.8) {H1};
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=2pt, minimum width=0.6cm, minimum height=0.4cm, font=\tiny] at (1.5,-0.8) {H2};
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=2pt, minimum width=0.6cm, minimum height=0.4cm, font=\tiny] at (2.2,-0.8) {H3};
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=2pt, minimum width=0.6cm, minimum height=0.4cm, font=\tiny] at (1.15,-1.4) {H4};
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=2pt, minimum width=0.6cm, minimum height=0.4cm, font=\tiny] at (1.85,-1.4) {H5};
+
+    \draw[{Stealth}-{Stealth}, hbPrimary, thick] (master) -- (bazaar);
+
+    % Hook Developer
+    \node[draw=hbAccent, line width=1.5pt, fill=hbBgDark, rounded corners=5pt, minimum width=2.5cm, minimum height=0.9cm] (hookdev) at (6,2) {\textcolor{hbAccent}{\small Hook Dev}};
+
+    % Submission
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=4pt, minimum width=2.5cm, minimum height=1.6cm, align=center] (submission) at (6,-0.8) {
+        \textcolor{hbMarble}{\tiny Encrypted Code}\\
+        \textcolor{hbMarble}{\tiny Formal Spec}\\
+        \textcolor{hbMarble}{\tiny Metadata}
+    };
+
+    \draw[-{Stealth}, hbAccent, thick] (hookdev) -- (submission);
+    \draw[-{Stealth}, hbAccent, thick] (submission) -- (bazaar);
+
+    % Revenue flow
+    \draw[-{Stealth}, hbPrimary, thick, dashed] (bazaar.north) to[bend left=25] node[midway, above, font=\tiny, text=hbPrimary] {Revenue \$} (hookdev.west);
+
+    % Labels
+    \node[text=hbMarble, font=\tiny] at (-6.5,0.8) {Full Control};
+    \node[text=hbMarble, font=\tiny] at (1.5,1.2) {Verified Hooks};
+    \node[text=hbMarble, font=\tiny] at (6,0.8) {IP Protected};
+\end{tikzpicture}
 \end{center}
-\end{column}
-\end{columns}
+
+\vspace{0.2cm}
+\begin{center}
+\textcolor{hbMarble}{\small Protocols plug in hooks safely $\cdot$ Developers earn proportional rewards}
+\end{center}
+\end{frame}
+
+% ============================================
+% SLIDE 4: HOW IT WORKS - 5-STEP FLOW
+% ============================================
+\begin{frame}{How HookBazaar Works}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.72]
+    % Step boxes
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=5pt, minimum width=2.2cm, minimum height=1.2cm] (s1) at (0,0) {};
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=5pt, minimum width=2.2cm, minimum height=1.2cm] (s2) at (3.2,0) {};
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=5pt, minimum width=2.2cm, minimum height=1.2cm] (s3) at (6.4,0) {};
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=5pt, minimum width=2.2cm, minimum height=1.2cm] (s4) at (9.6,0) {};
+    \node[draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=5pt, minimum width=2.2cm, minimum height=1.2cm] (s5) at (12.8,0) {};
+
+    % Step labels (separate nodes)
+    \node[text=hbPrimary, font=\scriptsize\bfseries] at (0,0.35) {1};
+    \node[text=hbWhite, font=\scriptsize] at (0,-0.1) {Protocol};
+    \node[text=hbPrimary, font=\scriptsize\bfseries] at (3.2,0.35) {2};
+    \node[text=hbWhite, font=\scriptsize] at (3.2,-0.1) {Browse};
+    \node[text=hbPrimary, font=\scriptsize\bfseries] at (6.4,0.35) {3};
+    \node[text=hbWhite, font=\scriptsize] at (6.4,-0.1) {AVS};
+    \node[text=hbPrimary, font=\scriptsize\bfseries] at (9.6,0.35) {4};
+    \node[text=hbWhite, font=\scriptsize] at (9.6,-0.1) {IP};
+    \node[text=hbPrimary, font=\scriptsize\bfseries] at (12.8,0.35) {5};
+    \node[text=hbWhite, font=\scriptsize] at (12.8,-0.1) {Market};
+
+    % Details below
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=3pt, minimum width=1.8cm, minimum height=0.5cm, font=\tiny, text=hbMarble] at (0,-1.1) {Pools+Master};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=3pt, minimum width=1.8cm, minimum height=0.5cm, font=\tiny, text=hbMarble] at (3.2,-1.1) {Specs+Compat};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=3pt, minimum width=1.8cm, minimum height=0.5cm, font=\tiny, text=hbMarble] at (6.4,-1.1) {EigenLayer};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=3pt, minimum width=1.8cm, minimum height=0.5cm, font=\tiny, text=hbMarble] at (9.6,-1.1) {Fhenix FHE};
+    \node[draw=hbAccent, fill=hbBgDark, rounded corners=3pt, minimum width=1.8cm, minimum height=0.5cm, font=\tiny, text=hbMarble] at (12.8,-1.1) {Price/Demand};
+
+    % Arrows
+    \draw[-{Stealth}, thick, hbPrimary] (s1) -- (s2);
+    \draw[-{Stealth}, thick, hbPrimary] (s2) -- (s3);
+    \draw[-{Stealth}, thick, hbPrimary] (s3) -- (s4);
+    \draw[-{Stealth}, thick, hbPrimary] (s4) -- (s5);
+
+    % Hook Submission Flow (bottom)
+    \node[draw=hbPrimary, dashed, rounded corners=8pt, minimum width=13cm, minimum height=1.6cm] at (6.4,-2.8) {};
+
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=3pt, minimum width=1.6cm, minimum height=0.6cm, font=\tiny, text=hbMarble] (c1) at (1.5,-2.7) {Encrypted};
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=3pt, minimum width=1.6cm, minimum height=0.6cm, font=\tiny, text=hbMarble] (c2) at (4.5,-2.7) {Formal Spec};
+    \node[draw=hbSuccess, fill=hbSecondary, rounded corners=3pt, minimum width=1.6cm, minimum height=0.6cm, font=\tiny, text=hbMarble] (c3) at (7.5,-2.7) {AVS Check};
+    \node[draw=hbPrimary, fill=hbSecondary, rounded corners=3pt, minimum width=1.6cm, minimum height=0.6cm, font=\tiny, text=hbMarble] (c4) at (10.5,-2.7) {Listed};
+
+    \draw[-{Stealth}, hbAccent, thick] (c1) -- (c2);
+    \draw[-{Stealth}, hbAccent, thick] (c2) -- (c3);
+    \draw[-{Stealth}, hbSuccess, thick] (c3) -- (c4);
+
+    \node[text=hbMarble, font=\tiny] at (6.4,-3.5) {Hook Submission Flow};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+% ============================================
+% SLIDE 5: AVS VERIFICATION FLOW
+% ============================================
+\begin{frame}{Formal Verification via EigenLayer AVS}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+    % Hook Developer
+    \node[draw=hbAccent, line width=1.5pt, fill=hbBgDark, rounded corners=5pt, minimum width=2cm, minimum height=0.9cm] (dev) at (-5.5,2) {\textcolor{hbAccent}{\small Hook Dev}};
+
+    % Submission
+    \node[draw=hbPrimary, fill=hbSecondary, rounded corners=5pt, minimum width=2.8cm, minimum height=1.8cm, align=center] (submit) at (-5.5,-0.2) {
+        \textcolor{hbWhite}{\scriptsize\textbf{Submission}}\\[4pt]
+        \textcolor{hbMarble}{\tiny Bytecode}\\
+        \textcolor{hbMarble}{\tiny Formal Spec}\\
+        \textcolor{hbMarble}{\tiny State Model}
+    };
+
+    \draw[-{Stealth}, hbAccent, thick] (dev) -- (submit);
+
+    % AVS Operator
+    \node[draw=hbSuccess, line width=2pt, fill=hbBgDark, rounded corners=8pt, minimum width=3.2cm, minimum height=2.2cm, align=center] (avs) at (-1,-0.2) {};
+    \node[text=hbSuccess, font=\small\bfseries] at (-1,0.5) {AVS Operator};
+    \node[text=hbMarble, font=\tiny, align=center] at (-1,-0.3) {Off-chain\\Attestation};
+    \node[draw=hbPrimary, fill=hbSecondary, rounded corners=2pt, font=\tiny, text=hbWhite] at (-1,-1) {EigenLayer};
+
+    \draw[-{Stealth}, hbPrimary, thick] (submit) -- (avs) node[midway, above, font=\tiny, text=hbMarble] {verify};
+
+    % Verification
+    \node[draw=hbPrimary, fill=hbSecondary, rounded corners=5pt, minimum width=3.2cm, minimum height=2cm, align=center] (checks) at (3.5,-0.2) {
+        \textcolor{hbPrimary}{\scriptsize\textbf{Verification}}\\[4pt]
+        \textcolor{hbSuccess}{\tiny\faCheck\ Code $\leftrightarrow$ Spec}\\
+        \textcolor{hbSuccess}{\tiny\faCheck\ State Invariants}\\
+        \textcolor{hbSuccess}{\tiny\faCheck\ Behavior Match}\\
+        \textcolor{hbSuccess}{\tiny\faCheck\ Compatibility}
+    };
+
+    \draw[-{Stealth}, hbSuccess, thick] (avs) -- (checks);
+
+    % Approved
+    \node[draw=hbPrimary, line width=2pt, fill=hbSecondary, rounded corners=5pt, minimum width=2.2cm, minimum height=0.9cm] (approved) at (3.5,-2.5) {\textcolor{hbPrimary}{\small\textbf{Approved}}};
+
+    \draw[-{Stealth}, hbSuccess, thick] (checks) -- (approved);
+
+    % Marketplace
+    \node[draw=hbPrimary, fill=hbBgDark, rounded corners=5pt, minimum width=2.2cm, minimum height=0.9cm] (market) at (-1,-2.5) {\textcolor{hbPrimary}{\small Marketplace}};
+
+    \draw[-{Stealth}, hbPrimary, thick] (approved) -- (market);
+
+    % Key insight
+    \node[draw=hbAccent, dashed, rounded corners=4pt, minimum width=4.5cm, minimum height=0.7cm, align=center] at (-5.5,-2.5) {\textcolor{hbMarble}{\tiny Math spec aligns with deployed code}};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+% ============================================
+% SLIDE 6: IP PROTECTION VIA FHENIX
+% ============================================
+\begin{frame}{IP Protection via Fhenix FHE}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+    % Original code
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=5pt, minimum width=2.8cm, minimum height=1.6cm, align=center] (original) at (-5,0.5) {
+        \textcolor{hbWhite}{\scriptsize\textbf{Original}}\\[3pt]
+        \textcolor{hbMarble}{\tiny Hook Code}\\
+        \textcolor{hbMarble}{\tiny Types + Logic}
+    };
+
+    % Fhenix
+    \node[draw=hbPrimary, line width=2pt, fill=hbBgDark, rounded corners=8pt, minimum width=3cm, minimum height=1.8cm, align=center] (fhenix) at (0,0.5) {
+        \textcolor{hbPrimary}{\textbf{Fhenix}}\\[4pt]
+        \textcolor{hbMarble}{\scriptsize FHE Encryption}\\[3pt]
+        \textcolor{hbWhite}{\tiny\faLock\ Bytecode}\\
+        \textcolor{hbWhite}{\tiny\faLock\ Types}
+    };
+
+    \draw[-{Stealth}, hbAccent, thick] (original) -- (fhenix);
+
+    % Protected
+    \node[draw=hbSuccess, fill=hbSecondary, rounded corners=5pt, minimum width=2.8cm, minimum height=1.6cm, align=center] (encrypted) at (5,0.5) {
+        \textcolor{hbSuccess}{\scriptsize\textbf{Protected}}\\[3pt]
+        \textcolor{hbMarble}{\tiny Encrypted Bytecode}\\
+        \textcolor{hbMarble}{\tiny Secure Execution}
+    };
+
+    \draw[-{Stealth}, hbPrimary, thick] (fhenix) -- (encrypted);
+
+    % Economic model
+    \node[draw=hbPrimary, dashed, rounded corners=8pt, minimum width=11cm, minimum height=1.8cm] at (0,-2.2) {};
+
+    \node[text=hbPrimary, font=\small\bfseries] at (0,-1.4) {Economic Security Model};
+
+    % Price vs cost
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=4pt, minimum width=2.8cm, minimum height=0.9cm, align=center] (price) at (-3,-2.5) {
+        \textcolor{hbPrimary}{\scriptsize Hook Price}\\[-1pt]
+        \textcolor{hbMarble}{\tiny Market-driven}
+    };
+
+    \node[text=hbPrimary, font=\Large] at (0,-2.5) {\textbf{<}};
+
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=4pt, minimum width=2.8cm, minimum height=0.9cm, align=center] (decompile) at (3,-2.5) {
+        \textcolor{hbAccent}{\scriptsize Decompile Cost}\\[-1pt]
+        \textcolor{hbMarble}{\tiny Extremely High}
+    };
+
+    % Result
+    \node[text=hbSuccess, font=\scriptsize] at (0,-3.6) {\faArrowRight\ Incentivizes legitimate usage over reverse engineering};
+\end{tikzpicture}
+\end{center}
 \end{frame}
 
 \end{document}
