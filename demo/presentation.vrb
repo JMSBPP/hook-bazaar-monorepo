@@ -1,0 +1,44 @@
+\frametitle{How HookBazaar Works}
+
+\begin{center}
+\begin{tikzpicture}[
+    scale=0.72,
+    step/.style={draw=hbPrimary, line width=1.5pt, fill=hbSecondary, rounded corners=5pt, minimum width=2.2cm, minimum height=1.2cm, align=center, font=\scriptsize},
+    detail/.style={draw=hbAccent, fill=hbBgDark, rounded corners=3pt, minimum width=1.8cm, minimum height=0.6cm, align=center, font=\tiny},
+    arrow/.style={-{Stealth}, thick, hbPrimary}
+]
+    % 5 Steps
+    \node[step] (s1) at (0,0) {\textcolor{hbPrimary}{\textbf{1}} \\ \textcolor{hbWhite}{Protocol} \\ \textcolor{hbWhite}{Definition}};
+    \node[step] (s2) at (3.2,0) {\textcolor{hbPrimary}{\textbf{2}} \\ \textcolor{hbWhite}{Browse} \\ \textcolor{hbWhite}{Hooks}};
+    \node[step] (s3) at (6.4,0) {\textcolor{hbPrimary}{\textbf{3}} \\ \textcolor{hbWhite}{AVS} \\ \textcolor{hbWhite}{Verification}};
+    \node[step] (s4) at (9.6,0) {\textcolor{hbPrimary}{\textbf{4}} \\ \textcolor{hbWhite}{IP} \\ \textcolor{hbWhite}{Protection}};
+    \node[step] (s5) at (12.8,0) {\textcolor{hbPrimary}{\textbf{5}} \\ \textcolor{hbWhite}{Market} \\ \textcolor{hbWhite}{Dynamics}};
+
+    % Details below
+    \node[detail] at (0,-1.2) {\textcolor{hbMarble}{Pools + Master}};
+    \node[detail] at (3.2,-1.2) {\textcolor{hbMarble}{Specs + Compat}};
+    \node[detail] at (6.4,-1.2) {\textcolor{hbMarble}{EigenLayer}};
+    \node[detail] at (9.6,-1.2) {\textcolor{hbMarble}{Fhenix FHE}};
+    \node[detail] at (12.8,-1.2) {\textcolor{hbMarble}{Price by Demand}};
+
+    % Arrows
+    \draw[arrow] (s1) -- (s2);
+    \draw[arrow] (s2) -- (s3);
+    \draw[arrow] (s3) -- (s4);
+    \draw[arrow] (s4) -- (s5);
+
+    % Hook Submission Flow (bottom)
+    \node[draw=hbPrimary, dashed, rounded corners=8pt, minimum width=13cm, minimum height=1.8cm] at (6.4,-3) {};
+
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=3pt, minimum width=1.6cm, minimum height=0.7cm, font=\tiny, align=center] (c1) at (1.5,-2.8) {Encrypted\\Code};
+    \node[draw=hbAccent, fill=hbSecondary, rounded corners=3pt, minimum width=1.6cm, minimum height=0.7cm, font=\tiny, align=center] (c2) at (4.5,-2.8) {Formal\\Spec};
+    \node[draw=hbSuccess, fill=hbSecondary, rounded corners=3pt, minimum width=1.6cm, minimum height=0.7cm, font=\tiny, align=center] (c3) at (7.5,-2.8) {AVS\\Attestation};
+    \node[draw=hbPrimary, fill=hbSecondary, rounded corners=3pt, minimum width=1.6cm, minimum height=0.7cm, font=\tiny, align=center] (c4) at (10.5,-2.8) {Listed in\\Market};
+
+    \draw[-{Stealth}, hbAccent, thick] (c1) -- (c2);
+    \draw[-{Stealth}, hbAccent, thick] (c2) -- (c3);
+    \draw[-{Stealth}, hbSuccess, thick] (c3) -- (c4);
+
+    \node[text=hbMarble, font=\tiny] at (6.4,-3.8) {Hook Submission Flow};
+\end{tikzpicture}
+\end{center}
