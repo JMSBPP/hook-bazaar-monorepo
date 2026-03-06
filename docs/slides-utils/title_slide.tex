@@ -1,0 +1,80 @@
+\documentclass[aspectratio=169]{beamer}
+
+% ============================================
+% HOOKBAZAAR TITLE SLIDE - STANDALONE
+% ============================================
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, calc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+
+% Define Hook Bazaar colors (from design system)
+\definecolor{hbPrimary}{HTML}{003366}      % Blue (was Gold)
+\definecolor{hbBgDarkest}{HTML}{000814}    % Deep Navy
+\definecolor{hbBgDark}{HTML}{001F3F}       % Navy
+\definecolor{hbSecondary}{HTML}{003366}    % Secondary Blue
+\definecolor{hbAccent}{HTML}{E85A4F}       % Coral/Terracotta
+\definecolor{hbWhite}{HTML}{FFFFFF}        % White
+\definecolor{hbMarble}{HTML}{F5F5F0}       % Marble Light
+\definecolor{hbSuccess}{HTML}{28A745}      % Green
+
+% Beamer configuration
+\usetheme{default}
+\usecolortheme{default}
+
+\setbeamercolor{background canvas}{bg=hbWhite}
+\setbeamercolor{normal text}{fg=hbBgDarkest}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+
+\begin{document}
+
+% ============================================
+% TITLE SLIDE
+% ============================================
+\begin{frame}
+\begin{center}
+
+\vspace{0.3cm}
+
+% Logo
+\includegraphics[width=3.2cm]{../../client2/src/assets/d9960bdb814135603341883999ea9dc547d831b8.png}
+
+\vspace{0.35cm}
+
+% Protocol Name
+{\Huge\textcolor{hbPrimary}{\textbf{HookBazaar}}}
+
+\vspace{0.2cm}
+
+% Tagline
+\textcolor{hbMarble}{\large Hook-as-a-Service for Uniswap v4}
+
+\vspace{0.1cm}
+
+% Subtitle
+
+\vspace{0.4cm}
+
+
+\vspace{0.25cm}
+
+% Team
+\textcolor{hbMarble}{\scriptsize UHI7 Team: }
+\textcolor{hbAccent}{\scriptsize\faGithub\ JMSBPP}
+\textcolor{hbMarble}{\scriptsize\ $\cdot$\ }
+\textcolor{hbAccent}{\scriptsize\faGithub\ viktor81562}
+\textcolor{hbMarble}{\scriptsize\ $\cdot$\ }
+\textcolor{hbAccent}{\scriptsize\faGithub\ iam-Truong}
+
+\vspace{0.15cm}
+
+% Loom Link
+\href{https://www.loom.com/share/8f8f5873702b4f6db3215892d824bba2}{\textcolor{hbPrimary}{\scriptsize\faPlayCircle\ \underline{Watch Demo on Loom}}}
+
+\end{center}
+\end{frame}
+
+\end{document}

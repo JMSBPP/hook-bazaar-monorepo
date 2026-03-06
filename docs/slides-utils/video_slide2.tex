@@ -1,0 +1,99 @@
+\documentclass[aspectratio=169]{beamer}
+
+% ============================================
+% HOOKBAZAAR VIDEO SLIDE
+% ============================================
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+
+% Define Hook Bazaar colors
+\definecolor{hbPrimary}{HTML}{003366}      % Blue
+\definecolor{hbBgDarkest}{HTML}{000814}    % Deep Navy
+\definecolor{hbBgDark}{HTML}{001F3F}       % Navy
+\definecolor{hbSecondary}{HTML}{003366}    % Secondary Blue
+\definecolor{hbAccent}{HTML}{E85A4F}       % Coral/Terracotta
+\definecolor{hbWhite}{HTML}{FFFFFF}        % White
+\definecolor{hbMarble}{HTML}{F5F5F0}       % Marble Light
+\definecolor{hbGray}{HTML}{2D2D2D}         % Dark Gray
+
+% Beamer configuration
+\usetheme{default}
+\usecolortheme{default}
+
+\setbeamercolor{background canvas}{bg=hbWhite}
+\setbeamercolor{normal text}{fg=hbBgDarkest}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{}
+
+\begin{document}
+
+% ============================================
+% VIDEO SLIDE
+% ============================================
+\begin{frame}
+\begin{center}
+
+\vspace{0.1cm}
+
+% Title
+{\Large\textcolor{hbPrimary}{\textbf{HookBazaar Demo}}}
+
+\vspace{0.2cm}
+
+% Video Player Frame
+\begin{tikzpicture}
+    % Video frame background
+    \node[
+        draw=hbGray,
+        line width=2pt,
+        fill=hbBgDarkest,
+        rounded corners=8pt,
+        minimum width=12cm,
+        minimum height=6.75cm
+    ] (videoframe) {};
+
+    % Loom branding bar at top
+    \fill[hbBgDark, rounded corners=6pt] (-5.9,3.1) rectangle (5.9,3.55);
+    \node[text=hbWhite, font=\footnotesize] at (-4.8,3.32) {\faVideo\ Loom};
+    \node[text=hbMarble, font=\scriptsize] at (0,3.32) {HookBazaar Protocol Demo};
+
+    % Play button circle
+    \node[
+        circle,
+        draw=hbWhite,
+        line width=3pt,
+        fill=hbAccent,
+        minimum size=2cm
+    ] (playbtn) at (0,0) {};
+
+    % Play triangle
+    \node[text=hbWhite, font=\Huge] at (0.15,0) {\faPlay};
+
+    % Click to play text
+    \node[text=hbMarble, font=\small] at (0,-1.8) {Click link below to play};
+
+    % Duration indicator
+    \fill[hbGray, rounded corners=3pt] (-5.5,-3) rectangle (5.5,-2.6);
+    \fill[hbAccent, rounded corners=3pt] (-5.5,-3) rectangle (-3,-2.6);
+    \node[text=hbWhite, font=\tiny] at (4.5,-2.8) {3:24};
+
+    % Video controls
+    \node[text=hbMarble, font=\scriptsize] at (-5,-2.3) {\faPlay};
+    \node[text=hbMarble, font=\scriptsize] at (-4.3,-2.3) {\faVolumeUp};
+    \node[text=hbMarble, font=\scriptsize] at (5,-2.3) {\faExpand};
+
+\end{tikzpicture}
+
+\vspace{0.15cm}
+
+% Clickable link
+\href{https://www.loom.com/share/06c4a87fb8d342f09d742eee85df3809}{\textcolor{hbAccent}{\faPlayCircle\ \textbf{Watch Video on Loom}}}
+
+\end{center}
+\end{frame}
+
+\end{document}
