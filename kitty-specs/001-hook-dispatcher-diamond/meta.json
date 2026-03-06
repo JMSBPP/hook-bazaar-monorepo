@@ -2,8 +2,10 @@
   "feature_number": "001",
   "slug": "001-hook-dispatcher-diamond",
   "feature_slug": "001-hook-dispatcher-diamond",
-  "friendly_name": "hook dispatcher diamond",
+  "friendly_name": "Hook Dispatcher Diamond",
   "mission": "software-dev",
+  "source_description": "Two-level Diamond architecture where MasterHook delegatecalls into a HookDispatcher (itself a Diamond) that manages conditional routing of Uniswap v4 hook calls to multiple HookFacets via bitmap selection from hookData, with pluggable aggregator strategy contracts per hook point for combining return values",
   "target_branch": "uhi7",
-  "created_at": "2026-03-06T14:36:54.076934+00:00"
+  "created_at": "2026-03-06T14:36:54.076934+00:00",
+  "vcs": "git"
 }
